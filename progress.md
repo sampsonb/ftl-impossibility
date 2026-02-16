@@ -107,9 +107,26 @@ https://sampsonb.github.io/ftl-impossibility/
 - All curves diverge simultaneously at c
 - Readouts: γ, time dilation, length %, energy
 
+### 10 — Spacetime Curvature in 3D
+- Interactive 3D visualization using Three.js + OrbitControls
+- 60×60 vertex grid (spacetime fabric) deforms in real-time when masses are placed
+- Grid vertex colors show gravitational time dilation (red = slow, blue = flat)
+- Schwarzschild-like potential: displacement ∝ -M/r
+- Click to place masses (up to 5), raycasting onto XZ plane
+- Particle simulation with Verlet integration following geodesics
+  - Drop mode: particles fall from rest into gravity wells
+  - Orbit mode: tangential launch for orbital mechanics
+  - Trail rendering (300-point ring buffer)
+- Presets: Earth (gentle), Sun (moderate), Black Hole (extreme + accretion ring), Binary Stars
+- Cross-section view: side camera showing classic rubber-sheet profile
+- Geodesic straightness visualization: red dashed (flat straight line) vs green (curved geodesic)
+- Mouse controls: rotate, zoom, pan via OrbitControls
+- Tooltip showing gravitational potential and time dilation at cursor
+- 5 readouts: masses placed, active particles, velocity, time dilation, orbital period
+
 ## Technical Details
-- Single self-contained HTML file (~3800 lines)
-- Vanilla JS + HTML5 Canvas (no dependencies)
+- Single self-contained HTML file (~5200 lines)
+- Vanilla JS + HTML5 Canvas for sections 01–09; Three.js (CDN) for section 10
 - Animated starfield background
 - Responsive design with dark theme
 - Tightened hero/section spacing for minimal dead space
@@ -130,3 +147,4 @@ https://sampsonb.github.io/ftl-impossibility/
 10. Length contraction moved to section 02, all sections renumbered
 11. Causality violation section with simultaneity diagram and paradox animation
 12. Causality violation moved to section 03, all sections renumbered
+13. 3D spacetime curvature section (10) with Three.js visualization

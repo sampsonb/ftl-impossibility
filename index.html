@@ -456,9 +456,66 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 2: Photon Clocks -->
+<!-- Section 02: Length Contraction -->
+<section id="sec-contraction">
+  <h2><span class="num">02</span> Length Contraction</h2>
+  <p class="subtitle">Moving objects physically shrink along their direction of motion &mdash; watch a starship compress as it accelerates toward c.</p>
+
+  <div class="card">
+    <p class="explain">
+      Just as time dilates, <strong>lengths contract</strong>. An object moving at velocity v is measured by a stationary
+      observer to be shorter by a factor of 1/γ: <strong>L = L₀ / γ</strong>.
+      At 0.87c the ship is half its rest length. At 0.99c it's compressed to just 14%. The ship's occupants
+      notice nothing different about their own ship &mdash; instead, they see the <em>universe</em> contracted ahead of them.
+    </p>
+
+    <div class="slider-group">
+      <label>Velocity <span class="val" id="lc-vel-label">0.00c</span></label>
+      <input type="range" id="lc-vel" min="0" max="990" value="0" step="5">
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="lc-canvas" width="800" height="480"></canvas>
+    </div>
+
+    <div class="readouts">
+      <div class="readout">
+        <div class="label">Rest Length (L₀)</div>
+        <div class="value blue" id="lc-rest">100.0 m</div>
+      </div>
+      <div class="readout">
+        <div class="label">Observed Length (L)</div>
+        <div class="value cyan" id="lc-obs">100.0 m</div>
+      </div>
+      <div class="readout">
+        <div class="label">Contraction</div>
+        <div class="value yellow" id="lc-pct">100.0%</div>
+      </div>
+      <div class="readout">
+        <div class="label">γ (Lorentz)</div>
+        <div class="value purple" id="lc-gamma">1.000</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
+      <button id="lc-flyby" class="tab-btn active" style="flex:1;min-width:140px;">Launch Fly-By</button>
+      <button id="lc-flyby-reset" class="tab-btn" style="flex:1;min-width:140px;">Reset</button>
+    </div>
+
+    <p class="explain" style="margin-top:16px;">
+      The <strong>top view</strong> shows the ship at rest for reference. The <strong>bottom view</strong> shows how a
+      stationary observer measures the same ship as it flies past. Press <em>Launch Fly-By</em> to see
+      contracted ships streak past the observation platform at your chosen speed. The ruler and grid
+      stay fixed &mdash; only the ship contracts.
+    </p>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- Section 03: Photon Clocks -->
 <section id="sec-clocks">
-  <h2><span class="num">02</span> Photon Clock &amp; Time Dilation</h2>
+  <h2><span class="num">03</span> Photon Clock &amp; Time Dilation</h2>
   <p class="subtitle">A photon bouncing between two mirrors reveals how time itself slows for moving objects.</p>
 
   <div class="card">
@@ -511,9 +568,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 2b: Spacetime Diagram -->
+<!-- Section 03b: Spacetime Diagram -->
 <section id="sec-spacetime">
-  <h2><span class="num">02b</span> Minkowski Spacetime Diagram</h2>
+  <h2><span class="num">03b</span> Minkowski Spacetime Diagram</h2>
   <p class="subtitle">The geometry of the universe &mdash; why the speed of light divides spacetime into reachable and forever-unreachable regions.</p>
 
   <div class="card">
@@ -571,9 +628,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 3: Lorentz Factor -->
+<!-- Section 04: Lorentz Factor -->
 <section id="sec-lorentz">
-  <h2><span class="num">03</span> The Lorentz Factor</h2>
+  <h2><span class="num">04</span> The Lorentz Factor</h2>
   <p class="subtitle">The mathematical heart of special relativity &mdash; and why it blows up at light speed.</p>
 
   <div class="card">
@@ -648,66 +705,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 3b: Length Contraction -->
-<section id="sec-contraction">
-  <h2><span class="num">03b</span> Length Contraction</h2>
-  <p class="subtitle">Moving objects physically shrink along their direction of motion &mdash; watch a starship compress as it accelerates toward c.</p>
-
-  <div class="card">
-    <p class="explain">
-      Just as time dilates, <strong>lengths contract</strong>. An object moving at velocity v is measured by a stationary
-      observer to be shorter by a factor of 1/γ: <strong>L = L₀ / γ</strong>.
-      At 0.87c the ship is half its rest length. At 0.99c it's compressed to just 14%. The ship's occupants
-      notice nothing different about their own ship &mdash; instead, they see the <em>universe</em> contracted ahead of them.
-    </p>
-
-    <div class="slider-group">
-      <label>Velocity <span class="val" id="lc-vel-label">0.00c</span></label>
-      <input type="range" id="lc-vel" min="0" max="990" value="0" step="5">
-    </div>
-
-    <div class="canvas-wrap">
-      <canvas id="lc-canvas" width="800" height="480"></canvas>
-    </div>
-
-    <div class="readouts">
-      <div class="readout">
-        <div class="label">Rest Length (L₀)</div>
-        <div class="value blue" id="lc-rest">100.0 m</div>
-      </div>
-      <div class="readout">
-        <div class="label">Observed Length (L)</div>
-        <div class="value cyan" id="lc-obs">100.0 m</div>
-      </div>
-      <div class="readout">
-        <div class="label">Contraction</div>
-        <div class="value yellow" id="lc-pct">100.0%</div>
-      </div>
-      <div class="readout">
-        <div class="label">γ (Lorentz)</div>
-        <div class="value purple" id="lc-gamma">1.000</div>
-      </div>
-    </div>
-
-    <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
-      <button id="lc-flyby" class="tab-btn active" style="flex:1;min-width:140px;">Launch Fly-By</button>
-      <button id="lc-flyby-reset" class="tab-btn" style="flex:1;min-width:140px;">Reset</button>
-    </div>
-
-    <p class="explain" style="margin-top:16px;">
-      The <strong>top view</strong> shows the ship at rest for reference. The <strong>bottom view</strong> shows how a
-      stationary observer measures the same ship as it flies past. Press <em>Launch Fly-By</em> to see
-      contracted ships streak past the observation platform at your chosen speed. The ruler and grid
-      stay fixed &mdash; only the ship contracts.
-    </p>
-  </div>
-</section>
-
-<div class="section-divider"><hr></div>
-
-<!-- Section 4: Energy -->
+<!-- Section 05: Energy -->
 <section id="sec-energy">
-  <h2><span class="num">04</span> The Infinite Energy Barrier</h2>
+  <h2><span class="num">05</span> The Infinite Energy Barrier</h2>
   <p class="subtitle">E = mc&sup2; is only the rest energy. The full picture shows why FTL requires infinite energy.</p>
 
   <div class="card">
@@ -775,9 +775,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 5: Real-World Examples -->
+<!-- Section 06: Real-World Examples -->
 <section id="sec-examples">
-  <h2><span class="num">05</span> Real-World Evidence</h2>
+  <h2><span class="num">06</span> Real-World Evidence</h2>
   <p class="subtitle">Special relativity isn't just theory &mdash; we measure its effects every day.</p>
 
   <div class="examples-grid">
@@ -836,9 +836,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 6: Relativistic Mass & E=mc² -->
+<!-- Section 07: Relativistic Mass & E=mc² -->
 <section id="sec-emc2">
-  <h2><span class="num">06</span> E = mc&sup2; and Mass-Energy Equivalence</h2>
+  <h2><span class="num">07</span> E = mc&sup2; and Mass-Energy Equivalence</h2>
   <p class="subtitle">Mass is frozen energy. Energy has inertia. This is why the speed limit exists.</p>
 
   <div class="card">
@@ -880,9 +880,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 7: Speed comparison -->
+<!-- Section 08: Speed comparison -->
 <section id="sec-compare">
-  <h2><span class="num">07</span> Putting It All Together</h2>
+  <h2><span class="num">08</span> Putting It All Together</h2>
   <p class="subtitle">Adjust the velocity and watch all relativistic effects simultaneously.</p>
 
   <div class="card">

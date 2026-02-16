@@ -171,8 +171,23 @@ https://sampsonb.github.io/ftl-impossibility/
 - All curves diverge simultaneously at c
 - Readouts: γ, time dilation, length %, energy
 
+## Adaptive Difficulty Level System
+- 3-level toggle in hero: Beginner (Grades 7–9), Intermediate (Grades 10–12), Advanced (College+)
+- Body-class CSS system: `level-beginner`, `level-intermediate`, `level-advanced` on `<body>`
+- Content tagged with `.level-beg`, `.level-int`, `.level-adv` — CSS shows/hides based on active level
+- Default level: Intermediate (matches original content)
+- localStorage persistence: level saved and restored across visits
+- URL parameter `?level=beginner|intermediate|advanced` for classroom use (hides toggle)
+- **Adaptive content per section**: beginner (simple analogies, no math), intermediate (current text), advanced (full equations, metric derivations, four-vectors)
+- **Section difficulty badges**: color-coded labels on each section heading (green=beginner, yellow=intermediate, red=advanced)
+- **Technical term tooltips**: ~15 key terms with hover definitions (hidden in advanced mode)
+- **Recommended path banner**: shown in beginner mode — suggests order 01 → 02 → 03 → 06 → 09
+- **Hero equation subtitle**: beginner-friendly explanation of E=mc² shown in beginner mode
+- **Equation/derivation hiding**: `.eq-only` blocks hidden in beginner mode, `.deriv-only` shown only in advanced
+- **Per-section override**: cards support local level override classes for "Show Simple / Show Full" toggling
+
 ## Technical Details
-- Single self-contained HTML file (~6200 lines)
+- Single self-contained HTML file (~7100 lines)
 - Vanilla JS + HTML5 Canvas for sections 01–04, 06–11; Three.js (CDN) for section 05
 - Animated starfield background
 - Responsive design with dark theme
@@ -199,3 +214,4 @@ https://sampsonb.github.io/ftl-impossibility/
 15. Spacetime curvature moved to section 04, all sections renumbered
 16. Multi-plane orbital demonstrations: inclination slider, 3-Plane/Solar System/Globular Cluster presets
 17. "Speed Limit of the Universe" section with 5 visual tabs, moved to section 01
+18. Adaptive difficulty level system: 3-level toggle, adaptive content, badges, tooltips, classroom mode

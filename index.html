@@ -374,6 +374,74 @@
   #curvature-container canvas { display: block; border-radius: 12px; }
   #sec-curvature input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
   #curv-tooltip { z-index: 10; backdrop-filter: blur(8px); }
+
+  /* ==================== DIFFICULTY LEVEL SYSTEM ==================== */
+
+  /* Toggle bar in hero */
+  .difficulty-toggle { display:flex; gap:8px; justify-content:center; align-items:center; margin:18px 0 4px; flex-wrap:wrap; }
+  .dt-label { color:var(--muted); font-size:0.85rem; margin-right:4px; }
+  .dt-btn { background:transparent; border:1px solid var(--border); color:var(--muted); padding:10px 20px; border-radius:10px; cursor:pointer; text-align:center; transition:all 0.3s; font-family:inherit; font-size:0.85rem; }
+  .dt-btn:hover { border-color:var(--text); color:var(--text); }
+  .dt-btn .dt-icon { font-size:1rem; }
+  .dt-btn .dt-sub { display:block; font-size:0.65rem; opacity:0.6; margin-top:2px; }
+  .dt-btn[data-level="beginner"].active { background:rgba(34,197,94,0.15); border-color:#22c55e; color:#22c55e; }
+  .dt-btn[data-level="intermediate"].active { background:rgba(245,158,11,0.15); border-color:#f59e0b; color:#f59e0b; }
+  .dt-btn[data-level="advanced"].active { background:rgba(239,68,68,0.15); border-color:#ef4444; color:#ef4444; }
+
+  /* Level-based content visibility — default hidden */
+  .level-beg, .level-int, .level-adv { display: none; }
+  .level-beg-inline, .level-int-inline, .level-adv-inline { display: none; }
+
+  /* Show content matching current level */
+  body.level-beginner .level-beg { display: block; }
+  body.level-beginner .level-beg-inline { display: inline; }
+  body.level-intermediate .level-int { display: block; }
+  body.level-intermediate .level-int-inline { display: inline; }
+  body.level-advanced .level-adv { display: block; }
+  body.level-advanced .level-adv-inline { display: inline; }
+
+  /* Equation blocks: hidden in beginner */
+  body.level-beginner .eq-only { display: none !important; }
+
+  /* Derivation blocks: only in advanced */
+  .deriv-only { display: none; }
+  body.level-advanced .deriv-only { display: block; }
+
+  /* Hide complex readouts in beginner */
+  body.level-beginner .readout-adv { display: none; }
+
+  /* Section difficulty badges */
+  .section-badge { display:inline-block; font-size:0.65rem; padding:2px 8px; border-radius:4px; margin-left:8px; vertical-align:middle; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; }
+  .badge-beginner { background:rgba(34,197,94,0.15); color:#22c55e; }
+  .badge-intermediate { background:rgba(245,158,11,0.15); color:#f59e0b; }
+  .badge-advanced { background:rgba(239,68,68,0.15); color:#ef4444; }
+
+  /* Technical term tooltips */
+  .term { border-bottom:1px dotted var(--muted); cursor:help; position:relative; }
+  body.level-advanced .term { border-bottom:none; cursor:default; }
+  .term-tip { display:none; position:absolute; bottom:calc(100% + 4px); left:50%; transform:translateX(-50%); background:var(--card); border:1px solid var(--border); border-radius:8px; padding:8px 12px; font-size:0.78rem; color:var(--muted); white-space:nowrap; z-index:100; pointer-events:none; box-shadow:0 4px 12px rgba(0,0,0,0.4); }
+  .term:hover .term-tip { display:block; }
+  body.level-advanced .term:hover .term-tip { display:none; }
+
+  /* Recommended path banner (beginner only) */
+  .rec-path { background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.25); border-radius:10px; padding:12px 20px; margin:0 0 20px; font-size:0.85rem; color:#22c55e; text-align:center; }
+
+  /* Hero equation subtitle (beginner) */
+  .equation-hero-sub { font-size:0.9rem; color:var(--muted); margin-top:6px; }
+
+  /* Per-section level switch buttons */
+  .level-switch { display:flex; gap:6px; margin:8px 0 4px; }
+  .ls-btn { background:transparent; border:1px solid var(--border); color:var(--muted); padding:4px 12px; border-radius:6px; cursor:pointer; font-size:0.75rem; font-family:inherit; transition:all 0.2s; }
+  .ls-btn:hover { border-color:var(--text); color:var(--text); }
+  .ls-btn.active { background:rgba(59,130,246,0.15); border-color:var(--accent); color:var(--accent); }
+
+  /* Per-section overrides — when a card has a local override, show that level's content regardless of global */
+  .card.level-override-beg .level-beg { display: block !important; }
+  .card.level-override-beg .level-int { display: none !important; }
+  .card.level-override-beg .level-adv { display: none !important; }
+  .card.level-override-adv .level-adv { display: block !important; }
+  .card.level-override-adv .level-int { display: none !important; }
+  .card.level-override-adv .level-beg { display: none !important; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js" defer></script>
@@ -389,18 +457,50 @@
   <h1>Why Faster-Than-Light Travel Is Impossible</h1>
   <p>An interactive exploration of Einstein's Special Relativity, time dilation, and the cosmic speed limit.</p>
   <div class="equation-hero">E = mc&sup2;</div>
+  <div class="equation-hero-sub level-beg">Energy equals mass times the speed of light squared &mdash; the most famous equation in physics!</div>
+
+  <div class="difficulty-toggle" id="difficulty-toggle">
+    <span class="dt-label">Level:</span>
+    <button class="dt-btn" data-level="beginner">
+      <span class="dt-icon">&#127793;</span> Beginner
+      <span class="dt-sub">Grades 7&ndash;9</span>
+    </button>
+    <button class="dt-btn active" data-level="intermediate">
+      <span class="dt-icon">&#9889;</span> Intermediate
+      <span class="dt-sub">Grades 10&ndash;12</span>
+    </button>
+    <button class="dt-btn" data-level="advanced">
+      <span class="dt-icon">&#128300;</span> Advanced
+      <span class="dt-sub">College+</span>
+    </button>
+  </div>
+
+  <div class="rec-path level-beg">
+    <strong>Recommended path:</strong> Start with sections 01, 02, 03, 06, then 09 for real-world proof!
+  </div>
 </header>
 
 <!-- Section 01: Speed Limit Explained Simply -->
 <section id="sec-speedlimit">
-  <h2><span class="num">01</span> The Speed Limit of the Universe</h2>
+  <h2><span class="num">01</span> The Speed Limit of the Universe <span class="section-badge badge-beginner">Start Here</span></h2>
   <p class="subtitle">No equations, no formulas &mdash; just visual stories that show why nothing can outrun light.</p>
 
   <div class="card">
-    <p class="explain">
+    <p class="explain level-beg">
+      Nothing can travel faster than light &mdash; but why? These five animations show you the answer without any math.
+      Think of it like a budget: you have a fixed amount of &ldquo;speed&rdquo; to spend, and you can put it toward
+      moving through space <em>or</em> moving through time, but never both at full speed.
+    </p>
+    <p class="explain level-int">
       Everything in the universe is always moving through spacetime at exactly one speed: <strong>the speed of light</strong>.
       You can trade speed through space for speed through time, but you can never exceed the total budget.
       Move faster through space? You move slower through time. Here&rsquo;s what that looks and feels like.
+    </p>
+    <p class="explain level-adv">
+      Every object traces a path through 4D spacetime with a <span class="term">four-velocity<span class="term-tip">A vector in spacetime whose magnitude is always c</span></span>
+      whose magnitude is always <em>c</em>. The <span class="term">spacetime interval<span class="term-tip">ds&sup2; = &minus;c&sup2;dt&sup2; + dx&sup2; &mdash; the invariant &ldquo;distance&rdquo; in spacetime</span></span>
+      ds&sup2; = &minus;c&sup2;dt&sup2; + dx&sup2; is invariant: more spatial velocity means less temporal velocity,
+      and vice versa. These visualizations illustrate that tradeoff.
     </p>
 
     <div class="tab-bar" id="speedlimit-tabs">
@@ -475,10 +575,21 @@
       </div>
     </div>
 
-    <p class="explain">
+    <p class="explain level-beg">
+      All five pictures show the same big idea: <strong>the faster you go, the more time slows down for you</strong>.
+      At light speed, time stops completely. Nothing with any mass can actually reach that speed &mdash; it would
+      take infinite energy. Keep scrolling to see more ways this shows up!
+    </p>
+    <p class="explain level-int">
       Every visualization above shows the same truth from a different angle: <strong>moving through space and moving through time are connected</strong>.
       The faster you go through space, the slower you go through time. At light speed, time stops completely.
       The sections below explore the physics behind these effects in detail.
+    </p>
+    <p class="explain level-adv">
+      Each tab illustrates a consequence of the Minkowski metric. The spacetime speedometer is the
+      four-velocity constraint |u&mu;| = c. Astronaut aging is proper time &tau; = &int;ds/c along a worldline.
+      The photon&rsquo;s view is the null limit ds&sup2; = 0. The energy hill is the divergence of &gamma;mc&sup2;.
+      The birthday candles are the integrated proper time difference &Delta;&tau; between two worldlines.
     </p>
   </div>
 </section>
@@ -487,15 +598,26 @@
 
 <!-- Section 02: Twin Paradox -->
 <section id="sec-twins">
-  <h2><span class="num">02</span> The Twin Paradox</h2>
+  <h2><span class="num">02</span> The Twin Paradox <span class="section-badge badge-beginner">Beginner</span></h2>
   <p class="subtitle">One twin stays home. The other rockets to a star and back. When they reunite, the traveler is younger. This is real.</p>
 
   <div class="card">
-    <p class="explain">
-      The <strong>twin paradox</strong> is the most famous consequence of time dilation. Twin A stays on Earth.
+    <p class="explain level-beg">
+      Imagine two identical twins. One stays home, one takes a super-fast rocket trip to a distant star and back.
+      When they meet again, the traveler is actually <strong>younger</strong>! This really happens &mdash; it&rsquo;s not science fiction.
+      The faster the rocket goes, the bigger the age difference.
+    </p>
+    <p class="explain level-int">
+      The <strong>twin paradox</strong> is the most famous consequence of <span class="term">time dilation<span class="term-tip">Time passes slower for objects moving at high speed</span></span>. Twin A stays on Earth.
       Twin B travels to a distant star at high speed, turns around, and returns. Because Twin B's clock
       runs slower during the trip, <strong>Twin B ages less</strong>. This isn't symmetric &mdash; Twin B
       <em>accelerated</em> (changed direction), breaking the symmetry between the two frames.
+    </p>
+    <p class="explain level-adv">
+      The twin paradox resolves through <span class="term">proper time<span class="term-tip">The time measured along an object&rsquo;s own worldline: &tau; = &int;ds/c</span></span>:
+      &tau; = &int;&radic;(1 &minus; v&sup2;/c&sup2;) dt. The stay-home twin&rsquo;s worldline is geodesic (straight in Minkowski space),
+      maximizing proper time. The traveler&rsquo;s worldline has a kink at turnaround &mdash; a non-inertial segment &mdash;
+      accumulating less proper time. The metric signature (&minus;,+,+,+) ensures the straight path is always longest.
     </p>
 
     <div class="slider-group">
@@ -544,13 +666,26 @@
       </div>
     </div>
 
-    <p class="explain" style="margin-top:16px;">
+    <p class="explain level-beg" style="margin-top:16px;">
+      <strong>But wait &mdash; isn&rsquo;t it unfair?</strong> From the rocket&rsquo;s point of view, isn&rsquo;t Earth moving away?
+      The difference is that the rocket had to <em>turn around</em>. Turning around means changing speed and direction,
+      and that breaks the tie. The twin who turned around is always the younger one when they meet again.
+      Look at the spacetime diagram below &mdash; the rocket&rsquo;s path has a &ldquo;kink&rdquo; where it turned around.
+    </p>
+    <p class="explain level-int" style="margin-top:16px;">
       <strong>Why isn't this a paradox?</strong> From the rocket's frame, doesn't Earth's clock run slow too?
       Yes &mdash; during each constant-velocity leg, each twin sees the other's clock running slow.
       But the traveler <em>turns around</em> (accelerates), which is <strong>not</strong> an inertial frame change.
       The turnaround breaks the symmetry. In the spacetime diagram below, the traveler's worldline
       has a <strong>kink</strong> &mdash; it's a longer path through spacetime, but a <em>shorter</em> proper time.
       The straight worldline (staying home) always accumulates the most proper time between two events.
+    </p>
+    <p class="explain level-adv" style="margin-top:16px;">
+      <strong>Resolution via the metric:</strong> Proper time along a worldline is &tau; = &int;&radic;(&minus;ds&sup2;)/c.
+      The stay-home worldline is geodesic in flat Minkowski space, and by the reversed triangle inequality of
+      Lorentzian geometry, the geodesic between two timelike-separated events has the <em>maximum</em> proper time.
+      The traveler&rsquo;s piecewise-inertial path with a turnaround kink always accumulates less.
+      Equivalently, during turnaround the traveler shifts to a frame where Earth&rsquo;s clock jumps forward by &Delta;t = 2vd/c&sup2;.
     </p>
   </div>
 </section>
@@ -559,15 +694,29 @@
 
 <!-- Section 03: Length Contraction -->
 <section id="sec-contraction">
-  <h2><span class="num">03</span> Length Contraction</h2>
+  <h2><span class="num">03</span> Length Contraction <span class="section-badge badge-beginner">Beginner</span></h2>
   <p class="subtitle">Moving objects physically shrink along their direction of motion &mdash; watch a starship compress as it accelerates toward c.</p>
 
   <div class="card">
-    <p class="explain">
+    <p class="explain level-beg">
+      When something moves really fast, it actually gets <strong>shorter</strong> in the direction it&rsquo;s moving.
+      Not because it&rsquo;s squished by a force &mdash; space itself contracts! The ship&rsquo;s passengers don&rsquo;t
+      notice anything different about their own ship. Instead, they see the universe compressed ahead of them.
+      Try the slider to see how much a ship shrinks at different speeds.
+    </p>
+    <p class="explain level-int">
       Just as time dilates, <strong>lengths contract</strong>. An object moving at velocity v is measured by a stationary
-      observer to be shorter by a factor of 1/γ: <strong>L = L₀ / γ</strong>.
+      observer to be shorter by a factor of 1/&gamma;: <strong>L = L&#x2080; / &gamma;</strong>.
       At 0.87c the ship is half its rest length. At 0.99c it's compressed to just 14%. The ship's occupants
       notice nothing different about their own ship &mdash; instead, they see the <em>universe</em> contracted ahead of them.
+    </p>
+    <p class="explain level-adv">
+      <span class="term">Length contraction<span class="term-tip">Moving objects are measured shorter along the direction of motion: L = L&#x2080;/&gamma;</span></span>
+      is a direct consequence of the <span class="term">relativity of simultaneity<span class="term-tip">Events simultaneous in one frame aren&rsquo;t simultaneous in another</span></span>.
+      Measuring a moving object&rsquo;s length requires noting both ends <em>simultaneously</em>, but &ldquo;simultaneous&rdquo;
+      differs between frames. In the rest frame S&prime;, the rod endpoints are at (0,0) and (L&#x2080;,0). Lorentz-transforming
+      to S where the rod moves at v, the simultaneous measurement yields L = L&#x2080;/&gamma;. The contraction is real
+      but frame-dependent &mdash; the proper length L&#x2080; is invariant.
     </p>
 
     <div class="slider-group">
@@ -603,11 +752,22 @@
       <button id="lc-flyby-reset" class="tab-btn" style="flex:1;min-width:140px;">Reset</button>
     </div>
 
-    <p class="explain" style="margin-top:16px;">
+    <p class="explain level-beg" style="margin-top:16px;">
+      The <strong>top picture</strong> shows the ship parked &mdash; its full length. The <strong>bottom picture</strong>
+      shows the same ship zooming past you. Notice how it gets squished! Press <em>Launch Fly-By</em> to see
+      ships streak past at different speeds. The faster they go, the shorter they look.
+    </p>
+    <p class="explain level-int" style="margin-top:16px;">
       The <strong>top view</strong> shows the ship at rest for reference. The <strong>bottom view</strong> shows how a
       stationary observer measures the same ship as it flies past. Press <em>Launch Fly-By</em> to see
       contracted ships streak past the observation platform at your chosen speed. The ruler and grid
       stay fixed &mdash; only the ship contracts.
+    </p>
+    <p class="explain level-adv" style="margin-top:16px;">
+      Note: what you <em>see</em> optically differs from the Lorentz-contracted length due to light travel time
+      (Terrell rotation). A sphere would appear rotated, not flattened. The visualization here shows the
+      Lorentz-contracted measurement, not the optical appearance. The ghost outline shows the proper length
+      for direct comparison.
     </p>
   </div>
 </section>
@@ -616,16 +776,30 @@
 
 <!-- Section 04: Causality Violation -->
 <section id="sec-causality">
-  <h2><span class="num">04</span> Causality Violation &mdash; Why FTL Breaks Reality</h2>
+  <h2><span class="num">04</span> Causality Violation &mdash; Why FTL Breaks Reality <span class="section-badge badge-intermediate">Intermediate</span></h2>
   <p class="subtitle">FTL doesn't just break a speed limit &mdash; it lets you receive messages before they were sent, destroying cause and effect.</p>
 
   <div class="card">
-    <p class="explain">
+    <p class="explain level-beg">
+      If you could send a message faster than light, some people in the universe would see you get the reply
+      <strong>before you sent the message</strong>. That&rsquo;s like getting an answer before asking the question &mdash;
+      impossible! This is the deepest reason why nothing can go faster than light: it would break
+      <span class="term">causality<span class="term-tip">The rule that causes always come before their effects</span></span>
+      &mdash; the rule that causes always come before their effects.
+    </p>
+    <p class="explain level-int">
       The speed of light isn't an arbitrary speed limit &mdash; it's the boundary between <strong>cause</strong> and <strong>effect</strong>.
       In special relativity, different observers moving at different velocities disagree about <em>when</em> events happen.
       For events connected by light or slower signals, everyone agrees on the order. But for faster-than-light signals,
       some observers see the reply arrive <strong>before the message was sent</strong> &mdash; creating logical paradoxes
       that make FTL communication physically impossible.
+    </p>
+    <p class="explain level-adv">
+      For a spacelike-separated signal (FTL), &exist; a Lorentz boost that reverses the temporal ordering.
+      Specifically, if a signal travels at speed s &gt; c, an observer moving at v &gt; c&sup2;/s sees it arrive
+      at negative time: t&prime; = &gamma;(t &minus; vx/c&sup2;) &lt; 0. This is the <strong>tachyonic antitelephone</strong>
+      argument (Tolman, 1917; Benford et al., 1970). Combined with the relativity principle (all inertial frames
+      are equivalent), any FTL signal can be combined with a Lorentz boost to create a closed timelike curve.
     </p>
 
     <div class="tab-bar" id="causality-tabs">
@@ -677,11 +851,24 @@
         </div>
       </div>
 
-      <p class="explain">
+      <p class="explain level-beg">
+        The <span class="term">light cone<span class="term-tip">The region of spacetime reachable at or below light speed</span></span>
+        is like a &ldquo;safe zone.&rdquo; Messages inside the cone always arrive in the right order.
+        But an FTL message goes <em>outside</em> the cone, into the danger zone where different people
+        disagree about what happened first. Try increasing the observer speed to see the arrival time go negative!
+      </p>
+      <p class="explain level-int">
         The Lorentz transformation tells us: <strong>t&prime; = &gamma;(t &minus; vx/c&sup2;)</strong>.
         For an FTL message traveling distance <em>d</em> at speed <em>s&middot;c</em>, the arrival time in the
         Earth frame is t = d/s. But a moving observer sees it arrive at t&prime; = &gamma;(d/s &minus; v&middot;d/c&sup2;).
         When <strong>v &gt; c/s</strong>, this goes <em>negative</em> &mdash; the message arrives before it was sent.
+      </p>
+      <p class="explain level-adv">
+        The critical condition is v &gt; c&sup2;/s, where s is the FTL signal speed. For s = 2c, any observer
+        with v &gt; 0.5c sees reversed ordering. The Lorentz-transformed arrival time
+        t&prime; = &gamma;d(1/s &minus; v/c&sup2;) changes sign at v = c&sup2;/s. Since s &gt; c, the threshold v &lt; c
+        is always achievable by a subluminal observer. This is why <em>any</em> FTL speed, no matter how modest,
+        enables time-reversed signaling.
       </p>
     </div>
 
@@ -724,13 +911,27 @@
         </div>
       </div>
 
-      <p class="explain">
+      <p class="explain level-beg">
+        <strong>Here&rsquo;s the problem:</strong> Earth sends a message saying &ldquo;HELLO&rdquo; to another star.
+        Because the message goes faster than light, someone on a moving spaceship sees the reply arrive
+        <em>before</em> the message was sent! The reply says &ldquo;DON&rsquo;T SEND.&rdquo; But if you don&rsquo;t send it,
+        the reply never exists. If you do send it, the warning was triggered. Either way, it makes no sense.
+        That&rsquo;s why FTL messaging is impossible &mdash; it creates unsolvable contradictions.
+      </p>
+      <p class="explain level-int">
         <strong>The causal loop:</strong> Earth sends &ldquo;HELLO&rdquo; to Alpha Centauri at 2.185c.
         It arrives in 2 years (Earth frame), but an observer moving at 0.50c sees it arrive
         <strong>78 days in the past</strong>. Alpha Centauri replies at the same FTL speed.
         The reply reaches Earth <em>before</em> the original was sent. Now imagine the reply says
         &ldquo;DON&rsquo;T SEND&rdquo; &mdash; if you obey, the warning was never triggered. If you ignore it,
         the warning <em>was</em> triggered. Either way: <strong>paradox</strong>.
+      </p>
+      <p class="explain level-adv">
+        <strong>Tachyonic antitelephone construction:</strong> Event A (Earth, t=0): send &ldquo;HELLO&rdquo; at 2.185c.
+        Event B (Alpha Centauri, t=2yr): arrival. Boost to frame S&prime; at v=0.5c: t&prime;(B) = &gamma;(2 &minus; 0.5 &times; 4.37) &approx; &minus;0.21yr.
+        Alpha Centauri retransmits in S&prime; at 2.185c. The reply reaches Earth at t &lt; 0 &mdash; before Event A.
+        This constructs a closed timelike curve (CTC). By Novikov&rsquo;s self-consistency principle, CTCs require
+        self-consistent histories, but the &ldquo;DON&rsquo;T SEND&rdquo; payload is explicitly inconsistent. Conclusion: FTL + Lorentz invariance &rArr; logical contradiction.
       </p>
     </div>
   </div>
@@ -740,15 +941,29 @@
 
 <!-- Section 05: Spacetime Curvature -->
 <section id="sec-curvature">
-  <h2><span class="num">05</span> Spacetime Curvature in 3D</h2>
+  <h2><span class="num">05</span> Spacetime Curvature in 3D <span class="section-badge badge-intermediate">Intermediate</span></h2>
   <p class="subtitle">Mass warps spacetime. Objects follow the straightest possible paths through curved geometry &mdash; what we perceive as gravity.</p>
 
   <div class="card">
-    <p class="explain">
+    <p class="explain level-beg">
+      Gravity isn&rsquo;t a pulling force &mdash; it&rsquo;s more like a curved path. Imagine rolling a marble on a trampoline
+      with a bowling ball in the middle. The marble curves because the surface is curved, not because something is pulling it.
+      That&rsquo;s what mass does to space! Click on the grid below to place masses and watch space bend.
+      Then drop particles to see them follow the curves.
+    </p>
+    <p class="explain level-int">
       Einstein's <strong>General Relativity</strong> reveals that gravity isn't a force &mdash; it's the curvature of spacetime
-      caused by mass and energy. A planet orbiting a star is simply following the straightest possible path (a <strong>geodesic</strong>)
+      caused by mass and energy. A planet orbiting a star is simply following the straightest possible path (a <span class="term">geodesic<span class="term-tip">The straightest possible path through curved spacetime</span></span>)
       through warped spacetime. Place masses below to watch the fabric of spacetime deform, then drop test particles
       to see them follow curved geodesics.
+    </p>
+    <p class="explain level-adv">
+      General Relativity replaces Newtonian gravity with the Einstein field equations: G&mu;&nu; = 8&pi;G/c&sup4; T&mu;&nu;.
+      The <span class="term">stress-energy tensor<span class="term-tip">T&mu;&nu; &mdash; describes the density and flux of energy and momentum in spacetime</span></span> T&mu;&nu;
+      sources spacetime curvature. Free particles follow geodesics of the
+      <span class="term">Schwarzschild metric<span class="term-tip">The spacetime geometry around a non-rotating spherical mass</span></span>
+      ds&sup2; = &minus;(1&minus;r_s/r)c&sup2;dt&sup2; + (1&minus;r_s/r)&sup1;dr&sup2; + r&sup2;d&Omega;&sup2;.
+      This visualization uses a Newtonian potential proxy (&Phi; &prop; &minus;M/r) for computational simplicity.
     </p>
 
     <!-- Preset buttons -->
@@ -850,13 +1065,26 @@
       </div>
     </div>
 
-    <p class="explain">
+    <p class="explain level-beg">
+      <strong>Gravity pulls from ALL directions, not just &ldquo;down.&rdquo;</strong> The 2D trampoline picture is helpful but
+      misleading &mdash; it makes gravity look like it only bends space downward. Switch to <strong>3D Spherical</strong>
+      to see how space actually curves equally in every direction around a mass. Try <strong>Rain Particles</strong>
+      to drop objects from above, below, and all sides &mdash; they all curve the same way!
+    </p>
+    <p class="explain level-int">
       <strong>Gravity isn't &ldquo;downward&rdquo; &mdash; it's inward.</strong> The 2D sheet view shows the classic &ldquo;rubber sheet&rdquo; analogy,
       but this is misleading because it only shows curvature in one direction. Switch to <strong>3D Spherical</strong> view to see
       concentric shells of spacetime compressing equally in all directions around a mass. Use <strong>Rain Particles</strong>
       to drop test objects from above, below, and all sides &mdash; they all experience identical curvature.
       An orbiting planet isn't being &ldquo;pulled&rdquo; &mdash; it's following the straightest possible path (a <strong>geodesic</strong>)
       through warped spacetime.
+    </p>
+    <p class="explain level-adv">
+      <strong>Spherical symmetry of the Schwarzschild solution:</strong> The metric is diagonal in (t,r,&theta;,&phi;)
+      and depends only on r, making all angular directions equivalent. The orbital plane presets demonstrate
+      this: orbits at any inclination are equally stable. The 2D embedding diagram (Flamm&rsquo;s paraboloid)
+      embeds only the equatorial slice (t=const, &theta;=&pi;/2) into Euclidean 3-space, which is inherently misleading.
+      The 3D shell view better represents the full spatial curvature of the r=const surfaces.
     </p>
   </div>
 </section>
@@ -865,14 +1093,27 @@
 
 <!-- Section 06: Photon Clocks -->
 <section id="sec-clocks">
-  <h2><span class="num">06</span> Photon Clock &amp; Time Dilation</h2>
+  <h2><span class="num">06</span> Photon Clock &amp; Time Dilation <span class="section-badge badge-beginner">Beginner</span></h2>
   <p class="subtitle">A photon bouncing between two mirrors reveals how time itself slows for moving objects.</p>
 
   <div class="card">
-    <p class="explain">
+    <p class="explain level-beg">
+      Imagine a clock that works by bouncing a beam of light between two mirrors, up and down.
+      When the clock is sitting still, the light goes straight up and down. But when the clock moves sideways,
+      the light has to travel a longer zigzag path &mdash; and light <em>always</em> goes at the same speed.
+      So the moving clock <strong>must tick slower</strong>. That&rsquo;s time dilation!
+    </p>
+    <p class="explain level-int">
       A <strong>photon clock</strong> bounces a photon between two mirrors. At rest, the photon travels straight up and down.
       But when the clock moves, the photon must travel a longer diagonal path. Since light speed is constant (c),
-      <strong>the moving clock ticks slower</strong> &mdash; this is time dilation.
+      <strong>the moving clock ticks slower</strong> &mdash; this is <span class="term">time dilation<span class="term-tip">Time passes slower for objects moving at high speed</span></span>.
+    </p>
+    <p class="explain level-adv">
+      The photon clock thought experiment directly derives the <span class="term">Lorentz factor<span class="term-tip">&gamma; = 1/&radic;(1&minus;v&sup2;/c&sup2;) &mdash; the ratio of coordinate time to proper time</span></span> from Pythagorean geometry.
+      In the rest frame, the round-trip time is t&#x2080; = 2L/c. In a frame where the clock moves at v, the photon
+      path length is 2&radic;(L&sup2; + (vt/2)&sup2;). Setting this equal to ct and solving: t = &gamma;t&#x2080; where &gamma; = 1/&radic;(1&minus;&beta;&sup2;).
+      The Pythagorean triangle overlay shows the geometry directly. This result also follows from the Minkowski metric
+      by computing proper time along the clock&rsquo;s worldline.
     </p>
 
     <div class="slider-group">
@@ -920,15 +1161,28 @@
 
 <!-- Section 06b: Spacetime Diagram -->
 <section id="sec-spacetime">
-  <h2><span class="num">06b</span> Minkowski Spacetime Diagram</h2>
+  <h2><span class="num">06b</span> Minkowski Spacetime Diagram <span class="section-badge badge-intermediate">Intermediate</span></h2>
   <p class="subtitle">The geometry of the universe &mdash; why the speed of light divides spacetime into reachable and forever-unreachable regions.</p>
 
   <div class="card">
-    <p class="explain">
+    <p class="explain level-beg">
+      Think of a map, but instead of two space directions, one axis is space and the other is time.
+      Your path through this map is called your <span class="term">worldline<span class="term-tip">Your path through spacetime &mdash; shows everywhere you&rsquo;ve been and when</span></span>
+      &mdash; it shows everywhere you&rsquo;ve been and when. Light draws diagonal lines on this map.
+      Everything inside those lines is reachable; everything outside is forever out of reach (you&rsquo;d need FTL to get there).
+    </p>
+    <p class="explain level-int">
       A <strong>spacetime diagram</strong> plots space (horizontal) against time (vertical, in units of ct).
-      Light always travels at 45&deg; lines, forming the <strong>light cone</strong>. Any massive object's worldline
+      Light always travels at 45&deg; lines, forming the <span class="term">light cone<span class="term-tip">The boundary between reachable and unreachable regions of spacetime</span></span>. Any massive object's worldline
       must stay <em>inside</em> the cone (steeper than 45&deg;). To go faster than light would mean leaving
       the cone &mdash; entering a region where cause and effect break down.
+    </p>
+    <p class="explain level-adv">
+      The Minkowski spacetime diagram represents the invariant interval ds&sup2; = &minus;c&sup2;dt&sup2; + dx&sup2;.
+      Light cones are null surfaces (ds&sup2; = 0) at 45&deg;. Timelike worldlines (ds&sup2; &lt; 0) stay inside the cone.
+      Spacelike separations (ds&sup2; &gt; 0) lie outside &mdash; events here have frame-dependent temporal ordering.
+      The object&rsquo;s <span class="term">worldline<span class="term-tip">Your path through spacetime &mdash; shows everywhere you&rsquo;ve been and when</span></span>
+      angle &theta; = arctan(v/c) relative to the time axis.
     </p>
 
     <div class="slider-group">
@@ -967,11 +1221,23 @@
       </div>
     </div>
 
-    <p class="explain">
+    <p class="explain level-beg">
+      As you speed up, your path tilts closer to the light line. The line that shows &ldquo;what&rsquo;s happening right now&rdquo;
+      also tilts &mdash; different speeds disagree about what &ldquo;now&rdquo; means! At light speed, everything merges
+      into the diagonal. Going faster would flip cause and effect &mdash; that&rsquo;s why it&rsquo;s impossible.
+    </p>
+    <p class="explain level-int">
       As velocity increases, the worldline tilts toward the light cone and the <strong>simultaneity line</strong>
       (what the moving observer calls "now") tilts symmetrically. At v = c, both collapse onto the light cone.
       Beyond c, the worldline would enter the <strong>spacelike region</strong> &mdash; the object would arrive
       before it left in some reference frames, violating causality.
+    </p>
+    <p class="explain level-adv">
+      Under a Lorentz boost, the time axis (worldline) and space axis (simultaneity line) scissor symmetrically
+      toward the light cone. At rapidity &phi; = arctanh(&beta;), the worldline angle is &phi; from vertical and
+      the simultaneity line tilts by the same angle from horizontal. Proper time tick spacing along the worldline
+      stretches by &gamma;, reflecting the time dilation factor. At &beta; = 1, the axes collapse onto the null cone,
+      and proper time intervals vanish (ds&sup2; = 0).
     </p>
   </div>
 </section>
@@ -980,7 +1246,7 @@
 
 <!-- Section 07: Lorentz Factor -->
 <section id="sec-lorentz">
-  <h2><span class="num">07</span> The Lorentz Factor</h2>
+  <h2><span class="num">07</span> The Lorentz Factor <span class="section-badge badge-intermediate">Intermediate</span></h2>
   <p class="subtitle">The mathematical heart of special relativity &mdash; and why it blows up at light speed.</p>
 
   <div class="card">
@@ -1012,7 +1278,25 @@
       </div>
     </div>
 
-    <div class="derivation">
+    <p class="explain level-beg">
+      The <span class="term">Lorentz factor<span class="term-tip">A number (&gamma;) that tells you how much time slows and space contracts at a given speed</span></span>
+      (written as &gamma;, the Greek letter &ldquo;gamma&rdquo;) tells us how much time slows down and space shrinks at any speed.
+      At everyday speeds it&rsquo;s basically 1 (no effect). But as you approach light speed, it shoots up toward infinity!
+      That&rsquo;s why you can never actually reach light speed &mdash; all the effects become infinitely strong.
+    </p>
+    <p class="explain level-int">
+      The graph above shows how &gamma; stays near 1 at low velocities but <strong>diverges to infinity</strong> as v &rarr; c.
+      This single number governs time dilation (clocks run &gamma;&times; slower), length contraction
+      (objects shrink by 1/&gamma;), and relativistic mass increase (inertia grows by &gamma;). The derivation below
+      shows how it emerges directly from the photon clock.
+    </p>
+    <p class="explain level-adv">
+      &gamma; = (1 &minus; &beta;&sup2;)^(&minus;1/2) is the Lorentz factor, where &beta; = v/c. In terms of rapidity &phi; = arctanh(&beta;),
+      &gamma; = cosh(&phi;) and &beta;&gamma; = sinh(&phi;). Rapidities add linearly under Lorentz boosts, making them the
+      natural velocity parameter. The divergence at &beta; = 1 reflects the null boundary of the Lorentz group.
+    </p>
+
+    <div class="derivation eq-only">
       <h4>Derivation from the Photon Clock</h4>
       <div class="deriv-step">
         <span class="step-num">1</span>
@@ -1057,7 +1341,7 @@
 
 <!-- Section 08: Energy -->
 <section id="sec-energy">
-  <h2><span class="num">08</span> The Infinite Energy Barrier</h2>
+  <h2><span class="num">08</span> The Infinite Energy Barrier <span class="section-badge badge-advanced">Advanced</span></h2>
   <p class="subtitle">E = mc&sup2; is only the rest energy. The full picture shows why FTL requires infinite energy.</p>
 
   <div class="card">
@@ -1071,9 +1355,19 @@
       <div class="canvas-wrap">
         <canvas id="ke-graph" width="800" height="400"></canvas>
       </div>
-      <p class="explain">
-        Relativistic kinetic energy: <strong>KE = (γ - 1)mc&sup2;</strong>. As v approaches c, γ approaches infinity,
+      <p class="explain level-beg">
+        The faster you push something, the harder it gets to push it faster. Near light speed, it takes
+        <strong>almost infinite energy</strong> to speed up even a tiny bit more. The yellow line (real physics)
+        shoots up way faster than the white line (old-school physics). That&rsquo;s the energy wall.
+      </p>
+      <p class="explain level-int">
+        Relativistic kinetic energy: <strong>KE = (&gamma; - 1)mc&sup2;</strong>. As v approaches c, &gamma; approaches infinity,
         so the energy needed grows without bound. No finite energy source can accelerate mass to light speed.
+      </p>
+      <p class="explain level-adv">
+        KE = (&gamma; &minus; 1)mc&sup2; is derived from the work integral: KE = &int;F&middot;dx = &int;(dp/dt)&middot;v dt
+        where p = &gamma;mv. The classical limit (&beta; &laquo; 1): KE &asymp; &frac12;mv&sup2; + (3/8)mv&sup4;/c&sup2; + &hellip;
+        The divergence at &beta; &rarr; 1 is not merely asymptotic; it follows from the Lorentz group structure.
       </p>
     </div>
 
@@ -1081,9 +1375,19 @@
       <div class="canvas-wrap">
         <canvas id="total-graph" width="800" height="400"></canvas>
       </div>
-      <p class="explain">
-        Total relativistic energy: <strong>E = γmc&sup2;</strong>. At rest (v=0), this reduces to E = mc&sup2;.
-        The rest mass energy of a 1 kg object is <strong>9 × 10&sup1;&sup6; joules</strong> &mdash; equivalent to ~21 megatons of TNT.
+      <p class="explain level-beg">
+        Even when something is sitting still, it has a huge amount of energy locked inside it &mdash;
+        that&rsquo;s what E = mc&sup2; means! The faster it moves, the more total energy it has, and that energy
+        shoots up toward infinity near light speed.
+      </p>
+      <p class="explain level-int">
+        Total relativistic energy: <strong>E = &gamma;mc&sup2;</strong>. At rest (v=0), this reduces to E = mc&sup2;.
+        The rest mass energy of a 1 kg object is <strong>9 &times; 10&sup1;&sup6; joules</strong> &mdash; equivalent to ~21 megatons of TNT.
+      </p>
+      <p class="explain level-adv">
+        E = &gamma;mc&sup2; is the time component of the four-momentum p&mu; = (&gamma;mc, &gamma;mv). The invariant mass
+        is recovered from p&mu;p&sup;&mu; = &minus;m&sup2;c&sup2;, giving E&sup2; = (pc)&sup2; + (mc&sup2;)&sup2;.
+        For massless particles (m = 0), E = pc, which is satisfied by photons with E = h&nu;.
       </p>
     </div>
 
@@ -1091,9 +1395,19 @@
       <div class="canvas-wrap">
         <canvas id="momentum-graph" width="800" height="400"></canvas>
       </div>
-      <p class="explain">
-        Relativistic momentum: <strong>p = γmv</strong>. Unlike classical p = mv, this diverges as v &rarr; c.
+      <p class="explain level-beg">
+        Momentum is how hard something is to stop. Near light speed, an object&rsquo;s momentum grows
+        way faster than you&rsquo;d expect &mdash; it becomes incredibly hard to stop or speed up.
+        The real curve (yellow) diverges from the straight line (white) you&rsquo;d expect from everyday experience.
+      </p>
+      <p class="explain level-int">
+        Relativistic momentum: <strong>p = &gamma;mv</strong>. Unlike classical p = mv, this diverges as v &rarr; c.
         The energy-momentum relation: <strong>E&sup2; = (pc)&sup2; + (mc&sup2;)&sup2;</strong> unifies energy, momentum, and mass.
+      </p>
+      <p class="explain level-adv">
+        The four-momentum p&mu; = m(dx&mu;/d&tau;) = (&gamma;mc, &gamma;m<strong>v</strong>) transforms as a Lorentz four-vector.
+        Its spatial magnitude p = &gamma;mv diverges as &beta; &rarr; 1. The invariant mass-shell relation
+        p&mu;p&sup;&mu; = &minus;m&sup2;c&sup2; yields E&sup2; = p&sup2;c&sup2; + m&sup2;c&sup4;, the most general energy-momentum relation.
       </p>
     </div>
 
@@ -1127,7 +1441,7 @@
 
 <!-- Section 09: Real-World Examples -->
 <section id="sec-examples">
-  <h2><span class="num">09</span> Real-World Evidence</h2>
+  <h2><span class="num">09</span> Real-World Evidence <span class="section-badge badge-beginner">Beginner</span></h2>
   <p class="subtitle">Special relativity isn't just theory &mdash; we measure its effects every day.</p>
 
   <div class="examples-grid">
@@ -1159,7 +1473,9 @@
 
   <div class="card" style="margin-top: 24px;">
     <h3>Interactive: Muon Decay Simulation</h3>
-    <p class="explain">Watch muons created at 15 km altitude travel toward Earth. At rest, they'd decay after ~660m. Time dilation lets them reach the surface.</p>
+    <p class="explain level-beg">Watch tiny particles called muons rain down from the sky. They should die off after just 660 meters, but because they&rsquo;re moving at 99.8% the speed of light, time slows down for them and they survive all the way to the ground!</p>
+    <p class="explain level-int">Watch muons created at 15 km altitude travel toward Earth. At rest, they'd decay after ~660m. Time dilation lets them reach the surface.</p>
+    <p class="explain level-adv">Muon half-life at rest: &tau; = 2.2 &mu;s. Classical range: c&tau; &asymp; 660 m. At v = 0.998c, &gamma; &asymp; 15.8, so the dilated lifetime is &gamma;&tau; &asymp; 34.8 &mu;s, giving a range of ~10.4 km &mdash; sufficient to reach sea level from typical production altitudes of 10&ndash;15 km. This was confirmed by Rossi &amp; Hall (1941).</p>
     <div class="canvas-wrap">
       <canvas id="muon-canvas" width="800" height="300"></canvas>
     </div>
@@ -1188,7 +1504,7 @@
 
 <!-- Section 10: Relativistic Mass & E=mc² -->
 <section id="sec-emc2">
-  <h2><span class="num">10</span> E = mc&sup2; and Mass-Energy Equivalence</h2>
+  <h2><span class="num">10</span> E = mc&sup2; and Mass-Energy Equivalence <span class="section-badge badge-intermediate">Intermediate</span></h2>
   <p class="subtitle">Mass is frozen energy. Energy has inertia. This is why the speed limit exists.</p>
 
   <div class="card">
@@ -1216,7 +1532,13 @@
       </div>
     </div>
 
-    <p class="explain" style="margin-top:16px;">
+    <p class="explain level-beg" style="margin-top:16px;">
+      A tiny amount of mass contains an <strong>enormous</strong> amount of energy. One kilogram has enough
+      energy to power a city for years! This is why the speed limit exists: as you push something faster,
+      the energy you add makes it harder and harder to push. Near light speed, it would take literally
+      infinite energy to go any faster. Light itself can travel at c only because photons have zero mass.
+    </p>
+    <p class="explain level-int" style="margin-top:16px;">
       <strong>Why does E = mc&sup2; create a speed limit?</strong> When you push an object, you add energy.
       That energy increases its inertia (resistance to further acceleration). The faster it goes,
       the more energy each additional m/s requires. Approaching c, the energy requirement
@@ -1225,6 +1547,13 @@
       Massless particles (photons) <em>must</em> travel at exactly c &mdash; they have no rest frame.
       Anything with mass is forever trapped below c.
     </p>
+    <p class="explain level-adv" style="margin-top:16px;">
+      The mass-energy equivalence E&#x2080; = mc&sup2; is the rest-frame value of the time component of the four-momentum.
+      Nuclear binding energy illustrates this: a helium-4 nucleus has mass 4.0026 u, less than the
+      sum of its parts (4.0319 u). The mass defect &Delta;m = 0.0293 u corresponds to 27.3 MeV of binding energy.
+      This is the energy source of stellar fusion. The speed limit follows from the Lorentz group:
+      massive representations have timelike four-momenta (p&sup2; &lt; 0), which can never be boosted to null (p&sup2; = 0).
+    </p>
   </div>
 </section>
 
@@ -1232,7 +1561,7 @@
 
 <!-- Section 11: Speed comparison -->
 <section id="sec-compare">
-  <h2><span class="num">11</span> Putting It All Together</h2>
+  <h2><span class="num">11</span> Putting It All Together <span class="section-badge badge-intermediate">Intermediate</span></h2>
   <p class="subtitle">Adjust the velocity and watch all relativistic effects simultaneously.</p>
 
   <div class="card">
@@ -1264,10 +1593,22 @@
       </div>
     </div>
 
-    <p class="explain">
+    <p class="explain level-beg">
+      All these effects happen together. The faster you go, the more time slows, the more space contracts,
+      and the more energy it costs &mdash; all at once. Move the slider to see every effect blow up at light speed.
+      This is why <strong>nothing can reach the speed of light</strong>: the universe fights back from every direction.
+    </p>
+    <p class="explain level-int">
       The vertical dashed line marks your chosen velocity. Notice how <strong>all quantities diverge
       simultaneously</strong> as v &rarr; c. This isn't a coincidence &mdash; it's the geometry of spacetime itself.
       The speed of light isn't just a speed limit for light; it's woven into the fabric of the universe.
+    </p>
+    <p class="explain level-adv">
+      All these effects are manifestations of the same underlying Minkowski geometry. The Lorentz factor &gamma;
+      governs time dilation (&Delta;t = &gamma;&Delta;&tau;), length contraction (L = L&#x2080;/&gamma;), and relativistic energy
+      (E = &gamma;mc&sup2;). Their simultaneous divergence at &beta; = 1 reflects the null boundary of the Lorentz group
+      SO(3,1). The speed of light is not an empirical speed limit but a structural constant of spacetime &mdash;
+      the conversion factor between space and time coordinates in the metric ds&sup2; = &minus;c&sup2;dt&sup2; + d<strong>x</strong>&sup2;.
     </p>
   </div>
 </section>
@@ -6730,6 +7071,58 @@ function setupCanvas(id) {
     requestAnimationFrame(mainDraw);
   }
   requestAnimationFrame(mainDraw);
+})();
+
+// ==================== DIFFICULTY LEVEL SYSTEM ====================
+(function initDifficulty() {
+  const urlLevel = new URLSearchParams(window.location.search).get('level');
+  const saved = localStorage.getItem('ftl-difficulty');
+  const level = ['beginner','intermediate','advanced'].includes(urlLevel) ? urlLevel
+    : ['beginner','intermediate','advanced'].includes(saved) ? saved
+    : 'intermediate';
+
+  function setLevel(lv) {
+    document.body.classList.remove('level-beginner', 'level-intermediate', 'level-advanced');
+    document.body.classList.add('level-' + lv);
+    localStorage.setItem('ftl-difficulty', lv);
+    document.querySelectorAll('.dt-btn').forEach(function(b) {
+      b.classList.toggle('active', b.getAttribute('data-level') === lv);
+    });
+  }
+
+  // Main toggle buttons
+  document.querySelectorAll('.dt-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      setLevel(btn.getAttribute('data-level'));
+    });
+  });
+
+  // If URL param provided, hide the toggle (classroom mode)
+  if (urlLevel && ['beginner','intermediate','advanced'].includes(urlLevel)) {
+    var toggle = document.getElementById('difficulty-toggle');
+    if (toggle) toggle.style.display = 'none';
+  }
+
+  // Per-section "Show Simple / Show Full" toggle buttons
+  document.querySelectorAll('.ls-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var card = btn.closest('.card');
+      if (!card) return;
+      var show = btn.getAttribute('data-show');
+      // Remove all level overrides on this card
+      card.classList.remove('level-override-beg', 'level-override-int', 'level-override-adv');
+      if (show === 'simple') {
+        card.classList.add('level-override-beg');
+      } else if (show === 'full') {
+        card.classList.add('level-override-adv');
+      }
+      // Update active state
+      card.querySelectorAll('.ls-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+    });
+  });
+
+  setLevel(level);
 })();
 
 // ==================== ROUNDRECT POLYFILL ====================

@@ -35,56 +35,7 @@ https://sampsonb.github.io/ftl-impossibility/
 - Formula overlay: L = L₀/γ
 - Readouts: rest length, observed length, contraction %, γ
 
-### 03 — Photon Clock & Time Dilation
-- Side-by-side animated photon clocks (stationary vs moving)
-- Smooth easing with proper requestAnimationFrame timestamps
-- Photon trails, mirror flash effects, layered glow
-- Pythagorean triangle overlay on moving clock (c·t₀, v·t, c·t)
-- Velocity slider (0–0.99c)
-- Readouts: velocity, Lorentz factor, time dilation, traveler time
-
-### 03b — Minkowski Spacetime Diagram
-- Interactive spacetime diagram with color-coded regions
-  - Future/past light cones (yellow)
-  - Spacelike regions (blue, labeled "FTL needed")
-- Animated photons traveling along the light cone
-- Object worldline tilts toward light cone with velocity
-- Simultaneity line showing how "now" tilts for moving observers
-- Proper time tick marks along the worldline
-- Smooth slider interpolation
-- Readouts: worldline angle, light cone angle, proper time ratio, simultaneity tilt
-
-### 04 — The Lorentz Factor
-- Interactive γ vs velocity graph (asymptotic blowup at c)
-- Crosshair tracking dot on the curve
-- Step-by-step derivation from the photon clock geometry (7 steps)
-- Readouts: v/c, γ, length contraction %, relativistic mass
-
-### 05 — The Infinite Energy Barrier
-- 3 tabbed graphs: Kinetic Energy, Total Energy, Momentum
-- Each shows relativistic vs classical (Newtonian) curves
-- Velocity slider with tracking dot
-- Readouts: rest energy, KE, total energy, momentum (all in mc² units)
-
-### 06 — Real-World Evidence
-- 4 example cards: GPS satellites, muon decay, particle accelerators, stellar aberration
-- Interactive muon decay simulation
-  - Classical vs relativistic survival rates descending from 15 km
-  - Animated particle groups fading as muons decay
-  - Play/Pause/Reset controls
-
-### 07 — E=mc² and Mass-Energy Equivalence
-- Log-scale bar chart: rest energy vs Hiroshima vs US daily energy vs relativistic energy
-- Mass slider (1–100 kg)
-- Readouts: rest energy, TNT equivalent, city-powering duration
-
-### 08 — Putting It All Together
-- Combined graph overlaying γ, time dilation, length contraction, energy
-- High-precision slider (0.0000c–0.9999c)
-- All curves diverge simultaneously at c
-- Readouts: γ, time dilation, length %, energy
-
-### 09 — Causality Violation — Why FTL Breaks Reality
+### 03 — Causality Violation — Why FTL Breaks Reality
 - Two-tab layout: Simultaneity & Light Cones / The Paradox
 - **Tab 1: Simultaneity & Light Cones**
   - Interactive spacetime diagram with light cones and spacelike "FTL Zone"
@@ -107,6 +58,55 @@ https://sampsonb.github.io/ftl-impossibility/
   - Play/Pause, Reset, Speed (1×/2×/5×/10×) controls
   - 6 readouts: Earth clock, AC clock, moving frame clock, phase, message content, paradox status
 
+### 04 — Photon Clock & Time Dilation
+- Side-by-side animated photon clocks (stationary vs moving)
+- Smooth easing with proper requestAnimationFrame timestamps
+- Photon trails, mirror flash effects, layered glow
+- Pythagorean triangle overlay on moving clock (c·t₀, v·t, c·t)
+- Velocity slider (0–0.99c)
+- Readouts: velocity, Lorentz factor, time dilation, traveler time
+
+### 04b — Minkowski Spacetime Diagram
+- Interactive spacetime diagram with color-coded regions
+  - Future/past light cones (yellow)
+  - Spacelike regions (blue, labeled "FTL needed")
+- Animated photons traveling along the light cone
+- Object worldline tilts toward light cone with velocity
+- Simultaneity line showing how "now" tilts for moving observers
+- Proper time tick marks along the worldline
+- Smooth slider interpolation
+- Readouts: worldline angle, light cone angle, proper time ratio, simultaneity tilt
+
+### 05 — The Lorentz Factor
+- Interactive γ vs velocity graph (asymptotic blowup at c)
+- Crosshair tracking dot on the curve
+- Step-by-step derivation from the photon clock geometry (7 steps)
+- Readouts: v/c, γ, length contraction %, relativistic mass
+
+### 06 — The Infinite Energy Barrier
+- 3 tabbed graphs: Kinetic Energy, Total Energy, Momentum
+- Each shows relativistic vs classical (Newtonian) curves
+- Velocity slider with tracking dot
+- Readouts: rest energy, KE, total energy, momentum (all in mc² units)
+
+### 07 — Real-World Evidence
+- 4 example cards: GPS satellites, muon decay, particle accelerators, stellar aberration
+- Interactive muon decay simulation
+  - Classical vs relativistic survival rates descending from 15 km
+  - Animated particle groups fading as muons decay
+  - Play/Pause/Reset controls
+
+### 08 — E=mc² and Mass-Energy Equivalence
+- Log-scale bar chart: rest energy vs Hiroshima vs US daily energy vs relativistic energy
+- Mass slider (1–100 kg)
+- Readouts: rest energy, TNT equivalent, city-powering duration
+
+### 09 — Putting It All Together
+- Combined graph overlaying γ, time dilation, length contraction, energy
+- High-precision slider (0.0000c–0.9999c)
+- All curves diverge simultaneously at c
+- Readouts: γ, time dilation, length %, energy
+
 ## Technical Details
 - Single self-contained HTML file (~3800 lines)
 - Vanilla JS + HTML5 Canvas (no dependencies)
@@ -128,4 +128,5 @@ https://sampsonb.github.io/ftl-impossibility/
 8. Traveler twin rides with rocket during flight
 9. Reduced hero/section padding to eliminate large gap
 10. Length contraction moved to section 02, all sections renumbered
-11. Causality violation section (09) with simultaneity diagram and paradox animation
+11. Causality violation section with simultaneity diagram and paradox animation
+12. Causality violation moved to section 03, all sections renumbered

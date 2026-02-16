@@ -576,6 +576,63 @@
 
 <div class="section-divider"><hr></div>
 
+<!-- Section 2b: Length Contraction -->
+<section id="sec-contraction">
+  <h2><span class="num">02b</span> Length Contraction</h2>
+  <p class="subtitle">Moving objects physically shrink along their direction of motion &mdash; watch a starship compress as it accelerates toward c.</p>
+
+  <div class="card">
+    <p class="explain">
+      Just as time dilates, <strong>lengths contract</strong>. An object moving at velocity v is measured by a stationary
+      observer to be shorter by a factor of 1/γ: <strong>L = L₀ / γ</strong>.
+      At 0.87c the ship is half its rest length. At 0.99c it's compressed to just 14%. The ship's occupants
+      notice nothing different about their own ship &mdash; instead, they see the <em>universe</em> contracted ahead of them.
+    </p>
+
+    <div class="slider-group">
+      <label>Velocity <span class="val" id="lc-vel-label">0.00c</span></label>
+      <input type="range" id="lc-vel" min="0" max="990" value="0" step="5">
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="lc-canvas" width="800" height="480"></canvas>
+    </div>
+
+    <div class="readouts">
+      <div class="readout">
+        <div class="label">Rest Length (L₀)</div>
+        <div class="value blue" id="lc-rest">100.0 m</div>
+      </div>
+      <div class="readout">
+        <div class="label">Observed Length (L)</div>
+        <div class="value cyan" id="lc-obs">100.0 m</div>
+      </div>
+      <div class="readout">
+        <div class="label">Contraction</div>
+        <div class="value yellow" id="lc-pct">100.0%</div>
+      </div>
+      <div class="readout">
+        <div class="label">γ (Lorentz)</div>
+        <div class="value purple" id="lc-gamma">1.000</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
+      <button id="lc-flyby" class="tab-btn active" style="flex:1;min-width:140px;">Launch Fly-By</button>
+      <button id="lc-flyby-reset" class="tab-btn" style="flex:1;min-width:140px;">Reset</button>
+    </div>
+
+    <p class="explain" style="margin-top:16px;">
+      The <strong>top view</strong> shows the ship at rest for reference. The <strong>bottom view</strong> shows how a
+      stationary observer measures the same ship as it flies past. Press <em>Launch Fly-By</em> to see
+      contracted ships streak past the observation platform at your chosen speed. The ruler and grid
+      stay fixed &mdash; only the ship contracts.
+    </p>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
 <!-- Section 3: Energy -->
 <section id="sec-energy">
   <h2><span class="num">03</span> The Infinite Energy Barrier</h2>
@@ -1634,6 +1691,410 @@ function setupCanvas(id) {
   });
 
   draw();
+})();
+
+// ==================== LENGTH CONTRACTION ====================
+(function initContraction() {
+  const { ctx, w, h } = setupCanvas('lc-canvas');
+  const slider = document.getElementById('lc-vel');
+  const flybyBtn = document.getElementById('lc-flyby');
+  const flybyResetBtn = document.getElementById('lc-flyby-reset');
+
+  let beta = 0;
+  let prevTs = null;
+
+  // Fly-by state
+  let flybyActive = false;
+  let flybyShips = []; // {x, beta, color}
+
+  const REST_LEN = 100; // meters (conceptual)
+  const SHIP_PX_REST = 280; // pixels at rest
+  const topY = 10;       // top view area
+  const midY = h / 2 - 10;  // divider
+  const botY = h / 2 + 10;  // bottom view area
+  const viewH = h / 2 - 20;
+
+  // --- Ship drawing ---
+  function drawShip(ctx, cx, cy, lengthPx, heightPx, color, label, faded) {
+    const hw = lengthPx / 2;
+    const hh = heightPx / 2;
+    const alpha = faded ? 0.25 : 1;
+
+    ctx.globalAlpha = alpha;
+
+    // Engine glow (rear)
+    if (!faded && beta > 0.01) {
+      const eg = ctx.createRadialGradient(cx - hw - 4, cy, 0, cx - hw - 4, cy, hh * 1.8);
+      eg.addColorStop(0, 'rgba(6,182,212,0.25)');
+      eg.addColorStop(1, 'transparent');
+      ctx.fillStyle = eg;
+      ctx.fillRect(cx - hw - hh * 2, cy - hh * 2, hh * 4, hh * 4);
+    }
+
+    // Hull body
+    ctx.beginPath();
+    ctx.moveTo(cx + hw, cy);                          // nose tip
+    ctx.lineTo(cx + hw * 0.65, cy - hh);              // top front
+    ctx.lineTo(cx - hw * 0.6, cy - hh);               // top rear
+    ctx.lineTo(cx - hw, cy - hh * 0.5);               // engine top
+    ctx.lineTo(cx - hw, cy + hh * 0.5);               // engine bottom
+    ctx.lineTo(cx - hw * 0.6, cy + hh);               // bottom rear
+    ctx.lineTo(cx + hw * 0.65, cy + hh);              // bottom front
+    ctx.closePath();
+
+    const hGrad = ctx.createLinearGradient(cx, cy - hh, cx, cy + hh);
+    hGrad.addColorStop(0, color);
+    hGrad.addColorStop(0.4, lightenColor(color, 40));
+    hGrad.addColorStop(1, darkenColor(color, 40));
+    ctx.fillStyle = hGrad;
+    ctx.fill();
+    ctx.strokeStyle = lightenColor(color, 60);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Cockpit window
+    const winW = Math.max(lengthPx * 0.12, 6);
+    const winH = Math.max(heightPx * 0.35, 4);
+    ctx.beginPath();
+    ctx.ellipse(cx + hw * 0.4, cy, winW / 2, winH / 2, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(6,182,212,0.6)';
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.beginPath();
+    ctx.ellipse(cx + hw * 0.4 - 1, cy - 1, winW * 0.25, winH * 0.25, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Engine nozzles
+    const nozW = Math.max(lengthPx * 0.04, 3);
+    ctx.fillStyle = '#475569';
+    for (let n = -1; n <= 1; n += 2) {
+      ctx.fillRect(cx - hw - nozW, cy + n * hh * 0.25 - nozW / 2, nozW, nozW);
+    }
+
+    // Hull detail lines
+    ctx.strokeStyle = lightenColor(color, 30) + '66';
+    ctx.lineWidth = 0.5;
+    for (let i = 1; i <= 3; i++) {
+      const lx = cx - hw * 0.6 + (i / 4) * lengthPx * 0.8;
+      ctx.beginPath();
+      ctx.moveTo(lx, cy - hh + 2);
+      ctx.lineTo(lx, cy + hh - 2);
+      ctx.stroke();
+    }
+
+    // Nacelles / wings
+    const wingSpan = hh * 1.5;
+    ctx.fillStyle = darkenColor(color, 20);
+    // Top wing
+    ctx.beginPath();
+    ctx.moveTo(cx - hw * 0.2, cy - hh);
+    ctx.lineTo(cx - hw * 0.5, cy - wingSpan);
+    ctx.lineTo(cx - hw * 0.7, cy - wingSpan);
+    ctx.lineTo(cx - hw * 0.5, cy - hh);
+    ctx.closePath();
+    ctx.fill();
+    // Bottom wing
+    ctx.beginPath();
+    ctx.moveTo(cx - hw * 0.2, cy + hh);
+    ctx.lineTo(cx - hw * 0.5, cy + wingSpan);
+    ctx.lineTo(cx - hw * 0.7, cy + wingSpan);
+    ctx.lineTo(cx - hw * 0.5, cy + hh);
+    ctx.closePath();
+    ctx.fill();
+
+    // Wing-tip engines
+    if (lengthPx > 40) {
+      ctx.fillStyle = '#94a3b8';
+      ctx.beginPath();
+      ctx.ellipse(cx - hw * 0.6, cy - wingSpan, nozW * 1.2, nozW * 0.8, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(cx - hw * 0.6, cy + wingSpan, nozW * 1.2, nozW * 0.8, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 1;
+
+    // Label
+    if (label) {
+      ctx.fillStyle = faded ? '#475569' : '#e2e8f0';
+      ctx.font = 'bold 11px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(label, cx, cy + hh * 1.5 + 22);
+    }
+  }
+
+  function lightenColor(hex, amount) {
+    const r = Math.min(255, parseInt(hex.slice(1,3), 16) + amount);
+    const g = Math.min(255, parseInt(hex.slice(3,5), 16) + amount);
+    const b = Math.min(255, parseInt(hex.slice(5,7), 16) + amount);
+    return `rgb(${r},${g},${b})`;
+  }
+  function darkenColor(hex, amount) {
+    const r = Math.max(0, parseInt(hex.slice(1,3), 16) - amount);
+    const g = Math.max(0, parseInt(hex.slice(3,5), 16) - amount);
+    const b = Math.max(0, parseInt(hex.slice(5,7), 16) - amount);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  // --- Ruler ---
+  function drawRuler(ctx, x, y, totalPx, label, segments) {
+    const segW = totalPx / segments;
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 1;
+    ctx.fillStyle = '#64748b';
+    ctx.font = '9px Courier New';
+    ctx.textAlign = 'center';
+    // Main line
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + totalPx, y);
+    ctx.stroke();
+    // Ticks
+    for (let i = 0; i <= segments; i++) {
+      const tx = x + i * segW;
+      const major = i % 2 === 0;
+      ctx.beginPath();
+      ctx.moveTo(tx, y - (major ? 6 : 3));
+      ctx.lineTo(tx, y + (major ? 6 : 3));
+      ctx.stroke();
+      if (major) {
+        ctx.fillText(Math.round(i * REST_LEN / segments) + '', tx, y + 16);
+      }
+    }
+    // Label
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '10px system-ui';
+    ctx.fillText(label, x + totalPx / 2, y - 12);
+  }
+
+  // --- Dimension bracket ---
+  function drawBracket(ctx, x1, x2, y, label, color) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    const bh = 6;
+    ctx.beginPath();
+    ctx.moveTo(x1, y - bh); ctx.lineTo(x1, y); ctx.lineTo(x2, y); ctx.lineTo(x2, y - bh);
+    ctx.stroke();
+    // Arrow heads
+    ctx.beginPath();
+    ctx.moveTo(x1 + 5, y - 2); ctx.lineTo(x1, y); ctx.lineTo(x1 + 5, y + 2);
+    ctx.moveTo(x2 - 5, y - 2); ctx.lineTo(x2, y); ctx.lineTo(x2 - 5, y + 2);
+    ctx.stroke();
+    ctx.fillStyle = color;
+    ctx.font = 'bold 11px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, (x1 + x2) / 2, y + 15);
+  }
+
+  // --- Grid ---
+  function drawGrid(ctx, x, y, gw, gh, cellSize) {
+    ctx.strokeStyle = 'rgba(30,41,59,0.5)';
+    ctx.lineWidth = 0.5;
+    for (let gx = 0; gx <= gw; gx += cellSize) {
+      ctx.beginPath();
+      ctx.moveTo(x + gx, y);
+      ctx.lineTo(x + gx, y + gh);
+      ctx.stroke();
+    }
+    for (let gy = 0; gy <= gh; gy += cellSize) {
+      ctx.beginPath();
+      ctx.moveTo(x, y + gy);
+      ctx.lineTo(x + gw, y + gy);
+      ctx.stroke();
+    }
+  }
+
+  // --- Main animation ---
+  function draw(ts) {
+    if (prevTs === null) prevTs = ts;
+    const dt = Math.min(ts - prevTs, 50);
+    prevTs = ts;
+
+    const g = beta > 0.001 ? gamma(Math.min(beta, 0.999)) : 1;
+    const contractedPx = SHIP_PX_REST / g;
+    const contractedM = REST_LEN / g;
+
+    ctx.clearRect(0, 0, w, h);
+
+    const cx = w / 2;
+
+    // ===== TOP: Rest frame =====
+    const topCenterY = topY + viewH / 2;
+
+    // Background
+    ctx.fillStyle = '#060a14';
+    ctx.fillRect(0, topY, w, viewH);
+
+    // Grid
+    drawGrid(ctx, cx - SHIP_PX_REST / 2 - 40, topY + 10, SHIP_PX_REST + 80, viewH - 20, 28);
+
+    // Section label
+    ctx.fillStyle = 'rgba(148,163,184,0.3)';
+    ctx.font = 'bold 12px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText('REST FRAME (v = 0)', 14, topY + 22);
+
+    // Rest ship
+    drawShip(ctx, cx, topCenterY, SHIP_PX_REST, 50, '#3b82f6', null, false);
+
+    // Ruler above
+    drawRuler(ctx, cx - SHIP_PX_REST / 2, topY + 24, SHIP_PX_REST, 'Rest length (m)', 10);
+
+    // Bracket below
+    drawBracket(ctx, cx - SHIP_PX_REST / 2, cx + SHIP_PX_REST / 2, topCenterY + 46,
+      'L₀ = ' + REST_LEN.toFixed(0) + ' m', '#3b82f6');
+
+    // ===== DIVIDER =====
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(20, midY);
+    ctx.lineTo(w - 20, midY);
+    ctx.stroke();
+    ctx.fillStyle = '#475569';
+    ctx.font = '10px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('— as seen by stationary observer —', cx, midY + 4);
+
+    // ===== BOTTOM: Observer's frame =====
+    const botCenterY = botY + viewH / 2;
+
+    // Background
+    ctx.fillStyle = '#060a14';
+    ctx.fillRect(0, botY + 8, w, viewH);
+
+    // Grid (same spacing as top — shows contraction against fixed reference)
+    drawGrid(ctx, cx - SHIP_PX_REST / 2 - 40, botY + 18, SHIP_PX_REST + 80, viewH - 20, 28);
+
+    // Section label
+    ctx.fillStyle = 'rgba(148,163,184,0.3)';
+    ctx.font = 'bold 12px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText('OBSERVER FRAME (v = ' + beta.toFixed(2) + 'c)', 14, botY + 30);
+
+    // Ghost rest-length outline (faded)
+    if (beta > 0.01) {
+      drawShip(ctx, cx, botCenterY, SHIP_PX_REST, 50, '#3b82f6', null, true);
+    }
+
+    // Contracted ship
+    const shipH = 50;
+    drawShip(ctx, cx, botCenterY, contractedPx, shipH, '#06b6d4', null, false);
+
+    // Ruler (same total width as rest ruler for comparison)
+    drawRuler(ctx, cx - SHIP_PX_REST / 2, botY + 32, SHIP_PX_REST, 'Observer\'s ruler (m)', 10);
+
+    // Bracket below contracted ship
+    drawBracket(ctx, cx - contractedPx / 2, cx + contractedPx / 2, botCenterY + 46,
+      'L = ' + contractedM.toFixed(1) + ' m (' + (100 / g).toFixed(1) + '%)', '#06b6d4');
+
+    // Contraction arrows (showing squeeze)
+    if (beta > 0.05) {
+      const restHalf = SHIP_PX_REST / 2;
+      const conHalf = contractedPx / 2;
+      ctx.strokeStyle = 'rgba(239,68,68,0.5)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+      // Left
+      ctx.beginPath();
+      ctx.moveTo(cx - restHalf, botCenterY - shipH * 0.8);
+      ctx.lineTo(cx - conHalf, botCenterY - shipH * 0.3);
+      ctx.stroke();
+      // Right
+      ctx.beginPath();
+      ctx.moveTo(cx + restHalf, botCenterY - shipH * 0.8);
+      ctx.lineTo(cx + conHalf, botCenterY - shipH * 0.3);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // ===== FLY-BY ANIMATION =====
+    if (flybyActive) {
+      flybyShips.forEach(ship => {
+        ship.x += ship.speed * dt;
+      });
+      // Remove off-screen ships
+      flybyShips = flybyShips.filter(s => s.x < w + 200);
+
+      // Draw fly-by ships in a strip between sections
+      flybyShips.forEach(ship => {
+        const sg = ship.beta > 0.001 ? gamma(Math.min(ship.beta, 0.999)) : 1;
+        const sLen = 120 / sg;
+        const sH = 22;
+        const sy = midY;
+
+        // Motion blur trail
+        const trailLen = ship.beta * 80;
+        const tGrad = ctx.createLinearGradient(ship.x - sLen / 2 - trailLen, sy, ship.x - sLen / 2, sy);
+        tGrad.addColorStop(0, 'transparent');
+        tGrad.addColorStop(1, ship.color + '44');
+        ctx.fillStyle = tGrad;
+        ctx.fillRect(ship.x - sLen / 2 - trailLen, sy - sH, trailLen, sH * 2);
+
+        drawShip(ctx, ship.x, sy, sLen, sH, ship.color, null, false);
+
+        // Velocity label
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '9px Courier New';
+        ctx.textAlign = 'center';
+        ctx.fillText(ship.beta.toFixed(2) + 'c', ship.x, sy - sH - 6);
+      });
+
+      // Spawn new ships periodically
+      if (flybyShips.length === 0 || (flybyShips.length < 4 && flybyShips[flybyShips.length - 1].x > 80)) {
+        const speeds = [0.1, 0.5, 0.8, 0.95];
+        const colors = ['#22c55e', '#3b82f6', '#a855f7', '#ef4444'];
+        if (flybyShips.length < speeds.length) {
+          const idx = flybyShips.length;
+          flybyShips.push({
+            x: -180,
+            beta: speeds[idx],
+            speed: (0.15 + speeds[idx] * 0.35),
+            color: colors[idx]
+          });
+        }
+      }
+    }
+
+    // Formula overlay
+    ctx.fillStyle = 'rgba(17,24,39,0.7)';
+    ctx.beginPath();
+    ctx.roundRect(w - 200, h - 40, 190, 30, 6);
+    ctx.fill();
+    ctx.fillStyle = '#a855f7';
+    ctx.font = 'italic 14px Georgia';
+    ctx.textAlign = 'center';
+    ctx.fillText('L = L₀ / γ = L₀ √(1 − v²/c²)', w - 105, h - 20);
+
+    requestAnimationFrame(draw);
+  }
+
+  // --- Slider ---
+  slider.addEventListener('input', () => {
+    beta = slider.value / 1000;
+    const g = beta > 0.001 ? gamma(Math.min(beta, 0.999)) : 1;
+    const contractedM = REST_LEN / g;
+    document.getElementById('lc-vel-label').textContent = beta.toFixed(2) + 'c';
+    document.getElementById('lc-rest').textContent = REST_LEN.toFixed(1) + ' m';
+    document.getElementById('lc-obs').textContent = contractedM.toFixed(1) + ' m';
+    document.getElementById('lc-pct').textContent = (100 / g).toFixed(1) + '%';
+    document.getElementById('lc-gamma').textContent = fmt(g);
+  });
+
+  // --- Fly-by controls ---
+  flybyBtn.addEventListener('click', () => {
+    flybyActive = !flybyActive;
+    flybyBtn.textContent = flybyActive ? 'Stop Fly-By' : 'Launch Fly-By';
+    if (flybyActive) flybyShips = [];
+  });
+  flybyResetBtn.addEventListener('click', () => {
+    flybyActive = false;
+    flybyShips = [];
+    flybyBtn.textContent = 'Launch Fly-By';
+  });
+
+  requestAnimationFrame(draw);
 })();
 
 // ==================== ENERGY GRAPHS ====================

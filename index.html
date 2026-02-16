@@ -406,14 +406,14 @@
       <input type="range" id="twin-dist" min="1" max="50" value="10" step="1">
     </div>
 
-    <div class="canvas-wrap">
-      <canvas id="twin-canvas" width="800" height="750"></canvas>
-    </div>
-
-    <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
+    <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
       <button id="twin-play" class="tab-btn active" style="flex:1;min-width:100px;">Launch Trip</button>
       <button id="twin-reset" class="tab-btn" style="flex:1;min-width:100px;">Reset</button>
       <button id="twin-speed" class="tab-btn" style="flex:1;min-width:100px;">Speed: 1&times;</button>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="twin-canvas" width="800" height="750"></canvas>
     </div>
 
     <div class="readouts" style="margin-top:16px;">
@@ -2783,26 +2783,26 @@ function setupCanvas(id) {
     if (phase === 'ready') {
       rocketX = earthX + earthR + 30;
       rocketY = groundY;
-      rocketAngle = -Math.PI / 2;
+      rocketAngle = Math.PI / 2;
     } else if (phase === 'outbound') {
       rocketX = lerp(earthX + earthR + 30, starX - 35, frac);
       rocketY = groundY - Math.sin(frac * Math.PI) * 40;
-      rocketAngle = -Math.PI / 2;
+      rocketAngle = Math.PI / 2;
       flameOn = true;
     } else if (phase === 'turnaround') {
       rocketX = starX - 35;
       rocketY = groundY - 40;
-      rocketAngle = -Math.PI / 2;
+      rocketAngle = Math.PI / 2;
       flameOn = true;
     } else if (phase === 'return') {
       rocketX = lerp(starX - 35, earthX + earthR + 30, frac);
       rocketY = groundY - Math.sin(frac * Math.PI) * 40;
-      rocketAngle = Math.PI / 2;
+      rocketAngle = -Math.PI / 2;
       flameOn = true;
     } else {
       rocketX = earthX + earthR + 30;
       rocketY = groundY;
-      rocketAngle = -Math.PI / 2;
+      rocketAngle = Math.PI / 2;
     }
 
     drawRocket(ctx, rocketX, rocketY, rocketScale, rocketAngle, flameOn);

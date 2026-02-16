@@ -751,9 +751,81 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 6: Speed comparison -->
+<!-- Section 6: Twin Paradox -->
+<section id="sec-twins">
+  <h2><span class="num">06</span> The Twin Paradox</h2>
+  <p class="subtitle">One twin stays home. The other rockets to a star and back. When they reunite, the traveler is younger. This is real.</p>
+
+  <div class="card">
+    <p class="explain">
+      The <strong>twin paradox</strong> is the most famous consequence of time dilation. Twin A stays on Earth.
+      Twin B travels to a distant star at high speed, turns around, and returns. Because Twin B's clock
+      runs slower during the trip, <strong>Twin B ages less</strong>. This isn't symmetric &mdash; Twin B
+      <em>accelerated</em> (changed direction), breaking the symmetry between the two frames.
+    </p>
+
+    <div class="slider-group">
+      <label>Travel velocity <span class="val" id="twin-vel-label">0.50c</span></label>
+      <input type="range" id="twin-vel" min="10" max="99" value="50" step="1">
+    </div>
+    <div class="slider-group">
+      <label>Destination distance <span class="val" id="twin-dist-label">5.0 ly</span></label>
+      <input type="range" id="twin-dist" min="1" max="50" value="10" step="1">
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="twin-canvas" width="800" height="500"></canvas>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
+      <button id="twin-play" class="tab-btn active" style="flex:1;min-width:100px;">Launch Trip</button>
+      <button id="twin-reset" class="tab-btn" style="flex:1;min-width:100px;">Reset</button>
+      <button id="twin-speed" class="tab-btn" style="flex:1;min-width:100px;">Speed: 1&times;</button>
+    </div>
+
+    <div class="readouts" style="margin-top:16px;">
+      <div class="readout">
+        <div class="label">Earth Twin Age</div>
+        <div class="value yellow" id="tw-earth-age">30.0 yr</div>
+      </div>
+      <div class="readout">
+        <div class="label">Traveler Twin Age</div>
+        <div class="value cyan" id="tw-trav-age">30.0 yr</div>
+      </div>
+      <div class="readout">
+        <div class="label">Earth Time Elapsed</div>
+        <div class="value blue" id="tw-earth-time">0.0 yr</div>
+      </div>
+      <div class="readout">
+        <div class="label">Traveler Time Elapsed</div>
+        <div class="value purple" id="tw-trav-time">0.0 yr</div>
+      </div>
+      <div class="readout">
+        <div class="label">Age Difference</div>
+        <div class="value red" id="tw-diff">0.0 yr</div>
+      </div>
+      <div class="readout">
+        <div class="label">Trip Phase</div>
+        <div class="value" id="tw-phase" style="color:var(--muted);">Ready</div>
+      </div>
+    </div>
+
+    <p class="explain" style="margin-top:16px;">
+      <strong>Why isn't this a paradox?</strong> From the rocket's frame, doesn't Earth's clock run slow too?
+      Yes &mdash; during each constant-velocity leg, each twin sees the other's clock running slow.
+      But the traveler <em>turns around</em> (accelerates), which is <strong>not</strong> an inertial frame change.
+      The turnaround breaks the symmetry. In the spacetime diagram on the right, the traveler's worldline
+      has a <strong>kink</strong> &mdash; it's a longer path through spacetime, but a <em>shorter</em> proper time.
+      The straight worldline (staying home) always accumulates the most proper time between two events.
+    </p>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- Section 7: Speed comparison -->
 <section id="sec-compare">
-  <h2><span class="num">06</span> Putting It All Together</h2>
+  <h2><span class="num">07</span> Putting It All Together</h2>
   <p class="subtitle">Adjust the velocity and watch all relativistic effects simultaneously.</p>
 
   <div class="card">
@@ -1964,6 +2036,635 @@ function setupCanvas(id) {
   });
 
   draw(1);
+})();
+
+// ==================== TWIN PARADOX ====================
+(function initTwins() {
+  const { ctx, w, h } = setupCanvas('twin-canvas');
+  const velSlider = document.getElementById('twin-vel');
+  const distSlider = document.getElementById('twin-dist');
+  const playBtn = document.getElementById('twin-play');
+  const resetBtn = document.getElementById('twin-reset');
+  const speedBtn = document.getElementById('twin-speed');
+
+  let beta = 0.5;
+  let distLY = 5.0; // light-years one way
+  let running = false;
+  let finished = false;
+  let simTime = 0; // Earth elapsed time in years
+  let simSpeed = 1; // multiplier
+  let prevTs = null;
+  let animId = null;
+
+  // Derived quantities
+  function getTripStats() {
+    const g = gamma(beta);
+    const tOneWayEarth = distLY / beta;      // years (Earth frame)
+    const tTotalEarth = 2 * tOneWayEarth;     // round trip, Earth
+    const tTotalTraveler = tTotalEarth / g;    // round trip, traveler
+    return { g, tOneWayEarth, tTotalEarth, tTotalTraveler };
+  }
+
+  function getPhase(earthTime) {
+    const { tOneWayEarth, tTotalEarth } = getTripStats();
+    if (earthTime <= 0) return { phase: 'ready', frac: 0, leg: 0 };
+    if (earthTime >= tTotalEarth) return { phase: 'reunited', frac: 1, leg: 2 };
+    if (earthTime < tOneWayEarth) return { phase: 'outbound', frac: earthTime / tOneWayEarth, leg: 0 };
+    if (earthTime < tOneWayEarth * 1.0001) return { phase: 'turnaround', frac: 0.5, leg: 1 };
+    return { phase: 'return', frac: (earthTime - tOneWayEarth) / tOneWayEarth, leg: 2 };
+  }
+
+  // ---- Drawing helpers ----
+  function drawStar(ctx, x, y, r, spikes, color) {
+    ctx.beginPath();
+    for (let i = 0; i < spikes * 2; i++) {
+      const angle = (i * Math.PI) / spikes - Math.PI / 2;
+      const rad = i % 2 === 0 ? r : r * 0.4;
+      const px = x + Math.cos(angle) * rad;
+      const py = y + Math.sin(angle) * rad;
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
+
+  function drawPerson(ctx, x, y, scale, faceColor, bodyColor, age) {
+    const s = scale;
+    // Body
+    ctx.fillStyle = bodyColor;
+    ctx.beginPath();
+    ctx.roundRect(x - 8 * s, y - 2 * s, 16 * s, 22 * s, 4 * s);
+    ctx.fill();
+    // Head
+    ctx.fillStyle = faceColor;
+    ctx.beginPath();
+    ctx.arc(x, y - 12 * s, 10 * s, 0, Math.PI * 2);
+    ctx.fill();
+    // Eyes
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.arc(x - 3.5 * s, y - 14 * s, 1.5 * s, 0, Math.PI * 2);
+    ctx.arc(x + 3.5 * s, y - 14 * s, 1.5 * s, 0, Math.PI * 2);
+    ctx.fill();
+    // Mouth
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(x, y - 9 * s, 3 * s, 0.1, Math.PI - 0.1);
+    ctx.stroke();
+    // Hair (grays with age)
+    const grayAmount = Math.min(1, Math.max(0, (age - 40) / 40));
+    const hairR = Math.round(lerp(60, 180, grayAmount));
+    const hairG = Math.round(lerp(40, 180, grayAmount));
+    const hairB = Math.round(lerp(30, 180, grayAmount));
+    ctx.fillStyle = `rgb(${hairR},${hairG},${hairB})`;
+    ctx.beginPath();
+    ctx.ellipse(x, y - 20 * s, 10 * s, 5 * s, 0, Math.PI, 0);
+    ctx.fill();
+    // Age label
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = `bold ${11 * s}px system-ui`;
+    ctx.textAlign = 'center';
+    ctx.fillText(age.toFixed(1) + ' yr', x, y + 30 * s);
+  }
+
+  function drawRocket(ctx, x, y, scale, angle, flameOn) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    const s = scale;
+    // Flame
+    if (flameOn) {
+      const flicker = 0.7 + Math.random() * 0.3;
+      const fGrad = ctx.createLinearGradient(0, 12 * s, 0, 12 * s + 18 * s * flicker);
+      fGrad.addColorStop(0, '#f59e0b');
+      fGrad.addColorStop(0.4, '#ef4444');
+      fGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = fGrad;
+      ctx.beginPath();
+      ctx.moveTo(-5 * s, 12 * s);
+      ctx.lineTo(5 * s, 12 * s);
+      ctx.lineTo(1 * s, 12 * s + 16 * s * flicker);
+      ctx.lineTo(-1 * s, 12 * s + 16 * s * flicker);
+      ctx.closePath();
+      ctx.fill();
+    }
+    // Body
+    ctx.fillStyle = '#94a3b8';
+    ctx.beginPath();
+    ctx.moveTo(0, -14 * s);
+    ctx.lineTo(-6 * s, 6 * s);
+    ctx.lineTo(-8 * s, 12 * s);
+    ctx.lineTo(8 * s, 12 * s);
+    ctx.lineTo(6 * s, 6 * s);
+    ctx.closePath();
+    ctx.fill();
+    // Nose cone
+    const nGrad = ctx.createLinearGradient(0, -14 * s, 0, -4 * s);
+    nGrad.addColorStop(0, '#ef4444');
+    nGrad.addColorStop(1, '#b91c1c');
+    ctx.fillStyle = nGrad;
+    ctx.beginPath();
+    ctx.moveTo(0, -14 * s);
+    ctx.lineTo(-4 * s, -4 * s);
+    ctx.lineTo(4 * s, -4 * s);
+    ctx.closePath();
+    ctx.fill();
+    // Window
+    ctx.fillStyle = '#06b6d4';
+    ctx.beginPath();
+    ctx.arc(0, -1 * s, 3 * s, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.beginPath();
+    ctx.arc(-1 * s, -2 * s, 1.5 * s, 0, Math.PI * 2);
+    ctx.fill();
+    // Fins
+    ctx.fillStyle = '#64748b';
+    ctx.beginPath();
+    ctx.moveTo(-6 * s, 6 * s);
+    ctx.lineTo(-12 * s, 14 * s);
+    ctx.lineTo(-8 * s, 12 * s);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(6 * s, 6 * s);
+    ctx.lineTo(12 * s, 14 * s);
+    ctx.lineTo(8 * s, 12 * s);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function draw(ts) {
+    if (prevTs === null) prevTs = ts;
+    const dt = Math.min(ts - prevTs, 50);
+    prevTs = ts;
+
+    const { g, tOneWayEarth, tTotalEarth, tTotalTraveler } = getTripStats();
+
+    if (running && !finished) {
+      // Advance simulation: dt in ms -> years. Speed up so trip takes ~8-15 seconds of real time.
+      const realSecsForTrip = Math.max(6, Math.min(20, tTotalEarth * 2));
+      const yearsPerMs = tTotalEarth / (realSecsForTrip * 1000) * simSpeed;
+      simTime += dt * yearsPerMs;
+      if (simTime >= tTotalEarth) {
+        simTime = tTotalEarth;
+        finished = true;
+        running = false;
+        playBtn.textContent = 'Trip Complete';
+      }
+    }
+
+    const { phase, frac, leg } = getPhase(simTime);
+
+    // Traveler proper time
+    let travelerTime = 0;
+    if (simTime <= tOneWayEarth) {
+      travelerTime = simTime / g;
+    } else {
+      travelerTime = tOneWayEarth / g + (simTime - tOneWayEarth) / g;
+    }
+    if (simTime >= tTotalEarth) travelerTime = tTotalTraveler;
+
+    const earthAge = 30 + simTime;
+    const travAge = 30 + travelerTime;
+
+    // Update readouts
+    document.getElementById('tw-earth-age').textContent = earthAge.toFixed(1) + ' yr';
+    document.getElementById('tw-trav-age').textContent = travAge.toFixed(1) + ' yr';
+    document.getElementById('tw-earth-time').textContent = simTime.toFixed(1) + ' yr';
+    document.getElementById('tw-trav-time').textContent = travelerTime.toFixed(1) + ' yr';
+    document.getElementById('tw-diff').textContent = (simTime - travelerTime).toFixed(1) + ' yr';
+    const phaseNames = { ready: 'Ready', outbound: 'Outbound →', turnaround: 'Turnaround ↩', return: '← Return', reunited: 'Reunited!' };
+    document.getElementById('tw-phase').textContent = phaseNames[phase] || phase;
+
+    // ---- Canvas drawing ----
+    ctx.clearRect(0, 0, w, h);
+
+    // Layout: left half = trip animation, right half = spacetime diagram
+    const divX = w * 0.48;
+    const stLeft = w * 0.52;
+
+    // ========= LEFT: Trip Animation =========
+    const earthX = 50;
+    const starX = divX - 40;
+    const groundY = h * 0.68;
+    const tripWidth = starX - earthX;
+
+    // Background: space gradient
+    const spGrad = ctx.createLinearGradient(0, 0, 0, h);
+    spGrad.addColorStop(0, '#05081a');
+    spGrad.addColorStop(0.7, '#0a1030');
+    spGrad.addColorStop(1, '#0c1225');
+    ctx.fillStyle = spGrad;
+    ctx.fillRect(0, 0, divX, h);
+
+    // Stars (decorative)
+    const starSeed = [0.1,0.3,0.5,0.7,0.15,0.85,0.4,0.6,0.25,0.9,0.35,0.55,0.72,0.08,0.48];
+    for (let i = 0; i < starSeed.length; i++) {
+      const sx = starSeed[i] * divX;
+      const sy = ((starSeed[(i+5)%starSeed.length]) * 0.5) * groundY;
+      const sr = 0.5 + starSeed[(i+3)%starSeed.length] * 1.2;
+      ctx.beginPath();
+      ctx.arc(sx, sy + 10, sr, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200,210,255,${0.2 + starSeed[(i+7)%starSeed.length] * 0.3})`;
+      ctx.fill();
+    }
+
+    // Earth
+    ctx.beginPath();
+    ctx.arc(earthX, groundY - 30, 22, 0, Math.PI * 2);
+    const eGrad = ctx.createRadialGradient(earthX - 5, groundY - 35, 3, earthX, groundY - 30, 22);
+    eGrad.addColorStop(0, '#3b82f6');
+    eGrad.addColorStop(0.5, '#2563eb');
+    eGrad.addColorStop(1, '#1e3a5f');
+    ctx.fillStyle = eGrad;
+    ctx.fill();
+    // Earth continents (simple)
+    ctx.fillStyle = 'rgba(34,197,94,0.4)';
+    ctx.beginPath();
+    ctx.ellipse(earthX - 4, groundY - 33, 6, 8, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(earthX + 7, groundY - 26, 5, 4, 0.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '11px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('Earth', earthX, groundY + 2);
+
+    // Destination star
+    drawStar(ctx, starX, groundY - 32, 16, 5, '#fbbf24');
+    // Star glow
+    const sgGrad = ctx.createRadialGradient(starX, groundY - 32, 4, starX, groundY - 32, 30);
+    sgGrad.addColorStop(0, 'rgba(251,191,36,0.3)');
+    sgGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = sgGrad;
+    ctx.fillRect(starX - 35, groundY - 67, 70, 70);
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = '11px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText(distLY.toFixed(1) + ' ly', starX, groundY + 2);
+
+    // Distance line
+    ctx.strokeStyle = 'rgba(100,116,139,0.3)';
+    ctx.setLineDash([4, 6]);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(earthX + 26, groundY - 30);
+    ctx.lineTo(starX - 20, groundY - 30);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Rocket position
+    let rocketX, rocketY, rocketAngle, flameOn = false;
+    if (phase === 'ready') {
+      rocketX = earthX + 35;
+      rocketY = groundY - 30;
+      rocketAngle = -Math.PI / 2;
+    } else if (phase === 'outbound') {
+      rocketX = lerp(earthX + 35, starX - 25, frac);
+      rocketY = groundY - 30 - Math.sin(frac * Math.PI) * 35;
+      rocketAngle = -Math.PI / 2;
+      flameOn = true;
+    } else if (phase === 'turnaround') {
+      rocketX = starX - 25;
+      rocketY = groundY - 65;
+      rocketAngle = -Math.PI / 2;
+      flameOn = true;
+    } else if (phase === 'return') {
+      rocketX = lerp(starX - 25, earthX + 35, frac);
+      rocketY = groundY - 30 - Math.sin(frac * Math.PI) * 35;
+      rocketAngle = Math.PI / 2;
+      flameOn = true;
+    } else {
+      rocketX = earthX + 35;
+      rocketY = groundY - 30;
+      rocketAngle = -Math.PI / 2;
+    }
+
+    drawRocket(ctx, rocketX, rocketY, 1.2, rocketAngle, flameOn);
+
+    // Twin figures
+    const twinBaseY = h - 40;
+    // Earth twin (left side of earth)
+    drawPerson(ctx, earthX - 10, twinBaseY - 35, 1.1, '#fcd6a8', '#3b82f6', earthAge);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '10px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('Earth Twin', earthX - 10, twinBaseY + 4);
+
+    // Traveler twin (near rocket or back at earth)
+    let travTwinX;
+    if (phase === 'ready') travTwinX = earthX + 25;
+    else if (phase === 'reunited') travTwinX = earthX + 25;
+    else travTwinX = rocketX;
+    const travTwinY = (phase === 'ready' || phase === 'reunited') ? twinBaseY - 35 : rocketY + 20;
+    const travScale = (phase === 'ready' || phase === 'reunited') ? 1.1 : 0.6;
+    if (phase === 'ready' || phase === 'reunited') {
+      drawPerson(ctx, travTwinX, travTwinY, travScale, '#fcd6a8', '#a855f7', travAge);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '10px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('Traveler', travTwinX, twinBaseY + 4);
+    }
+
+    // Age difference highlight on reunion
+    if (phase === 'reunited') {
+      const diff = (simTime - travelerTime).toFixed(1);
+      ctx.fillStyle = 'rgba(239,68,68,0.12)';
+      ctx.beginPath();
+      ctx.roundRect(earthX - 40, twinBaseY - 80, 100, 24, 6);
+      ctx.fill();
+      ctx.fillStyle = '#ef4444';
+      ctx.font = 'bold 12px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('Δ ' + diff + ' years younger!', earthX + 10, twinBaseY - 64);
+    }
+
+    // ========= RIGHT: Spacetime Worldline Diagram =========
+    // Background
+    ctx.fillStyle = '#080c16';
+    ctx.fillRect(stLeft - 6, 0, w - stLeft + 6, h);
+    // Border
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(stLeft - 6, 0);
+    ctx.lineTo(stLeft - 6, h);
+    ctx.stroke();
+
+    const stPad = { l: 50, r: 20, t: 30, b: 50 };
+    const stW = w - stLeft - stPad.l - stPad.r;
+    const stH = h - stPad.t - stPad.b;
+    const stOx = stLeft + stPad.l;               // x origin (Earth position)
+    const stOy = stPad.t + stH;                   // y origin (t=0, bottom)
+
+    // Axes
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 1.5;
+    // Time axis (vertical)
+    ctx.beginPath();
+    ctx.moveTo(stOx, stOy);
+    ctx.lineTo(stOx, stPad.t);
+    ctx.stroke();
+    // Space axis (horizontal)
+    ctx.beginPath();
+    ctx.moveTo(stOx, stOy);
+    ctx.lineTo(stOx + stW, stOy);
+    ctx.stroke();
+
+    // Arrow on time axis
+    ctx.fillStyle = '#475569';
+    ctx.beginPath();
+    ctx.moveTo(stOx, stPad.t);
+    ctx.lineTo(stOx - 4, stPad.t + 10);
+    ctx.lineTo(stOx + 4, stPad.t + 10);
+    ctx.closePath();
+    ctx.fill();
+
+    // Axis labels
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '12px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('x (ly)', stOx + stW / 2, stOy + 35);
+    ctx.save();
+    ctx.translate(stOx - 35, stPad.t + stH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('t (years)', 0, 0);
+    ctx.restore();
+
+    // Scale: map distLY -> 70% of stW, tTotalEarth -> 85% of stH
+    const xScale = (stW * 0.7) / Math.max(distLY, 0.1);
+    const tScale = (stH * 0.85) / Math.max(tTotalEarth, 0.1);
+
+    // Grid
+    ctx.strokeStyle = 'rgba(30,41,59,0.5)';
+    ctx.lineWidth = 0.5;
+    ctx.fillStyle = '#475569';
+    ctx.font = '10px system-ui';
+    // Time ticks
+    const tStep = Math.max(1, Math.ceil(tTotalEarth / 8));
+    for (let t = tStep; t <= tTotalEarth * 1.1; t += tStep) {
+      const y = stOy - t * tScale;
+      if (y < stPad.t) break;
+      ctx.beginPath();
+      ctx.moveTo(stOx, y);
+      ctx.lineTo(stOx + stW, y);
+      ctx.stroke();
+      ctx.textAlign = 'right';
+      ctx.fillText(t.toFixed(0), stOx - 6, y + 3);
+    }
+    // Space ticks
+    const xStep = Math.max(1, Math.ceil(distLY / 5));
+    for (let x = xStep; x <= distLY * 1.1; x += xStep) {
+      const px = stOx + x * xScale;
+      if (px > stOx + stW) break;
+      ctx.beginPath();
+      ctx.moveTo(px, stOy);
+      ctx.lineTo(px, stPad.t);
+      ctx.stroke();
+      ctx.textAlign = 'center';
+      ctx.fillText(x.toFixed(0), px, stOy + 15);
+    }
+
+    // Light cone from origin (faint)
+    ctx.strokeStyle = 'rgba(245,158,11,0.25)';
+    ctx.setLineDash([4, 4]);
+    ctx.lineWidth = 1;
+    // Light: x = t (in ly, yr), so slope = 1
+    const lcLen = Math.min(stW, stH);
+    ctx.beginPath();
+    ctx.moveTo(stOx, stOy);
+    ctx.lineTo(stOx + lcLen, stOy - lcLen);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(stOx, stOy);
+    ctx.lineTo(stOx - Math.min(stPad.l - 10, lcLen), stOy - Math.min(stPad.l - 10, lcLen));
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(245,158,11,0.3)';
+    ctx.font = '9px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText('light (c)', stOx + lcLen * 0.3 + 4, stOy - lcLen * 0.3 - 4);
+
+    // Earth worldline (vertical, stationary)
+    ctx.strokeStyle = 'rgba(245,158,11,0.5)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(stOx, stOy);
+    ctx.lineTo(stOx, stOy - tTotalEarth * tScale);
+    ctx.stroke();
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = '10px system-ui';
+    ctx.textAlign = 'right';
+    ctx.fillText('Earth twin', stOx - 6, stOy - tTotalEarth * tScale + 12);
+
+    // Traveler worldline (kinked: out and back)
+    const midX = stOx + distLY * xScale;
+    const midY = stOy - tOneWayEarth * tScale;
+    const endY = stOy - tTotalEarth * tScale;
+
+    // Glow
+    ctx.strokeStyle = 'rgba(6,182,212,0.15)';
+    ctx.lineWidth = 8;
+    ctx.beginPath();
+    ctx.moveTo(stOx, stOy);
+    ctx.lineTo(midX, midY);
+    ctx.lineTo(stOx, endY);
+    ctx.stroke();
+    // Core
+    ctx.strokeStyle = '#06b6d4';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(stOx, stOy);
+    ctx.lineTo(midX, midY);
+    ctx.lineTo(stOx, endY);
+    ctx.stroke();
+
+    // Turnaround kink highlight
+    ctx.beginPath();
+    ctx.arc(midX, midY, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#a855f7';
+    ctx.fill();
+    ctx.fillStyle = '#a855f7';
+    ctx.font = '10px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText('turnaround', midX + 8, midY + 4);
+
+    // Labels
+    ctx.fillStyle = '#06b6d4';
+    ctx.font = '10px system-ui';
+    ctx.textAlign = 'left';
+    const lblX = (stOx + midX) / 2 + 6;
+    const lblY = (stOy + midY) / 2;
+    ctx.fillText('Traveler', lblX, lblY);
+
+    // Animated position dot along the traveler worldline
+    if (simTime > 0 && simTime <= tTotalEarth) {
+      let dotX, dotY;
+      if (simTime <= tOneWayEarth) {
+        const f = simTime / tOneWayEarth;
+        dotX = lerp(stOx, midX, f);
+        dotY = lerp(stOy, midY, f);
+      } else {
+        const f = (simTime - tOneWayEarth) / tOneWayEarth;
+        dotX = lerp(midX, stOx, f);
+        dotY = lerp(midY, endY, f);
+      }
+      // Glow
+      const dg = ctx.createRadialGradient(dotX, dotY, 0, dotX, dotY, 12);
+      dg.addColorStop(0, 'rgba(6,182,212,0.6)');
+      dg.addColorStop(1, 'transparent');
+      ctx.fillStyle = dg;
+      ctx.fillRect(dotX - 14, dotY - 14, 28, 28);
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+
+      // Earth twin position dot (on vertical line)
+      const eDotY = stOy - simTime * tScale;
+      const edg = ctx.createRadialGradient(stOx, eDotY, 0, stOx, eDotY, 10);
+      edg.addColorStop(0, 'rgba(245,158,11,0.6)');
+      edg.addColorStop(1, 'transparent');
+      ctx.fillStyle = edg;
+      ctx.fillRect(stOx - 12, eDotY - 12, 24, 24);
+      ctx.beginPath();
+      ctx.arc(stOx, eDotY, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#fef3c7';
+      ctx.fill();
+
+      // Horizontal dashed line connecting both at current time
+      ctx.strokeStyle = 'rgba(148,163,184,0.25)';
+      ctx.setLineDash([3, 4]);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(stOx, eDotY);
+      ctx.lineTo(dotX, dotY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Proper time annotations at endpoints
+    if (simTime >= tTotalEarth) {
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = 'bold 11px system-ui';
+      ctx.textAlign = 'right';
+      ctx.fillText('τ = ' + tTotalEarth.toFixed(1) + ' yr', stOx - 6, endY - 4);
+      ctx.fillStyle = '#06b6d4';
+      ctx.textAlign = 'left';
+      ctx.fillText('τ = ' + tTotalTraveler.toFixed(1) + ' yr', stOx + 6, endY - 4);
+    }
+
+    // Title on spacetime diagram
+    ctx.fillStyle = '#64748b';
+    ctx.font = 'bold 11px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('Spacetime Diagram', stOx + stW / 2, stPad.t + stH + 42);
+
+    animId = requestAnimationFrame(draw);
+  }
+
+  // ---- Slider events ----
+  velSlider.addEventListener('input', () => {
+    beta = velSlider.value / 100;
+    document.getElementById('twin-vel-label').textContent = beta.toFixed(2) + 'c';
+    if (!running && !finished) updatePreview();
+  });
+  distSlider.addEventListener('input', () => {
+    distLY = distSlider.value / 2;
+    document.getElementById('twin-dist-label').textContent = distLY.toFixed(1) + ' ly';
+    if (!running && !finished) updatePreview();
+  });
+
+  function updatePreview() {
+    const { tTotalEarth, tTotalTraveler } = getTripStats();
+    document.getElementById('tw-earth-time').textContent = tTotalEarth.toFixed(1) + ' yr (total)';
+    document.getElementById('tw-trav-time').textContent = tTotalTraveler.toFixed(1) + ' yr (total)';
+    document.getElementById('tw-diff').textContent = (tTotalEarth - tTotalTraveler).toFixed(1) + ' yr';
+  }
+
+  // ---- Controls ----
+  playBtn.addEventListener('click', () => {
+    if (finished) return;
+    if (running) {
+      running = false;
+      playBtn.textContent = 'Resume';
+    } else {
+      running = true;
+      playBtn.textContent = 'Pause';
+    }
+  });
+
+  resetBtn.addEventListener('click', () => {
+    running = false;
+    finished = false;
+    simTime = 0;
+    prevTs = null;
+    playBtn.textContent = 'Launch Trip';
+    document.getElementById('tw-earth-age').textContent = '30.0 yr';
+    document.getElementById('tw-trav-age').textContent = '30.0 yr';
+    document.getElementById('tw-earth-time').textContent = '0.0 yr';
+    document.getElementById('tw-trav-time').textContent = '0.0 yr';
+    document.getElementById('tw-diff').textContent = '0.0 yr';
+    document.getElementById('tw-phase').textContent = 'Ready';
+    updatePreview();
+  });
+
+  const speeds = [1, 2, 5, 10];
+  let speedIdx = 0;
+  speedBtn.addEventListener('click', () => {
+    speedIdx = (speedIdx + 1) % speeds.length;
+    simSpeed = speeds[speedIdx];
+    speedBtn.innerHTML = 'Speed: ' + simSpeed + '&times;';
+  });
+
+  // Initialize
+  updatePreview();
+  requestAnimationFrame(draw);
 })();
 
 // ==================== COMBINED GRAPH ====================

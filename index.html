@@ -922,6 +922,130 @@
   </div>
 </section>
 
+<div class="section-divider"><hr></div>
+
+<!-- Section 09: Causality Violation -->
+<section id="sec-causality">
+  <h2><span class="num">09</span> Causality Violation &mdash; Why FTL Breaks Reality</h2>
+  <p class="subtitle">FTL doesn't just break a speed limit &mdash; it lets you receive messages before they were sent, destroying cause and effect.</p>
+
+  <div class="card">
+    <p class="explain">
+      The speed of light isn't an arbitrary speed limit &mdash; it's the boundary between <strong>cause</strong> and <strong>effect</strong>.
+      In special relativity, different observers moving at different velocities disagree about <em>when</em> events happen.
+      For events connected by light or slower signals, everyone agrees on the order. But for faster-than-light signals,
+      some observers see the reply arrive <strong>before the message was sent</strong> &mdash; creating logical paradoxes
+      that make FTL communication physically impossible.
+    </p>
+
+    <div class="tab-bar" id="causality-tabs">
+      <button class="tab-btn active" data-tab="causality-simul">Simultaneity &amp; Light Cones</button>
+      <button class="tab-btn" data-tab="causality-paradox">The Paradox</button>
+    </div>
+
+    <!-- Tab 1: Simultaneity & Light Cones -->
+    <div id="causality-simul" class="tab-content active">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:8px;">
+        <div class="slider-group" style="flex:1;min-width:200px;">
+          <label>Observer velocity <span class="val" id="caus-vel-label">0.00c</span></label>
+          <input type="range" id="caus-vel" min="0" max="95" value="0" step="1">
+        </div>
+        <div class="slider-group" style="flex:1;min-width:200px;">
+          <label>FTL message speed <span class="val" id="caus-ftl-label">2.0c</span></label>
+          <input type="range" id="caus-ftl" min="20" max="500" value="20" step="1">
+        </div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="causality-canvas" width="800" height="650"></canvas>
+      </div>
+
+      <div class="readouts">
+        <div class="readout">
+          <div class="label">Observer Velocity</div>
+          <div class="value blue" id="cv-vel">0.00c</div>
+        </div>
+        <div class="readout">
+          <div class="label">FTL Message Speed</div>
+          <div class="value cyan" id="cv-ftl">2.0c</div>
+        </div>
+        <div class="readout">
+          <div class="label">Earth Frame Arrival</div>
+          <div class="value yellow" id="cv-earth-t">+2.19 yr</div>
+        </div>
+        <div class="readout">
+          <div class="label">Moving Frame Arrival</div>
+          <div class="value purple" id="cv-moving-t">+2.19 yr</div>
+        </div>
+        <div class="readout">
+          <div class="label">Time Reversal</div>
+          <div class="value red" id="cv-reversal">0 days</div>
+        </div>
+        <div class="readout">
+          <div class="label">Causality</div>
+          <div class="value" id="cv-status" style="color:#22c55e;">OK</div>
+        </div>
+      </div>
+
+      <p class="explain">
+        The Lorentz transformation tells us: <strong>t&prime; = &gamma;(t &minus; vx/c&sup2;)</strong>.
+        For an FTL message traveling distance <em>d</em> at speed <em>s&middot;c</em>, the arrival time in the
+        Earth frame is t = d/s. But a moving observer sees it arrive at t&prime; = &gamma;(d/s &minus; v&middot;d/c&sup2;).
+        When <strong>v &gt; c/s</strong>, this goes <em>negative</em> &mdash; the message arrives before it was sent.
+      </p>
+    </div>
+
+    <!-- Tab 2: The Paradox -->
+    <div id="causality-paradox" class="tab-content">
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+        <button id="paradox-play" class="tab-btn active" style="flex:1;min-width:100px;">Play Scenario</button>
+        <button id="paradox-reset" class="tab-btn" style="flex:1;min-width:100px;">Reset</button>
+        <button id="paradox-speed" class="tab-btn" style="flex:1;min-width:100px;">Speed: 1&times;</button>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="paradox-canvas" width="800" height="650"></canvas>
+      </div>
+
+      <div class="readouts">
+        <div class="readout">
+          <div class="label">Earth Clock</div>
+          <div class="value yellow" id="px-earth-t">T = 0.00 yr</div>
+        </div>
+        <div class="readout">
+          <div class="label">Alpha Centauri Clock</div>
+          <div class="value cyan" id="px-ac-t">T = 0.00 yr</div>
+        </div>
+        <div class="readout">
+          <div class="label">Moving Frame Clock</div>
+          <div class="value purple" id="px-moving-t">T&prime; = 0.00 yr</div>
+        </div>
+        <div class="readout">
+          <div class="label">Phase</div>
+          <div class="value" id="px-phase" style="color:var(--muted);">Ready</div>
+        </div>
+        <div class="readout">
+          <div class="label">Message Content</div>
+          <div class="value cyan" id="px-msg" style="font-size:1rem;">&mdash;</div>
+        </div>
+        <div class="readout">
+          <div class="label">Paradox</div>
+          <div class="value" id="px-paradox" style="color:#22c55e;">None yet</div>
+        </div>
+      </div>
+
+      <p class="explain">
+        <strong>The causal loop:</strong> Earth sends &ldquo;HELLO&rdquo; to Alpha Centauri at 2.185c.
+        It arrives in 2 years (Earth frame), but an observer moving at 0.50c sees it arrive
+        <strong>78 days in the past</strong>. Alpha Centauri replies at the same FTL speed.
+        The reply reaches Earth <em>before</em> the original was sent. Now imagine the reply says
+        &ldquo;DON&rsquo;T SEND&rdquo; &mdash; if you obey, the warning was never triggered. If you ignore it,
+        the warning <em>was</em> triggered. Either way: <strong>paradox</strong>.
+      </p>
+    </div>
+  </div>
+</section>
+
 <footer>
   Built to illuminate the beauty of Einstein's Special Relativity
 </footer>
@@ -3279,6 +3403,1123 @@ function setupCanvas(id) {
   });
 
   draw();
+})();
+
+// ==================== CAUSALITY VIOLATION ====================
+(function initCausality() {
+  // ---- Tab switching ----
+  const tabBar = document.getElementById('causality-tabs');
+  if (!tabBar) return;
+  tabBar.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBar.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const tgt = btn.getAttribute('data-tab');
+      btn.closest('.card').querySelectorAll('.tab-content').forEach(tc => {
+        tc.classList.toggle('active', tc.id === tgt);
+      });
+    });
+  });
+
+  // ---- Constants ----
+  const ALPHA_CENTAURI = 4.37; // light-years
+
+  // ================================================================
+  //  TAB 1: Simultaneity & Light Cones
+  // ================================================================
+  (function initSimultaneity() {
+    const { ctx, w, h } = setupCanvas('causality-canvas');
+    const velSlider = document.getElementById('caus-vel');
+    const ftlSlider = document.getElementById('caus-ftl');
+    let beta = 0;
+    let ftlSpeed = 2.0; // multiples of c
+    let animBeta = 0;
+    let animFtl = 2.0;
+    let animTime = 0;
+    let prevTs = null;
+    let violationFlash = 0;
+
+    function updateReadouts(b, s) {
+      const g = b > 0.001 ? gamma(Math.min(b, 0.999)) : 1;
+      const tEarth = ALPHA_CENTAURI / s;
+      const tMoving = g * (tEarth - b * ALPHA_CENTAURI);
+      document.getElementById('cv-vel').textContent = b.toFixed(2) + 'c';
+      document.getElementById('cv-ftl').textContent = s.toFixed(1) + 'c';
+      document.getElementById('cv-earth-t').textContent = '+' + tEarth.toFixed(2) + ' yr';
+      const movSign = tMoving >= 0 ? '+' : '';
+      const movEl = document.getElementById('cv-moving-t');
+      movEl.textContent = movSign + tMoving.toFixed(2) + ' yr';
+      movEl.className = 'value ' + (tMoving < 0 ? 'red' : 'purple');
+      const reversalDays = tMoving < 0 ? Math.abs(tMoving * 365.25) : 0;
+      document.getElementById('cv-reversal').textContent = reversalDays > 0 ? reversalDays.toFixed(0) + ' days' : 'None';
+      const statusEl = document.getElementById('cv-status');
+      if (tMoving < 0) {
+        statusEl.textContent = 'VIOLATION';
+        statusEl.style.color = '#ef4444';
+      } else {
+        statusEl.textContent = 'OK';
+        statusEl.style.color = '#22c55e';
+      }
+      return tMoving;
+    }
+
+    velSlider.addEventListener('input', () => {
+      beta = velSlider.value / 100;
+      document.getElementById('caus-vel-label').textContent = beta.toFixed(2) + 'c';
+      updateReadouts(beta, ftlSpeed);
+    });
+    ftlSlider.addEventListener('input', () => {
+      ftlSpeed = ftlSlider.value / 10;
+      document.getElementById('caus-ftl-label').textContent = ftlSpeed.toFixed(1) + 'c';
+      updateReadouts(beta, ftlSpeed);
+    });
+
+    function draw(ts) {
+      if (prevTs === null) prevTs = ts;
+      const dt = Math.min(ts - prevTs, 50);
+      prevTs = ts;
+      animTime += dt;
+      animBeta += (beta - animBeta) * Math.min(1, dt * 0.008);
+      animFtl += (ftlSpeed - animFtl) * Math.min(1, dt * 0.008);
+
+      const b = animBeta;
+      const s = animFtl;
+      const g = b > 0.001 ? gamma(Math.min(b, 0.999)) : 1;
+      const tEarth = ALPHA_CENTAURI / s;
+      const tMoving = g * (tEarth - b * ALPHA_CENTAURI);
+
+      // Violation flash
+      if (tMoving < 0) {
+        violationFlash = Math.min(1, violationFlash + dt * 0.004);
+      } else {
+        violationFlash = Math.max(0, violationFlash - dt * 0.004);
+      }
+
+      ctx.clearRect(0, 0, w, h);
+
+      // --- Coordinate system ---
+      const margin = { left: 80, right: 40, top: 50, bottom: 60 };
+      const plotW = w - margin.left - margin.right;
+      const plotH = h - margin.top - margin.bottom;
+      const ox = margin.left; // origin x (Earth, x=0)
+      const oy = margin.top + plotH * 0.65; // origin y (t=0) — shifted down so we see negative time
+      const maxX = 8; // light-years
+      const maxTup = 6; // years up (future)
+      const maxTdown = 3; // years down (past)
+      const xScale = plotW / maxX;
+      const tScale = plotH / (maxTup + maxTdown);
+      const tToY = (t) => oy - t * tScale;
+      const xToX = (x) => ox + x * xScale;
+
+      // --- Grid ---
+      ctx.strokeStyle = 'rgba(30,41,59,0.5)';
+      ctx.lineWidth = 0.5;
+      for (let i = -Math.floor(maxTdown); i <= maxTup; i++) {
+        const gy = tToY(i);
+        ctx.beginPath(); ctx.moveTo(ox, gy); ctx.lineTo(ox + plotW, gy); ctx.stroke();
+      }
+      for (let i = 0; i <= maxX; i++) {
+        const gx = xToX(i);
+        ctx.beginPath(); ctx.moveTo(gx, tToY(-maxTdown)); ctx.lineTo(gx, tToY(maxTup)); ctx.stroke();
+      }
+
+      // --- Axes ---
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1.5;
+      // Time axis (vertical at x=0)
+      ctx.beginPath(); ctx.moveTo(ox, tToY(-maxTdown)); ctx.lineTo(ox, tToY(maxTup)); ctx.stroke();
+      // Space axis (horizontal at t=0)
+      ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + plotW, oy); ctx.stroke();
+
+      // Axis labels
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '12px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('Distance (light-years)', ox + plotW / 2, h - 12);
+      ctx.save();
+      ctx.translate(18, oy);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('Time (years)', 0, 0);
+      ctx.restore();
+
+      // Tick labels
+      ctx.font = '10px system-ui';
+      ctx.fillStyle = '#64748b';
+      ctx.textAlign = 'center';
+      for (let i = 0; i <= maxX; i += 2) {
+        ctx.fillText(i + '', xToX(i), oy + 18);
+      }
+      ctx.textAlign = 'right';
+      for (let i = -Math.floor(maxTdown); i <= maxTup; i++) {
+        if (i === 0) continue;
+        ctx.fillText((i > 0 ? '+' : '') + i, ox - 8, tToY(i) + 4);
+      }
+      ctx.fillText('0', ox - 8, oy + 4);
+
+      // --- Light cone (from origin) ---
+      // Future cone shading
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(xToX(maxTup), tToY(maxTup));
+      ctx.lineTo(ox, tToY(maxTup));
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(250,204,21,0.05)';
+      ctx.fill();
+
+      // Past cone shading
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(xToX(maxTdown), tToY(-maxTdown));
+      ctx.lineTo(ox, tToY(-maxTdown));
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(250,204,21,0.04)';
+      ctx.fill();
+
+      // Spacelike region shading (FTL zone) - right side
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(xToX(maxTup), tToY(maxTup));
+      ctx.lineTo(ox + plotW, tToY(maxTup));
+      ctx.lineTo(ox + plotW, tToY(-maxTdown));
+      ctx.lineTo(xToX(maxTdown), tToY(-maxTdown));
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(96,165,250,0.04)';
+      ctx.fill();
+      // Violation flash overlay
+      if (violationFlash > 0) {
+        ctx.fillStyle = `rgba(239,68,68,${0.06 * violationFlash * (0.5 + 0.5 * Math.sin(animTime * 0.006))})`;
+        ctx.fillRect(ox, tToY(maxTup), plotW, plotH);
+      }
+
+      // Light cone lines (45°: 1 ly per year)
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([]);
+      // Future right
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(xToX(Math.min(maxX, maxTup)), tToY(Math.min(maxX, maxTup)));
+      ctx.stroke();
+      // Past right
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(xToX(Math.min(maxX, maxTdown)), tToY(-Math.min(maxX, maxTdown)));
+      ctx.stroke();
+
+      // Light cone label
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = 'italic 11px system-ui';
+      ctx.textAlign = 'left';
+      const lcLabelX = xToX(3.5);
+      const lcLabelY = tToY(3.5);
+      ctx.save();
+      ctx.translate(lcLabelX, lcLabelY);
+      ctx.rotate(-Math.PI / 4);
+      ctx.fillText('Light (c)', 0, -8);
+      ctx.restore();
+
+      // FTL zone label
+      ctx.fillStyle = 'rgba(96,165,250,0.5)';
+      ctx.font = 'bold 14px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('FTL ZONE', xToX(6), oy - 6);
+      ctx.font = '11px system-ui';
+      ctx.fillStyle = 'rgba(96,165,250,0.35)';
+      ctx.fillText('(spacelike region)', xToX(6), oy + 12);
+
+      // --- Earth worldline (vertical at x=0) ---
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(ox, tToY(-maxTdown));
+      ctx.lineTo(ox, tToY(maxTup));
+      ctx.stroke();
+      // Earth label
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = 'bold 12px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('Earth', ox, tToY(maxTup) - 8);
+
+      // --- Alpha Centauri worldline (vertical at x=4.37) ---
+      const acX = xToX(ALPHA_CENTAURI);
+      ctx.strokeStyle = '#06b6d4';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(acX, tToY(-maxTdown));
+      ctx.lineTo(acX, tToY(maxTup));
+      ctx.stroke();
+      // AC label
+      ctx.fillStyle = '#06b6d4';
+      ctx.font = 'bold 12px system-ui';
+      ctx.fillText('Alpha Centauri', acX, tToY(maxTup) - 8);
+      ctx.font = '10px system-ui';
+      ctx.fillStyle = '#06b6d4';
+      ctx.fillText('4.37 ly', acX, tToY(maxTup) - 22);
+
+      // --- FTL message line (Earth → AC) ---
+      const msgArrT = ALPHA_CENTAURI / s; // arrival time in Earth frame
+      const msgStartX = ox;
+      const msgStartY = oy; // T=0
+      const msgEndX = acX;
+      const msgEndY = tToY(msgArrT);
+
+      // Glow
+      ctx.strokeStyle = 'rgba(239,68,68,0.2)';
+      ctx.lineWidth = 8;
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(msgStartX, msgStartY); ctx.lineTo(msgEndX, msgEndY); ctx.stroke();
+      // Core
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([8, 6]);
+      ctx.beginPath(); ctx.moveTo(msgStartX, msgStartY); ctx.lineTo(msgEndX, msgEndY); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // FTL message label
+      ctx.fillStyle = '#ef4444';
+      ctx.font = 'bold 11px system-ui';
+      ctx.textAlign = 'center';
+      const fmlX = (msgStartX + msgEndX) / 2;
+      const fmlY = (msgStartY + msgEndY) / 2;
+      ctx.fillText('FTL Message (' + s.toFixed(1) + 'c)', fmlX, fmlY - 12);
+
+      // Arrival event marker
+      ctx.beginPath();
+      ctx.arc(msgEndX, msgEndY, 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#ef4444';
+      ctx.fill();
+      // Send event marker
+      ctx.beginPath();
+      ctx.arc(msgStartX, msgStartY, 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#22c55e';
+      ctx.fill();
+      // Event labels
+      ctx.font = '10px system-ui';
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#22c55e';
+      ctx.fillText('SEND (T=0)', msgStartX + 10, msgStartY + 4);
+      ctx.fillStyle = '#ef4444';
+      ctx.textAlign = 'right';
+      ctx.fillText('ARRIVE (T=' + msgArrT.toFixed(2) + 'yr)', msgEndX - 10, msgEndY - 8);
+
+      // --- Simultaneity line (moving observer's "now") ---
+      if (b > 0.005) {
+        // The simultaneity line through the origin: t = (v/c²)·x → t = b·x (in natural units)
+        const simSlope = b; // dt/dx in light-year/year units
+        const simX1 = 0;
+        const simT1 = 0;
+        const simX2 = maxX;
+        const simT2 = simSlope * maxX;
+
+        // Wide glow
+        ctx.strokeStyle = 'rgba(168,85,247,0.15)';
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(xToX(simX1), tToY(simT1));
+        ctx.lineTo(xToX(simX2), tToY(simT2));
+        ctx.stroke();
+
+        // Dashed line
+        ctx.strokeStyle = '#a855f7';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.moveTo(xToX(simX1), tToY(simT1));
+        ctx.lineTo(xToX(simX2), tToY(simT2));
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // "Now" labels
+        ctx.fillStyle = '#a855f7';
+        ctx.font = 'bold 11px system-ui';
+        ctx.textAlign = 'left';
+        ctx.fillText('"Now" for moving observer', xToX(simX2) - 160, tToY(simT2) - 10);
+
+        // Horizontal "now" for Earth (reference)
+        ctx.strokeStyle = 'rgba(148,163,184,0.3)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(ox, oy);
+        ctx.lineTo(ox + plotW, oy);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px system-ui';
+        ctx.textAlign = 'right';
+        ctx.fillText('"Now" for Earth observer', ox + plotW, oy - 6);
+
+        // Show where the simultaneity line crosses Alpha Centauri
+        const simCrossT = simSlope * ALPHA_CENTAURI;
+        const simCrossY = tToY(simCrossT);
+        ctx.beginPath();
+        ctx.arc(acX, simCrossY, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#a855f7';
+        ctx.fill();
+
+        // Dashed vertical showing the time difference at AC
+        ctx.strokeStyle = 'rgba(168,85,247,0.3)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(acX, oy);
+        ctx.lineTo(acX, simCrossY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Label the time offset at AC
+        ctx.fillStyle = '#a855f7';
+        ctx.font = '10px system-ui';
+        ctx.textAlign = 'left';
+        const offsetLabel = simCrossT > 0 ? '+' + simCrossT.toFixed(2) + 'yr' : simCrossT.toFixed(2) + 'yr';
+        ctx.fillText('Δt = ' + offsetLabel, acX + 8, (oy + simCrossY) / 2 + 4);
+      }
+
+      // --- Moving frame arrival time annotation ---
+      if (b > 0.005 && tMoving < tEarth) {
+        const movArrY = tToY(tMoving);
+        // Dashed line from arrival point to the time axis
+        ctx.strokeStyle = tMoving < 0 ? 'rgba(239,68,68,0.5)' : 'rgba(168,85,247,0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.moveTo(acX, movArrY);
+        ctx.lineTo(ox, movArrY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Label on time axis
+        ctx.fillStyle = tMoving < 0 ? '#ef4444' : '#a855f7';
+        ctx.font = 'bold 10px system-ui';
+        ctx.textAlign = 'right';
+        const mtLabel = (tMoving >= 0 ? '+' : '') + tMoving.toFixed(2) + 'yr';
+        // Background pill
+        const mtText = "T'=" + mtLabel;
+        const mtMeasure = ctx.measureText(mtText);
+        const pillX = ox - 4 - mtMeasure.width - 8;
+        const pillY = movArrY - 8;
+        ctx.fillStyle = tMoving < 0 ? 'rgba(239,68,68,0.15)' : 'rgba(168,85,247,0.1)';
+        ctx.beginPath();
+        ctx.roundRect(pillX, pillY, mtMeasure.width + 12, 18, 4);
+        ctx.fill();
+        ctx.fillStyle = tMoving < 0 ? '#ef4444' : '#a855f7';
+        ctx.fillText(mtText, ox - 6, movArrY + 4);
+
+        // If violation, show a prominent marker
+        if (tMoving < 0) {
+          // Red zone highlight below T=0
+          ctx.fillStyle = `rgba(239,68,68,${0.08 * (0.6 + 0.4 * Math.sin(animTime * 0.005))})`;
+          ctx.fillRect(ox, oy, plotW, tToY(Math.max(tMoving, -maxTdown)) - oy);
+
+          // CAUSALITY VIOLATION label
+          const flashAlpha = 0.7 + 0.3 * Math.sin(animTime * 0.006);
+          ctx.fillStyle = `rgba(239,68,68,${flashAlpha})`;
+          ctx.font = 'bold 18px system-ui';
+          ctx.textAlign = 'center';
+          ctx.fillText('CAUSALITY VIOLATION', w / 2, tToY(maxTup) + 30);
+          ctx.font = '12px system-ui';
+          ctx.fillText('Message arrives ' + Math.abs(tMoving * 365.25).toFixed(0) + ' days BEFORE it was sent', w / 2, tToY(maxTup) + 50);
+        }
+      }
+
+      // --- Animated photons on light cone ---
+      const photonPhase = (animTime % 4000) / 4000;
+      const photonDist = photonPhase * Math.min(maxX, maxTup);
+      const ppx = xToX(photonDist);
+      const ppy = tToY(photonDist);
+      if (ppy > tToY(maxTup)) {
+        const pg = ctx.createRadialGradient(ppx, ppy, 0, ppx, ppy, 6);
+        pg.addColorStop(0, 'rgba(251,191,36,0.6)');
+        pg.addColorStop(1, 'transparent');
+        ctx.fillStyle = pg;
+        ctx.fillRect(ppx - 8, ppy - 8, 16, 16);
+        ctx.beginPath(); ctx.arc(ppx, ppy, 3, 0, Math.PI * 2);
+        ctx.fillStyle = '#fef3c7'; ctx.fill();
+      }
+
+      requestAnimationFrame(draw);
+    }
+    updateReadouts(0, 2.0);
+    requestAnimationFrame(draw);
+  })();
+
+  // ================================================================
+  //  TAB 2: The Paradox Animation
+  // ================================================================
+  (function initParadox() {
+    const { ctx, w, h } = setupCanvas('paradox-canvas');
+    const playBtn = document.getElementById('paradox-play');
+    const resetBtn = document.getElementById('paradox-reset');
+    const speedBtn = document.getElementById('paradox-speed');
+
+    // Physics constants for the scenario
+    const dist = ALPHA_CENTAURI; // 4.37 ly
+    const ftlS = 2.185; // FTL speed in c — arrives in ~2 years
+    const obsV = 0.50; // moving observer velocity
+    const obsG = gamma(obsV); // 1.1547
+    const tArriveEarth = dist / ftlS; // ~2.0 years
+    const tArriveMoving = obsG * (tArriveEarth - obsV * dist); // ~ -0.214 yr
+    const replyArriveEarth = tArriveEarth + tArriveMoving; // arrives before T=0
+
+    // Animation state
+    let running = false;
+    let finished = false;
+    let simTime = 0; // simulation time in "phase units" (0 to totalDuration)
+    let simSpeed = 1;
+    let prevTs = null;
+
+    // Phases with durations (in seconds of real time at 1x)
+    const phases = [
+      { name: 'send',      duration: 2.5, label: 'Sending FTL Message...' },
+      { name: 'arrive',    duration: 1.5, label: 'Message Received!' },
+      { name: 'reframe',   duration: 2.5, label: 'Switching to Moving Frame...' },
+      { name: 'reply',     duration: 2.5, label: 'Sending FTL Reply...' },
+      { name: 'paradox',   duration: 2.0, label: 'Reply Arrives Before Sending!' },
+      { name: 'loop',      duration: 4.0, label: 'PARADOX: Causal Loop!' },
+    ];
+    const totalDuration = phases.reduce((s, p) => s + p.duration, 0);
+
+    function getPhase(t) {
+      let acc = 0;
+      for (let i = 0; i < phases.length; i++) {
+        if (t < acc + phases[i].duration) {
+          return { idx: i, phase: phases[i].name, frac: (t - acc) / phases[i].duration, label: phases[i].label };
+        }
+        acc += phases[i].duration;
+      }
+      return { idx: phases.length - 1, phase: 'loop', frac: 1, label: phases[phases.length - 1].label };
+    }
+
+    // Controls
+    playBtn.addEventListener('click', () => {
+      if (finished) return;
+      if (running) {
+        running = false;
+        playBtn.textContent = 'Resume';
+      } else {
+        running = true;
+        playBtn.textContent = 'Pause';
+      }
+    });
+    resetBtn.addEventListener('click', () => {
+      running = false; finished = false; simTime = 0; prevTs = null;
+      playBtn.textContent = 'Play Scenario';
+      document.getElementById('px-earth-t').textContent = 'T = 0.00 yr';
+      document.getElementById('px-ac-t').textContent = 'T = 0.00 yr';
+      document.getElementById('px-moving-t').textContent = "T\u2032 = 0.00 yr";
+      document.getElementById('px-phase').textContent = 'Ready';
+      document.getElementById('px-phase').style.color = 'var(--muted)';
+      document.getElementById('px-msg').textContent = '\u2014';
+      document.getElementById('px-msg').className = 'value cyan';
+      document.getElementById('px-paradox').textContent = 'None yet';
+      document.getElementById('px-paradox').style.color = '#22c55e';
+    });
+    const speeds = [1, 2, 5, 10];
+    let speedIdx = 0;
+    speedBtn.addEventListener('click', () => {
+      speedIdx = (speedIdx + 1) % speeds.length;
+      simSpeed = speeds[speedIdx];
+      speedBtn.innerHTML = 'Speed: ' + simSpeed + '&times;';
+    });
+
+    function draw(ts) {
+      if (prevTs === null) prevTs = ts;
+      const dt = Math.min(ts - prevTs, 50);
+      prevTs = ts;
+
+      if (running && !finished) {
+        simTime += (dt / 1000) * simSpeed;
+        if (simTime >= totalDuration) {
+          simTime = totalDuration;
+          finished = true;
+          running = false;
+          playBtn.textContent = 'Scenario Complete';
+        }
+      }
+
+      const { idx, phase, frac, label } = running || finished || simTime > 0
+        ? getPhase(simTime) : { idx: -1, phase: 'ready', frac: 0, label: 'Ready' };
+
+      ctx.clearRect(0, 0, w, h);
+
+      // ---- Layout ----
+      const sceneH = h * 0.35;
+      const stH = h * 0.65;
+      const stTop = sceneH;
+
+      // ==============================
+      //  SCENE VIEW (top 35%)
+      // ==============================
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, w, sceneH);
+      ctx.clip();
+
+      // Background
+      ctx.fillStyle = '#060a14';
+      ctx.fillRect(0, 0, w, sceneH);
+
+      // Some stars
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      for (let i = 0; i < 40; i++) {
+        const sx = ((i * 137 + 50) % w);
+        const sy = ((i * 97 + 30) % sceneH);
+        ctx.fillRect(sx, sy, 1, 1);
+      }
+
+      const earthX = 80;
+      const acX_scene = w - 80;
+      const midY = sceneH / 2;
+
+      // Earth
+      ctx.beginPath();
+      ctx.arc(earthX, midY, 22, 0, Math.PI * 2);
+      const earthGrad = ctx.createRadialGradient(earthX - 5, midY - 5, 2, earthX, midY, 22);
+      earthGrad.addColorStop(0, '#60a5fa');
+      earthGrad.addColorStop(0.5, '#2563eb');
+      earthGrad.addColorStop(1, '#1e3a5f');
+      ctx.fillStyle = earthGrad;
+      ctx.fill();
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 12px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('Earth', earthX, midY + 38);
+
+      // Alpha Centauri (star)
+      const starPulse = 0.85 + 0.15 * Math.sin(ts * 0.003);
+      ctx.beginPath();
+      ctx.arc(acX_scene, midY, 14 * starPulse, 0, Math.PI * 2);
+      const starGrad = ctx.createRadialGradient(acX_scene, midY, 0, acX_scene, midY, 14);
+      starGrad.addColorStop(0, '#fff');
+      starGrad.addColorStop(0.3, '#fbbf24');
+      starGrad.addColorStop(1, 'rgba(251,191,36,0)');
+      ctx.fillStyle = starGrad;
+      ctx.fill();
+      // Star glow
+      ctx.beginPath();
+      ctx.arc(acX_scene, midY, 28, 0, Math.PI * 2);
+      const glowGrad = ctx.createRadialGradient(acX_scene, midY, 8, acX_scene, midY, 28);
+      glowGrad.addColorStop(0, 'rgba(251,191,36,0.15)');
+      glowGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = glowGrad;
+      ctx.fill();
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 12px system-ui';
+      ctx.fillText('\u03B1 Centauri', acX_scene, midY + 38);
+
+      // Distance label
+      ctx.fillStyle = '#64748b';
+      ctx.font = '10px system-ui';
+      ctx.fillText('4.37 light-years', (earthX + acX_scene) / 2, sceneH - 12);
+      // Dashed distance line
+      ctx.strokeStyle = 'rgba(100,116,139,0.3)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(earthX + 30, sceneH - 16);
+      ctx.lineTo(acX_scene - 24, sceneH - 16);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // ---- Animated signals in scene ----
+      const sigRange = acX_scene - earthX - 60;
+      const sigStartX = earthX + 30;
+
+      // Phase: send — FTL message travels Earth → AC
+      if (phase === 'send') {
+        const px = sigStartX + frac * sigRange;
+        // Trail
+        const trailLen = 80;
+        ctx.strokeStyle = 'rgba(6,182,212,0.3)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(Math.max(sigStartX, px - trailLen), midY);
+        ctx.lineTo(px, midY);
+        ctx.stroke();
+        // Pulse
+        const pg = ctx.createRadialGradient(px, midY, 0, px, midY, 10);
+        pg.addColorStop(0, '#fff');
+        pg.addColorStop(0.3, '#06b6d4');
+        pg.addColorStop(1, 'transparent');
+        ctx.fillStyle = pg;
+        ctx.fillRect(px - 12, midY - 12, 24, 24);
+        // Label
+        ctx.fillStyle = '#06b6d4';
+        ctx.font = 'bold 11px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('"HELLO" @ 2.185c', px, midY - 18);
+      }
+
+      // Phase: arrive — flash at AC
+      if (phase === 'arrive') {
+        const flashR = 20 + 15 * (1 - frac);
+        const flashA = 0.4 * (1 - frac);
+        ctx.beginPath();
+        ctx.arc(acX_scene, midY, flashR, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(6,182,212,${flashA})`;
+        ctx.fill();
+        ctx.fillStyle = '#06b6d4';
+        ctx.font = 'bold 12px system-ui';
+        ctx.fillText('RECEIVED "HELLO"', (earthX + acX_scene) / 2, midY - 30);
+        ctx.font = '11px system-ui';
+        ctx.fillText('T = 2.00 yr (Earth frame)', (earthX + acX_scene) / 2, midY - 14);
+      }
+
+      // Phase: reframe — visual transition
+      if (phase === 'reframe') {
+        const flashAlpha = 0.5 + 0.5 * Math.sin(frac * Math.PI * 4);
+        ctx.fillStyle = `rgba(168,85,247,${flashAlpha * 0.15})`;
+        ctx.fillRect(0, 0, w, sceneH);
+        ctx.fillStyle = '#a855f7';
+        ctx.font = 'bold 14px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('Moving observer (v=0.50c) sees arrival at', w / 2, midY - 24);
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 20px Courier New';
+        ctx.fillText("T' = -0.21 yr = -78 days", w / 2, midY + 8);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '12px system-ui';
+        ctx.fillText('The message arrived BEFORE it was sent!', w / 2, midY + 32);
+      }
+
+      // Phase: reply — FTL reply travels AC → Earth
+      if (phase === 'reply') {
+        const px = sigStartX + sigRange - frac * sigRange;
+        // Trail
+        const trailLen = 80;
+        ctx.strokeStyle = 'rgba(239,68,68,0.3)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(Math.min(sigStartX + sigRange, px + trailLen), midY);
+        ctx.lineTo(px, midY);
+        ctx.stroke();
+        // Pulse
+        const pg = ctx.createRadialGradient(px, midY, 0, px, midY, 10);
+        pg.addColorStop(0, '#fff');
+        pg.addColorStop(0.3, '#ef4444');
+        pg.addColorStop(1, 'transparent');
+        ctx.fillStyle = pg;
+        ctx.fillRect(px - 12, midY - 12, 24, 24);
+        // Label
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 11px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('"DON\'T SEND" @ 2.185c', px, midY - 18);
+      }
+
+      // Phase: paradox — flash at Earth
+      if (phase === 'paradox') {
+        const flashR = 25 + 20 * (1 - frac);
+        const flashA = 0.5 * (1 - frac * 0.5);
+        ctx.beginPath();
+        ctx.arc(earthX, midY, flashR, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(239,68,68,${flashA})`;
+        ctx.fill();
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 14px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('Reply arrives BEFORE original was sent!', w / 2, midY - 28);
+        ctx.font = 'bold 16px Courier New';
+        ctx.fillText('T(reply) < T(send) = 0', w / 2, midY + 4);
+      }
+
+      // Phase: loop — the paradox revealed
+      if (phase === 'loop') {
+        const pulse = 0.5 + 0.5 * Math.sin(ts * 0.005);
+        ctx.fillStyle = `rgba(239,68,68,${0.08 * pulse})`;
+        ctx.fillRect(0, 0, w, sceneH);
+
+        // Circular arrow showing the loop
+        ctx.strokeStyle = `rgba(239,68,68,${0.6 + 0.4 * pulse})`;
+        ctx.lineWidth = 3;
+        const cx = w / 2, cy = midY;
+        const rr = 50;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rr, -Math.PI * 0.8, Math.PI * 0.6);
+        ctx.stroke();
+        // Arrowhead
+        const aAngle = Math.PI * 0.6;
+        const ax = cx + rr * Math.cos(aAngle);
+        const ay = cy + rr * Math.sin(aAngle);
+        ctx.fillStyle = `rgba(239,68,68,${0.6 + 0.4 * pulse})`;
+        ctx.beginPath();
+        ctx.moveTo(ax, ay);
+        ctx.lineTo(ax + 10, ay - 6);
+        ctx.lineTo(ax + 4, ay + 8);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 13px system-ui';
+        ctx.fillText('CAUSAL LOOP PARADOX', cx, cy - 8);
+        ctx.font = '11px system-ui';
+        ctx.fillStyle = '#f87171';
+        ctx.fillText('If you receive "DON\'T SEND" before sending...', cx, cy + 8);
+        ctx.fillText('do you send? Either answer = contradiction', cx, cy + 24);
+      }
+
+      ctx.restore(); // end scene clip
+
+      // Divider line
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, sceneH); ctx.lineTo(w, sceneH); ctx.stroke();
+
+      // ==============================
+      //  SPACETIME DIAGRAM (bottom 65%)
+      // ==============================
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, stTop, w, stH);
+      ctx.clip();
+
+      // Background
+      ctx.fillStyle = '#080c16';
+      ctx.fillRect(0, stTop, w, stH);
+
+      const stMargin = { left: 80, right: 40, top: 30, bottom: 40 };
+      const stPlotW = w - stMargin.left - stMargin.right;
+      const stPlotH = stH - stMargin.top - stMargin.bottom;
+      const stOx = stMargin.left;
+      const stOy = stTop + stMargin.top + stPlotH * 0.7; // origin shifted down
+      const stMaxX = 8;
+      const stMaxTup = 5;
+      const stMaxTdown = 2;
+      const stXScale = stPlotW / stMaxX;
+      const stTScale = stPlotH / (stMaxTup + stMaxTdown);
+      const stTtoY = (t) => stOy - t * stTScale;
+      const stXtoX = (x) => stOx + x * stXScale;
+
+      // Grid
+      ctx.strokeStyle = 'rgba(30,41,59,0.4)';
+      ctx.lineWidth = 0.5;
+      for (let i = -Math.floor(stMaxTdown); i <= stMaxTup; i++) {
+        const gy = stTtoY(i);
+        ctx.beginPath(); ctx.moveTo(stOx, gy); ctx.lineTo(stOx + stPlotW, gy); ctx.stroke();
+      }
+      for (let i = 0; i <= stMaxX; i += 2) {
+        const gx = stXtoX(i);
+        ctx.beginPath(); ctx.moveTo(gx, stTtoY(-stMaxTdown)); ctx.lineTo(gx, stTtoY(stMaxTup)); ctx.stroke();
+      }
+
+      // Axes
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(stOx, stTtoY(-stMaxTdown)); ctx.lineTo(stOx, stTtoY(stMaxTup)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(stOx, stOy); ctx.lineTo(stOx + stPlotW, stOy); ctx.stroke();
+
+      // Axis labels
+      ctx.fillStyle = '#64748b';
+      ctx.font = '10px system-ui';
+      ctx.textAlign = 'center';
+      for (let i = 0; i <= stMaxX; i += 2) ctx.fillText(i + ' ly', stXtoX(i), stOy + 16);
+      ctx.textAlign = 'right';
+      for (let i = -Math.floor(stMaxTdown); i <= stMaxTup; i++) {
+        ctx.fillText((i >= 0 ? '+' : '') + i + 'yr', stOx - 6, stTtoY(i) + 4);
+      }
+
+      // Light cone from origin
+      ctx.strokeStyle = 'rgba(245,158,11,0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(stOx, stOy);
+      ctx.lineTo(stXtoX(Math.min(stMaxX, stMaxTup)), stTtoY(Math.min(stMaxX, stMaxTup)));
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(stOx, stOy);
+      ctx.lineTo(stXtoX(Math.min(stMaxX, stMaxTdown)), stTtoY(-Math.min(stMaxX, stMaxTdown)));
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(245,158,11,0.35)';
+      ctx.font = 'italic 10px system-ui';
+      ctx.textAlign = 'left';
+      ctx.fillText('c', stXtoX(2.5), stTtoY(2.5) - 6);
+
+      // Earth worldline
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(stOx, stTtoY(-stMaxTdown));
+      ctx.lineTo(stOx, stTtoY(stMaxTup));
+      ctx.stroke();
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = 'bold 10px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('Earth', stOx, stTtoY(stMaxTup) - 6);
+
+      // Alpha Centauri worldline
+      const stAcX = stXtoX(dist);
+      ctx.strokeStyle = '#06b6d4';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(stAcX, stTtoY(-stMaxTdown));
+      ctx.lineTo(stAcX, stTtoY(stMaxTup));
+      ctx.stroke();
+      ctx.fillStyle = '#06b6d4';
+      ctx.font = 'bold 10px system-ui';
+      ctx.fillText('\u03B1 Cen', stAcX, stTtoY(stMaxTup) - 6);
+
+      // ---- Animated events based on phase ----
+      // Event A: Send at (x=0, t=0)
+      const evSendX = stOx;
+      const evSendY = stOy;
+
+      // Event B: Arrive at (x=4.37, t=2.0)
+      const evArrX = stAcX;
+      const evArrY = stTtoY(tArriveEarth);
+
+      // Event C: Reply arrives at Earth at negative time
+      const replyArrT = tArriveEarth + tArriveMoving; // ~1.79 yr but via moving frame perspective
+      // For the paradox, the reply arrives BEFORE T=0
+      const evReplyX = stOx;
+      const evReplyY = stTtoY(tArriveMoving); // at the negative time
+
+      // Compute animation progress for each element
+      const showSendLine = phase !== 'ready';
+      const showArrival = idx >= 1; // arrive phase or later
+      const showReframe = idx >= 2; // reframe or later
+      const showReplyLine = idx >= 3; // reply or later
+      const showParadox = idx >= 4; // paradox or later
+      const showLoop = idx >= 5;
+
+      // Send event marker (always visible once started)
+      if (showSendLine) {
+        ctx.beginPath();
+        ctx.arc(evSendX, evSendY, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#22c55e';
+        ctx.fill();
+        ctx.fillStyle = '#22c55e';
+        ctx.font = '9px system-ui';
+        ctx.textAlign = 'left';
+        ctx.fillText('SEND (T=0)', evSendX + 8, evSendY - 6);
+      }
+
+      // FTL message line (Earth → AC)
+      if (showSendLine) {
+        const msgFrac = phase === 'send' ? frac : 1;
+        const curX = lerp(evSendX, evArrX, msgFrac);
+        const curY = lerp(evSendY, evArrY, msgFrac);
+        // Glow
+        ctx.strokeStyle = 'rgba(6,182,212,0.2)';
+        ctx.lineWidth = 6;
+        ctx.beginPath(); ctx.moveTo(evSendX, evSendY); ctx.lineTo(curX, curY); ctx.stroke();
+        // Dashed core
+        ctx.strokeStyle = '#06b6d4';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath(); ctx.moveTo(evSendX, evSendY); ctx.lineTo(curX, curY); ctx.stroke();
+        ctx.setLineDash([]);
+        // Traveling pulse
+        if (phase === 'send') {
+          const pg = ctx.createRadialGradient(curX, curY, 0, curX, curY, 8);
+          pg.addColorStop(0, '#fff');
+          pg.addColorStop(0.4, '#06b6d4');
+          pg.addColorStop(1, 'transparent');
+          ctx.fillStyle = pg;
+          ctx.fillRect(curX - 10, curY - 10, 20, 20);
+        }
+        // Label
+        ctx.fillStyle = '#06b6d4';
+        ctx.font = '9px system-ui';
+        ctx.textAlign = 'center';
+        const mlx = (evSendX + evArrX) / 2;
+        const mly = (evSendY + evArrY) / 2;
+        if (msgFrac > 0.3) {
+          ctx.fillText('"HELLO" (2.185c)', mlx + 40, mly + 5);
+        }
+      }
+
+      // Arrival marker
+      if (showArrival) {
+        ctx.beginPath();
+        ctx.arc(evArrX, evArrY, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#06b6d4';
+        ctx.fill();
+        ctx.fillStyle = '#06b6d4';
+        ctx.font = '9px system-ui';
+        ctx.textAlign = 'right';
+        ctx.fillText('ARRIVE (T=+2.0yr)', evArrX - 8, evArrY - 6);
+      }
+
+      // Moving observer's simultaneity line
+      if (showReframe) {
+        const simSlope = obsV;
+        const simX2 = stMaxX;
+        const simT2 = simSlope * simX2;
+        ctx.strokeStyle = 'rgba(168,85,247,0.15)';
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.moveTo(stOx, stOy);
+        ctx.lineTo(stXtoX(simX2), stTtoY(simT2));
+        ctx.stroke();
+        ctx.strokeStyle = '#a855f7';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 3]);
+        ctx.beginPath();
+        ctx.moveTo(stOx, stOy);
+        ctx.lineTo(stXtoX(simX2), stTtoY(simT2));
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#a855f7';
+        ctx.font = '9px system-ui';
+        ctx.textAlign = 'left';
+        ctx.fillText("Moving observer's \"now\"", stXtoX(simX2) - 130, stTtoY(simT2) - 8);
+
+        // Show the T' arrival time annotation
+        const movArrY = stTtoY(tArriveMoving);
+        ctx.strokeStyle = 'rgba(239,68,68,0.4)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(evArrX, movArrY);
+        ctx.lineTo(stOx, movArrY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 9px system-ui';
+        ctx.textAlign = 'right';
+        ctx.fillText("T'=-0.21yr (-78 days)", stOx - 4, movArrY + 4);
+      }
+
+      // Reply line (AC → Earth, arriving at negative time)
+      if (showReplyLine) {
+        const replyFrac = phase === 'reply' ? frac : 1;
+        const rStartX = evArrX;
+        const rStartY = evArrY;
+        const rEndX = evReplyX;
+        const rEndY = evReplyY;
+        const curX = lerp(rStartX, rEndX, replyFrac);
+        const curY = lerp(rStartY, rEndY, replyFrac);
+        // Glow
+        ctx.strokeStyle = 'rgba(239,68,68,0.2)';
+        ctx.lineWidth = 6;
+        ctx.beginPath(); ctx.moveTo(rStartX, rStartY); ctx.lineTo(curX, curY); ctx.stroke();
+        // Dashed core
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath(); ctx.moveTo(rStartX, rStartY); ctx.lineTo(curX, curY); ctx.stroke();
+        ctx.setLineDash([]);
+        // Pulse
+        if (phase === 'reply') {
+          const pg = ctx.createRadialGradient(curX, curY, 0, curX, curY, 8);
+          pg.addColorStop(0, '#fff');
+          pg.addColorStop(0.4, '#ef4444');
+          pg.addColorStop(1, 'transparent');
+          ctx.fillStyle = pg;
+          ctx.fillRect(curX - 10, curY - 10, 20, 20);
+        }
+        // Label
+        if (replyFrac > 0.3) {
+          ctx.fillStyle = '#ef4444';
+          ctx.font = '9px system-ui';
+          ctx.textAlign = 'center';
+          const rlx = (rStartX + rEndX) / 2;
+          const rly = (rStartY + rEndY) / 2;
+          ctx.fillText('"DON\'T SEND" (2.185c)', rlx - 40, rly - 5);
+        }
+      }
+
+      // Reply arrival marker (below T=0!)
+      if (showParadox) {
+        ctx.beginPath();
+        ctx.arc(evReplyX, evReplyY, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#ef4444';
+        ctx.fill();
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 9px system-ui';
+        ctx.textAlign = 'left';
+        ctx.fillText('REPLY ARRIVES', evReplyX + 10, evReplyY - 8);
+        ctx.fillText('BEFORE SEND!', evReplyX + 10, evReplyY + 6);
+
+        // Red zone below T=0
+        const zoneAlpha = 0.08 * (0.6 + 0.4 * Math.sin(ts * 0.004));
+        ctx.fillStyle = `rgba(239,68,68,${zoneAlpha})`;
+        ctx.fillRect(stOx, stOy, stPlotW, stTtoY(Math.max(tArriveMoving, -stMaxTdown)) - stOy);
+      }
+
+      // Causal loop highlight
+      if (showLoop) {
+        const loopPulse = 0.5 + 0.5 * Math.sin(ts * 0.005);
+        // Highlight the triangle formed by send→arrive→reply-arrive
+        ctx.strokeStyle = `rgba(239,68,68,${0.4 + 0.3 * loopPulse})`;
+        ctx.lineWidth = 3;
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(evSendX, evSendY);
+        ctx.lineTo(evArrX, evArrY);
+        ctx.lineTo(evReplyX, evReplyY);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fillStyle = `rgba(239,68,68,${0.04 + 0.03 * loopPulse})`;
+        ctx.fill();
+
+        // PARADOX label
+        ctx.fillStyle = `rgba(239,68,68,${0.7 + 0.3 * loopPulse})`;
+        ctx.font = 'bold 14px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('CAUSAL LOOP', (evSendX + evArrX) / 2, (evSendY + evArrY + evReplyY) / 3 + 4);
+      }
+
+      ctx.restore(); // end spacetime clip
+
+      // ---- Update readouts ----
+      if (running || finished || simTime > 0) {
+        const phaseEl = document.getElementById('px-phase');
+        phaseEl.textContent = label;
+        phaseEl.style.color = showParadox ? '#ef4444' : showReframe ? '#a855f7' : '#06b6d4';
+
+        // Earth clock shows simulation progress through Earth time
+        let earthT = 0;
+        if (phase === 'send') earthT = frac * tArriveEarth;
+        else if (idx >= 1 && idx < 3) earthT = tArriveEarth;
+        else if (phase === 'reply') earthT = tArriveEarth + frac * tArriveMoving;
+        else if (idx >= 4) earthT = tArriveEarth + tArriveMoving;
+        document.getElementById('px-earth-t').textContent = 'T = ' + earthT.toFixed(2) + ' yr';
+
+        // AC clock
+        let acT = 0;
+        if (idx >= 1) acT = tArriveEarth;
+        document.getElementById('px-ac-t').textContent = 'T = ' + acT.toFixed(2) + ' yr';
+
+        // Moving frame
+        let movT = 0;
+        if (idx >= 2) movT = tArriveMoving;
+        const movTEl = document.getElementById('px-moving-t');
+        movTEl.textContent = "T\u2032 = " + movT.toFixed(2) + ' yr';
+        movTEl.className = 'value ' + (movT < 0 ? 'red' : 'purple');
+
+        // Message content
+        const msgEl = document.getElementById('px-msg');
+        if (phase === 'send') { msgEl.textContent = '"HELLO"'; msgEl.className = 'value cyan'; msgEl.style.fontSize = '1rem'; }
+        else if (phase === 'arrive') { msgEl.textContent = '"HELLO" received'; msgEl.className = 'value cyan'; msgEl.style.fontSize = '1rem'; }
+        else if (phase === 'reframe') { msgEl.textContent = 'Frame shift...'; msgEl.className = 'value purple'; msgEl.style.fontSize = '1rem'; }
+        else if (phase === 'reply') { msgEl.textContent = '"DON\'T SEND"'; msgEl.className = 'value red'; msgEl.style.fontSize = '1rem'; }
+        else if (showParadox) { msgEl.textContent = '"DON\'T SEND"'; msgEl.className = 'value red'; msgEl.style.fontSize = '1rem'; }
+
+        // Paradox
+        const pxEl = document.getElementById('px-paradox');
+        if (showLoop) {
+          const pPulse = Math.sin(ts * 0.004) > 0;
+          pxEl.textContent = pPulse ? 'PARADOX!' : 'CAUSAL LOOP';
+          pxEl.style.color = '#ef4444';
+        } else if (showParadox) {
+          pxEl.textContent = 'Time reversed!';
+          pxEl.style.color = '#ef4444';
+        } else if (showReframe) {
+          pxEl.textContent = 'Negative time...';
+          pxEl.style.color = '#f59e0b';
+        } else {
+          pxEl.textContent = 'None yet';
+          pxEl.style.color = '#22c55e';
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  })();
 })();
 
 // ==================== ROUNDRECT POLYFILL ====================

@@ -1077,17 +1077,25 @@
       <button class="tab-btn" id="curv-clear" style="margin-left:auto;">Clear All</button>
     </div>
 
+    <!-- View mode toggle -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;">
+      <span style="color:var(--muted);font-size:0.85rem;line-height:2.2;">View:</span>
+      <button class="tab-btn active" id="curv-view-2d">2D Sheet</button>
+      <button class="tab-btn" id="curv-view-3d">3D Spherical</button>
+    </div>
+
     <!-- Mode buttons -->
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;">
       <button class="tab-btn active" id="curv-mode-place">Place Mass</button>
       <button class="tab-btn" id="curv-mode-drop">Drop Particle</button>
       <button class="tab-btn" id="curv-mode-orbit">Launch Orbit</button>
+      <button class="tab-btn" id="curv-mode-rain">Rain Particles</button>
     </div>
 
     <!-- Toggles -->
     <div style="display:flex;gap:16px;flex-wrap:wrap;margin:12px 0;align-items:center;">
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.9rem;color:var(--muted);">
-        <input type="checkbox" id="curv-cross-section"> Cross-section View
+        <input type="checkbox" id="curv-cross-sections" checked> Show Cross-Sections
       </label>
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.9rem;color:var(--muted);">
         <input type="checkbox" id="curv-straightness"> Show Geodesic Straightness
@@ -1142,10 +1150,12 @@
     </div>
 
     <p class="explain">
-      <strong>Why curved paths are &ldquo;straight&rdquo;:</strong> In flat space, the shortest path between two points is a straight line.
-      In curved spacetime, the shortest path &mdash; the <strong>geodesic</strong> &mdash; curves in response to gravity.
-      An orbiting planet isn't being &ldquo;pulled&rdquo; &mdash; it's following the natural geometry of spacetime itself.
-      Enable &ldquo;Show Geodesic Straightness&rdquo; to see how a curved trajectory through space corresponds to the straightest possible path through spacetime.
+      <strong>Gravity isn't &ldquo;downward&rdquo; &mdash; it's inward.</strong> The 2D sheet view shows the classic &ldquo;rubber sheet&rdquo; analogy,
+      but this is misleading because it only shows curvature in one direction. Switch to <strong>3D Spherical</strong> view to see
+      concentric shells of spacetime compressing equally in all directions around a mass. Use <strong>Rain Particles</strong>
+      to drop test objects from above, below, and all sides &mdash; they all experience identical curvature.
+      An orbiting planet isn't being &ldquo;pulled&rdquo; &mdash; it's following the straightest possible path (a <strong>geodesic</strong>)
+      through warped spacetime.
     </p>
   </div>
 </section>
@@ -4737,7 +4747,124 @@ function setupCanvas(id) {
     let currentMode = 'place';
     let crossSectionMode = false;
     let showStraightness = false;
+    let showCrossSections = true;
+    let view3D = false;
     let mouseDownPos = null;
+
+    // ---- 3D Spherical shells ----
+    const sphereGroup = new THREE.Group();
+    sphereGroup.visible = false;
+    scene.add(sphereGroup);
+    const shellRadii = [8, 14, 20];
+    const shellDetail = 3;
+    const shells = [];
+    const shellOrigPositions = [];
+
+    for (let si = 0; si < shellRadii.length; si++) {
+      const r = shellRadii[si];
+      const geo = new THREE.IcosahedronGeometry(r, shellDetail);
+      const vc = geo.attributes.position.count;
+      const cols = new Float32Array(vc * 3);
+      for (let i = 0; i < vc; i++) { cols[i*3]=0.2; cols[i*3+1]=0.4; cols[i*3+2]=1.0; }
+      geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+      const mat = new THREE.MeshPhongMaterial({
+        vertexColors: true, transparent: true, opacity: 0.15 + si * 0.05,
+        side: THREE.DoubleSide, shininess: 20, depthWrite: false
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      const wGeo = new THREE.WireframeGeometry(geo);
+      const wMat = new THREE.LineBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.22 - si * 0.04 });
+      const wire = new THREE.LineSegments(wGeo, wMat);
+      sphereGroup.add(mesh);
+      sphereGroup.add(wire);
+      shells.push({ geo, mesh, wire, wGeo, radius: r });
+      shellOrigPositions.push(new Float32Array(geo.attributes.position.array));
+    }
+
+    function updateSphereShells() {
+      for (let si = 0; si < shells.length; si++) {
+        const sh = shells[si];
+        const pos = sh.geo.attributes.position.array;
+        const orig = shellOrigPositions[si];
+        const col = sh.geo.attributes.color.array;
+        const vc = sh.geo.attributes.position.count;
+        for (let i = 0; i < vc; i++) {
+          const ix = i * 3;
+          let ox = orig[ix], oy = orig[ix+1], oz = orig[ix+2];
+          let totalPull = 0;
+          let px = ox, py = oy, pz = oz;
+          for (const m of masses) {
+            const dx = ox - m.x, dy = oy, dz = oz - m.z;
+            const r = Math.max(Math.sqrt(dx*dx + dy*dy + dz*dz), 0.5);
+            const pull = m.strength / (r * r) * 2.5;
+            totalPull += m.strength / r;
+            px -= (dx / r) * pull;
+            py -= (dy / r) * pull;
+            pz -= (dz / r) * pull;
+          }
+          pos[ix] = px; pos[ix+1] = py; pos[ix+2] = pz;
+          const phi = Math.min(totalPull * 0.08, 0.499);
+          const tau = Math.sqrt(1 - 2 * phi);
+          col[ix]   = lerp(1.0, 0.15, tau);
+          col[ix+1] = lerp(0.12, 0.35, tau);
+          col[ix+2] = lerp(0.05, 1.0, tau);
+        }
+        sh.geo.attributes.position.needsUpdate = true;
+        sh.geo.attributes.color.needsUpdate = true;
+        sh.geo.computeVertexNormals();
+        // Rebuild wireframe
+        sh.wire.geometry.dispose();
+        sh.wire.geometry = new THREE.WireframeGeometry(sh.geo);
+      }
+    }
+
+    // ---- Cross-section rings (3 orthogonal planes) ----
+    const crossRingsGroup = new THREE.Group();
+    crossRingsGroup.visible = false;
+    scene.add(crossRingsGroup);
+    const RING_PTS = 120;
+    const RING_R = 16;
+    const ringColors = [0xf59e0b, 0x06b6d4, 0xa855f7]; // XZ, XY, YZ
+    const ringLabels = ['XZ (horizontal)', 'XY (vertical)', 'YZ (vertical)'];
+    const crossRings = [];
+
+    for (let ri = 0; ri < 3; ri++) {
+      const pts = new Float32Array((RING_PTS + 1) * 3);
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+      const mat = new THREE.LineBasicMaterial({ color: ringColors[ri], transparent: true, opacity: 0.6, linewidth: 2 });
+      const line = new THREE.LineLoop(geo, mat);
+      crossRingsGroup.add(line);
+      crossRings.push({ geo, pts, line });
+    }
+
+    function updateCrossRings() {
+      if (!showCrossSections || !view3D) { crossRingsGroup.visible = false; return; }
+      crossRingsGroup.visible = true;
+      for (let ri = 0; ri < 3; ri++) {
+        const ring = crossRings[ri];
+        const pts = ring.pts;
+        for (let i = 0; i <= RING_PTS; i++) {
+          const angle = (i / RING_PTS) * Math.PI * 2;
+          let x, y, z;
+          if (ri === 0) { x = RING_R * Math.cos(angle); y = 0; z = RING_R * Math.sin(angle); }
+          else if (ri === 1) { x = RING_R * Math.cos(angle); y = RING_R * Math.sin(angle); z = 0; }
+          else { x = 0; y = RING_R * Math.sin(angle); z = RING_R * Math.cos(angle); }
+          // Pull toward masses
+          for (const m of masses) {
+            const dx = x - m.x, dy2 = y, dz = z - m.z;
+            const r = Math.max(Math.sqrt(dx*dx + dy2*dy2 + dz*dz), 0.5);
+            const pull = m.strength / (r * r) * 2.5;
+            x -= (dx / r) * pull;
+            y -= (dy2 / r) * pull;
+            z -= (dz / r) * pull;
+          }
+          const ix = i * 3;
+          pts[ix] = x; pts[ix+1] = y; pts[ix+2] = z;
+        }
+        ring.geo.attributes.position.needsUpdate = true;
+      }
+    }
 
     // ---- Grid deformation ----
     function updateGrid() {
@@ -4862,35 +4989,49 @@ function setupCanvas(id) {
     }
 
     // ---- Particle system ----
-    function addParticle(px, pz, vx, vz) {
+    function addParticle(px, py_in, pz, vx, vy_in, vz, color) {
       if (particles.length >= MAX_PARTICLES) removeParticle(0);
+      const c = color || 0x06b6d4;
       const geo = new THREE.SphereGeometry(0.3, 10, 10);
-      const mat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
+      const mat = new THREE.MeshBasicMaterial({ color: c });
       const mesh = new THREE.Mesh(geo, mat);
-      // Glow
       const gGeo = new THREE.SphereGeometry(0.6, 8, 8);
-      const gMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.2 });
+      const gMat = new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.2 });
       const glowMesh = new THREE.Mesh(gGeo, gMat);
-      // Trail
       const trailPos = new Float32Array(TRAIL_LEN * 3);
-      const py = gridYAt(px, pz) + 0.35;
+      const py = view3D ? (py_in || 0) : gridYAt(px, pz) + 0.35;
+      const vy = view3D ? (vy_in || 0) : 0;
       for (let i = 0; i < TRAIL_LEN; i++) {
-        trailPos[i * 3] = px; trailPos[i * 3 + 1] = py; trailPos[i * 3 + 2] = pz;
+        trailPos[i*3] = px; trailPos[i*3+1] = py; trailPos[i*3+2] = pz;
       }
       const tGeo = new THREE.BufferGeometry();
       tGeo.setAttribute('position', new THREE.BufferAttribute(trailPos, 3));
-      const tMat = new THREE.LineBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.35 });
+      const tMat = new THREE.LineBasicMaterial({ color: c, transparent: true, opacity: 0.35 });
       const trail = new THREE.Line(tGeo, tMat);
       const p = {
-        x: px, z: pz, vx, vz,
-        prevX: px - vx * 0.016, prevZ: pz - vz * 0.016,
+        x: px, y: py, z: pz, vx, vy, vz,
+        prevX: px - vx * 0.016, prevY: py - vy * 0.016, prevZ: pz - vz * 0.016,
         mesh, glowMesh, trail, trailGeo: tGeo, trailPos,
         trailIdx: 0, totalAngle: 0, lastAngle: null,
-        orbitTimer: 0, alive: true, startX: px, startZ: pz
+        orbitTimer: 0, alive: true, startX: px, startY: py, startZ: pz
       };
       particles.push(p);
       particleGroup.add(mesh); particleGroup.add(glowMesh); particleGroup.add(trail);
       updateReadouts();
+    }
+
+    function rainParticles() {
+      clearParticles();
+      if (masses.length === 0) return;
+      const m = masses[0];
+      const dist = 12;
+      const dirs = [
+        [dist,0,0], [-dist,0,0], [0,dist,0], [0,-dist,0], [0,0,dist], [0,0,-dist]
+      ];
+      const rainColors = [0xef4444, 0x3b82f6, 0x22c55e, 0xf59e0b, 0xa855f7, 0x06b6d4];
+      dirs.forEach((d, i) => {
+        addParticle(m.x + d[0], d[1], m.z + d[2], 0, 0, 0, rainColors[i]);
+      });
     }
 
     function removeParticle(i) {
@@ -4914,30 +5055,38 @@ function setupCanvas(id) {
       for (const p of particles) {
         if (!p.alive) continue;
         for (let s = 0; s < steps; s++) {
-          let ax = 0, az = 0;
+          let ax = 0, ay = 0, az = 0;
           for (const m of masses) {
-            const dx = p.x - m.x, dz = p.z - m.z;
-            const r2 = dx * dx + dz * dz;
+            const dx = p.x - m.x;
+            const dy = view3D ? p.y : 0;
+            const dz = p.z - m.z;
+            const r2 = dx*dx + dy*dy + dz*dz;
             const r = Math.max(Math.sqrt(r2), 0.4);
             const r3 = r * r * r;
             ax -= m.strength * dx / r3;
+            if (view3D) ay -= m.strength * dy / r3;
             az -= m.strength * dz / r3;
           }
-          // Verlet
           const nx = 2 * p.x - p.prevX + ax * sDt * sDt;
           const nz = 2 * p.z - p.prevZ + az * sDt * sDt;
           p.prevX = p.x; p.prevZ = p.z;
           p.x = nx; p.z = nz;
+          if (view3D) {
+            const ny = 2 * p.y - p.prevY + ay * sDt * sDt;
+            p.prevY = p.y; p.y = ny;
+          }
         }
         p.vx = (p.x - p.prevX) / sDt;
         p.vz = (p.z - p.prevZ) / sDt;
-        const py = gridYAt(p.x, p.z) + 0.35;
+        p.vy = view3D ? (p.y - p.prevY) / sDt : 0;
+        const py = view3D ? p.y : gridYAt(p.x, p.z) + 0.35;
+        if (!view3D) p.y = py;
         p.mesh.position.set(p.x, py, p.z);
         p.glowMesh.position.set(p.x, py, p.z);
         // Trail
         p.trailIdx = (p.trailIdx + 1) % TRAIL_LEN;
         const ti = p.trailIdx * 3;
-        p.trailPos[ti] = p.x; p.trailPos[ti + 1] = py; p.trailPos[ti + 2] = p.z;
+        p.trailPos[ti] = p.x; p.trailPos[ti+1] = py; p.trailPos[ti+2] = p.z;
         p.trailGeo.attributes.position.needsUpdate = true;
         // Orbital angle tracking
         const nm = nearestMass(p.x, p.z);
@@ -4955,9 +5104,11 @@ function setupCanvas(id) {
         // Kill if out of bounds
         const hg = GRID_SIZE / 2 + 5;
         if (Math.abs(p.x) > hg || Math.abs(p.z) > hg) p.alive = false;
-        // Kill if falls too deep (absorbed by mass)
+        if (view3D && Math.abs(p.y) > hg) p.alive = false;
+        // Kill if absorbed
         for (const m of masses) {
-          const dr = Math.sqrt((p.x - m.x) ** 2 + (p.z - m.z) ** 2);
+          const dy2 = view3D ? p.y * p.y : 0;
+          const dr = Math.sqrt((p.x - m.x) ** 2 + dy2 + (p.z - m.z) ** 2);
           if (dr < 0.25) p.alive = false;
         }
       }
@@ -5015,9 +5166,11 @@ function setupCanvas(id) {
       if (!showStraightness || particles.length === 0) return;
       for (const p of particles) {
         // Flat-space straight line
+        const sy = view3D ? (p.startY || 0) : 0.15;
+        const ey = view3D ? p.y : 0.15;
         const flatGeo = new THREE.BufferGeometry().setFromPoints([
-          new THREE.Vector3(p.startX, 0.15, p.startZ),
-          new THREE.Vector3(p.x, 0.15, p.z)
+          new THREE.Vector3(p.startX, sy, p.startZ),
+          new THREE.Vector3(p.x, ey, p.z)
         ]);
         const flatMat = new THREE.LineDashedMaterial({
           color: 0xef4444, dashSize: 0.5, gapSize: 0.3, transparent: true, opacity: 0.6
@@ -5049,6 +5202,7 @@ function setupCanvas(id) {
     });
 
     container.addEventListener('click', (e) => {
+      if (currentMode === 'rain') { rainParticles(); return; }
       // Ignore drags (OrbitControls)
       if (mouseDownPos) {
         const dx = e.clientX - mouseDownPos.x, dy = e.clientY - mouseDownPos.y;
@@ -5066,17 +5220,19 @@ function setupCanvas(id) {
       if (currentMode === 'place') {
         const str = parseFloat(document.getElementById('curv-mass-slider').value) / 10;
         addMass(ix, iz, str, false);
+        if (view3D) { updateSphereShells(); updateCrossRings(); }
       } else if (currentMode === 'drop') {
-        addParticle(ix, iz, 0, 0);
+        const py = view3D ? 12 : 0;
+        addParticle(ix, py, iz, 0, 0, 0);
       } else if (currentMode === 'orbit') {
         const speed = parseFloat(document.getElementById('curv-launch-speed').value) / 100;
         const nm = nearestMass(ix, iz);
         if (nm) {
           const dx = ix - nm.x, dz = iz - nm.z;
           const d = Math.max(Math.sqrt(dx * dx + dz * dz), 0.1);
-          addParticle(ix, iz, (-dz / d) * speed * 8, (dx / d) * speed * 8);
+          addParticle(ix, 0, iz, (-dz / d) * speed * 8, 0, (dx / d) * speed * 8);
         } else {
-          addParticle(ix, iz, speed * 8, 0);
+          addParticle(ix, 0, iz, speed * 8, 0, 0);
         }
       }
     });
@@ -5108,31 +5264,40 @@ function setupCanvas(id) {
     });
 
     // ---- Controls wiring ----
-    const modeMap = { 'curv-mode-place': 'place', 'curv-mode-drop': 'drop', 'curv-mode-orbit': 'orbit' };
+    // ---- Mode buttons ----
+    const modeMap = { 'curv-mode-place': 'place', 'curv-mode-drop': 'drop', 'curv-mode-orbit': 'orbit', 'curv-mode-rain': 'rain' };
+    const modeIds = Object.keys(modeMap);
     Object.entries(modeMap).forEach(([id, mode]) => {
       document.getElementById(id).addEventListener('click', () => {
         currentMode = mode;
-        Object.keys(modeMap).forEach(bid => {
-          document.getElementById(bid).classList.toggle('active', bid === id);
-        });
-        container.style.cursor = mode === 'place' ? 'crosshair' : mode === 'drop' ? 'pointer' : 'cell';
+        modeIds.forEach(bid => document.getElementById(bid).classList.toggle('active', bid === id));
+        if (mode === 'rain') {
+          rainParticles();
+          container.style.cursor = 'default';
+        } else {
+          container.style.cursor = mode === 'place' ? 'crosshair' : mode === 'drop' ? 'pointer' : 'cell';
+        }
       });
     });
 
+    // ---- Presets ----
     ['earth', 'sun', 'blackhole', 'binary'].forEach(name => {
       const btn = document.getElementById('curv-preset-' + (name === 'blackhole' ? 'bh' : name));
       if (btn) btn.addEventListener('click', () => {
         document.querySelectorAll('#sec-curvature [data-preset]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         loadPreset(name);
+        if (view3D) { updateSphereShells(); updateCrossRings(); }
       });
     });
 
     document.getElementById('curv-clear').addEventListener('click', () => {
       clearMasses(); clearParticles();
       document.querySelectorAll('#sec-curvature [data-preset]').forEach(b => b.classList.remove('active'));
+      if (view3D) { updateSphereShells(); updateCrossRings(); }
     });
 
+    // ---- Sliders ----
     document.getElementById('curv-mass-slider').addEventListener('input', (e) => {
       document.getElementById('curv-mass-label').textContent = (e.target.value / 10).toFixed(1);
     });
@@ -5140,15 +5305,36 @@ function setupCanvas(id) {
       document.getElementById('curv-speed-label').textContent = (e.target.value / 100).toFixed(2);
     });
 
-    document.getElementById('curv-cross-section').addEventListener('change', (e) => {
-      crossSectionMode = e.target.checked;
-      if (crossSectionMode) {
-        camera.position.set(0, 2, 45);
-        controls.target.set(0, -5, 0);
+    // ---- 2D / 3D view toggle ----
+    function switchView(to3D) {
+      view3D = to3D;
+      document.getElementById('curv-view-2d').classList.toggle('active', !to3D);
+      document.getElementById('curv-view-3d').classList.toggle('active', to3D);
+      // 2D elements
+      gridMesh.visible = !to3D && document.getElementById('curv-show-grid').checked;
+      wireframe.visible = !to3D && document.getElementById('curv-show-grid').checked;
+      csLine.visible = false;
+      // 3D elements
+      sphereGroup.visible = to3D;
+      crossRingsGroup.visible = to3D && showCrossSections;
+      if (to3D) {
+        updateSphereShells();
+        updateCrossRings();
+        camera.position.set(0, 20, 45);
+        controls.target.set(0, 0, 0);
       } else {
         camera.position.set(0, 28, 38);
         controls.target.set(0, -3, 0);
       }
+      clearParticles();
+    }
+    document.getElementById('curv-view-2d').addEventListener('click', () => switchView(false));
+    document.getElementById('curv-view-3d').addEventListener('click', () => switchView(true));
+
+    // ---- Checkboxes ----
+    document.getElementById('curv-cross-sections').addEventListener('change', (e) => {
+      showCrossSections = e.target.checked;
+      crossRingsGroup.visible = view3D && showCrossSections;
     });
     document.getElementById('curv-straightness').addEventListener('change', (e) => {
       showStraightness = e.target.checked;
@@ -5162,8 +5348,8 @@ function setupCanvas(id) {
       }
     });
     document.getElementById('curv-show-grid').addEventListener('change', (e) => {
-      gridMesh.visible = e.target.checked;
-      wireframe.visible = e.target.checked;
+      gridMesh.visible = !view3D && e.target.checked;
+      wireframe.visible = !view3D && e.target.checked;
     });
 
     // ---- Readouts ----
@@ -5172,7 +5358,7 @@ function setupCanvas(id) {
       document.getElementById('curv-particle-count').textContent = particles.length;
       if (particles.length > 0) {
         const p = particles[particles.length - 1];
-        const spd = Math.sqrt(p.vx * p.vx + p.vz * p.vz);
+        const spd = Math.sqrt(p.vx * p.vx + (p.vy || 0) * (p.vy || 0) + p.vz * p.vz);
         document.getElementById('curv-particle-vel').textContent = spd.toFixed(3);
         if (p.totalAngle > 2 * Math.PI && p.orbitTimer > 0) {
           const period = p.orbitTimer * (2 * Math.PI) / p.totalAngle;
@@ -5203,7 +5389,11 @@ function setupCanvas(id) {
       if (masses.length > 0 && particles.length > 0) stepParticles(dt);
 
       // Update visuals
-      updateCrossSection();
+      if (view3D) {
+        if (frameCount % 4 === 0 && masses.length > 0) { updateSphereShells(); updateCrossRings(); }
+      } else {
+        updateCrossSection();
+      }
       if (showStraightness && frameCount % 3 === 0) updateStraightnessVis();
 
       // Animate mass glow pulse

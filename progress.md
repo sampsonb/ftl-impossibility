@@ -109,23 +109,28 @@ https://sampsonb.github.io/ftl-impossibility/
 
 ### 10 — Spacetime Curvature in 3D
 - Interactive 3D visualization using Three.js + OrbitControls
-- 60×60 vertex grid (spacetime fabric) deforms in real-time when masses are placed
-- Grid vertex colors show gravitational time dilation (red = slow, blue = flat)
+- **2D Sheet view**: 60×60 vertex grid deforms downward (classic rubber-sheet analogy)
+- **3D Spherical view**: 3 concentric icosahedron shells (r=8, 14, 20) compress inward toward masses
+  - Demonstrates gravity curves space equally in ALL directions, not just "downward"
+  - 3 orthogonal cross-section rings (XZ amber, XY cyan, YZ purple) show curvature in each plane
+- Grid/shell vertex colors show gravitational time dilation (red = slow, blue = flat)
 - Schwarzschild-like potential: displacement ∝ -M/r
 - Click to place masses (up to 5), raycasting onto XZ plane
-- Particle simulation with Verlet integration following geodesics
+- Particle simulation with full 3D Verlet integration following geodesics
   - Drop mode: particles fall from rest into gravity wells
   - Orbit mode: tangential launch for orbital mechanics
+  - **Rain mode**: 6 particles from ±X, ±Y, ±Z all fall inward — proves omnidirectional curvature
   - Trail rendering (300-point ring buffer)
 - Presets: Earth (gentle), Sun (moderate), Black Hole (extreme + accretion ring), Binary Stars
-- Cross-section view: side camera showing classic rubber-sheet profile
-- Geodesic straightness visualization: red dashed (flat straight line) vs green (curved geodesic)
+- Toggle between 2D Sheet and 3D Spherical views
+- Show/hide cross-section rings, grid, geodesic straightness
+- Geodesic straightness: red dashed (flat line) vs green (curved geodesic)
 - Mouse controls: rotate, zoom, pan via OrbitControls
 - Tooltip showing gravitational potential and time dilation at cursor
 - 5 readouts: masses placed, active particles, velocity, time dilation, orbital period
 
 ## Technical Details
-- Single self-contained HTML file (~5200 lines)
+- Single self-contained HTML file (~5400 lines)
 - Vanilla JS + HTML5 Canvas for sections 01–09; Three.js (CDN) for section 10
 - Animated starfield background
 - Responsive design with dark theme
@@ -148,3 +153,4 @@ https://sampsonb.github.io/ftl-impossibility/
 11. Causality violation section with simultaneity diagram and paradox animation
 12. Causality violation moved to section 03, all sections renumbered
 13. 3D spacetime curvature section (10) with Three.js visualization
+14. Added 3D Spherical view with concentric shells, cross-section rings, rain particles

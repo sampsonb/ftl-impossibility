@@ -5,7 +5,43 @@ https://sampsonb.github.io/ftl-impossibility/
 
 ## Sections (current order)
 
-### 01 — The Twin Paradox
+### 01 — The Speed Limit of the Universe (Explained Simply)
+- Five-tab interactive section — NO equations, purely visual storytelling
+- **Tab 1: Speedometer of Spacetime**
+  - Quarter-circle arc visualization: dot moves along arc as speed increases
+  - X-axis = speed through space (cyan), Y-axis = speed through time (amber)
+  - Projection lines show how one trades off for the other
+  - Descriptive labels change at different speed ranges
+  - Slider: 0.00c – 1.00c
+- **Tab 2: Astronaut Aging**
+  - Three-column comparison: Sitting Still, Fast Rocket (adjustable), Photon
+  - Animated clock faces ticking at different rates
+  - Astronaut figures with helmets and spacesuits
+  - Star streaks show motion, frozen blur for photon
+  - Age counters diverge in real time
+  - Play/Pause, Reset controls; speed slider
+- **Tab 3: Photon's View**
+  - Split screen: "Your View" vs "Photon's View"
+  - Top: photon travels Sun to Earth (8 minutes, 150M km)
+  - Bottom: universe squishes flat — Sun and Earth merge together
+  - Length contraction animated in real time
+  - "To the photon, the whole universe is squished flat!"
+  - Play/Pause, Reset controls
+- **Tab 4: The Wall (Energy Hill)**
+  - Hill curve steepens with speed (green → yellow → red)
+  - Stick figure pushing boulder up increasingly steep slope
+  - Sweat drops appear at high speeds
+  - Vertical wall at c with "IMPOSSIBLE" label
+  - Photon floats effortlessly over the wall (massless)
+  - Speed slider: 0.00c – 1.00c
+- **Tab 5: Birthday Candles**
+  - Twin comparison: Earth Twin vs Traveler Twin
+  - Birthday cakes with candles lighting up at different rates
+  - Clock faces above each twin
+  - Candle count diverges over a 20-year trip
+  - Play/Pause, Reset, Speed (1×/2×/5×/10×) controls; speed slider
+
+### 02 — The Twin Paradox
 - Animated rocket trip: Earth to destination star and back
 - Rocket points correctly (toward star outbound, toward Earth on return)
 - Traveler twin rides above the rocket with live aging counter during flight
@@ -25,7 +61,7 @@ https://sampsonb.github.io/ftl-impossibility/
 - Controls: Launch/Pause, Reset, Speed (1x/2x/5x/10x)
 - 6 readouts: both ages, both elapsed times, age difference, trip phase
 
-### 02 — Length Contraction
+### 03 — Length Contraction
 - Detailed starship (hull, cockpit, wings, engines) drawn on canvas
 - Top panel: ship at rest with ruler and grid
 - Bottom panel: contracted ship against same fixed grid
@@ -35,7 +71,7 @@ https://sampsonb.github.io/ftl-impossibility/
 - Formula overlay: L = L₀/γ
 - Readouts: rest length, observed length, contraction %, γ
 
-### 03 — Causality Violation — Why FTL Breaks Reality
+### 04 — Causality Violation — Why FTL Breaks Reality
 - Two-tab layout: Simultaneity & Light Cones / The Paradox
 - **Tab 1: Simultaneity & Light Cones**
   - Interactive spacetime diagram with light cones and spacelike "FTL Zone"
@@ -58,7 +94,7 @@ https://sampsonb.github.io/ftl-impossibility/
   - Play/Pause, Reset, Speed (1×/2×/5×/10×) controls
   - 6 readouts: Earth clock, AC clock, moving frame clock, phase, message content, paradox status
 
-### 04 — Spacetime Curvature in 3D
+### 05 — Spacetime Curvature in 3D
 - Interactive 3D visualization using Three.js + OrbitControls
 - **2D Sheet view**: 60×60 vertex grid deforms downward (classic rubber-sheet analogy)
 - **3D Spherical view**: 3 concentric icosahedron shells (r=8, 14, 20) compress inward toward masses
@@ -86,7 +122,7 @@ https://sampsonb.github.io/ftl-impossibility/
 - Tooltip showing gravitational potential and time dilation at cursor
 - 5 readouts: masses placed, active particles, velocity, time dilation, orbital period
 
-### 05 — Photon Clock & Time Dilation
+### 06 — Photon Clock & Time Dilation
 - Side-by-side animated photon clocks (stationary vs moving)
 - Smooth easing with proper requestAnimationFrame timestamps
 - Photon trails, mirror flash effects, layered glow
@@ -94,7 +130,7 @@ https://sampsonb.github.io/ftl-impossibility/
 - Velocity slider (0–0.99c)
 - Readouts: velocity, Lorentz factor, time dilation, traveler time
 
-### 05b — Minkowski Spacetime Diagram
+### 06b — Minkowski Spacetime Diagram
 - Interactive spacetime diagram with color-coded regions
   - Future/past light cones (yellow)
   - Spacelike regions (blue, labeled "FTL needed")
@@ -105,39 +141,39 @@ https://sampsonb.github.io/ftl-impossibility/
 - Smooth slider interpolation
 - Readouts: worldline angle, light cone angle, proper time ratio, simultaneity tilt
 
-### 06 — The Lorentz Factor
+### 07 — The Lorentz Factor
 - Interactive γ vs velocity graph (asymptotic blowup at c)
 - Crosshair tracking dot on the curve
 - Step-by-step derivation from the photon clock geometry (7 steps)
 - Readouts: v/c, γ, length contraction %, relativistic mass
 
-### 07 — The Infinite Energy Barrier
+### 08 — The Infinite Energy Barrier
 - 3 tabbed graphs: Kinetic Energy, Total Energy, Momentum
 - Each shows relativistic vs classical (Newtonian) curves
 - Velocity slider with tracking dot
 - Readouts: rest energy, KE, total energy, momentum (all in mc² units)
 
-### 08 — Real-World Evidence
+### 09 — Real-World Evidence
 - 4 example cards: GPS satellites, muon decay, particle accelerators, stellar aberration
 - Interactive muon decay simulation
   - Classical vs relativistic survival rates descending from 15 km
   - Animated particle groups fading as muons decay
   - Play/Pause/Reset controls
 
-### 09 — E=mc² and Mass-Energy Equivalence
+### 10 — E=mc² and Mass-Energy Equivalence
 - Log-scale bar chart: rest energy vs Hiroshima vs US daily energy vs relativistic energy
 - Mass slider (1–100 kg)
 - Readouts: rest energy, TNT equivalent, city-powering duration
 
-### 10 — Putting It All Together
+### 11 — Putting It All Together
 - Combined graph overlaying γ, time dilation, length contraction, energy
 - High-precision slider (0.0000c–0.9999c)
 - All curves diverge simultaneously at c
 - Readouts: γ, time dilation, length %, energy
 
 ## Technical Details
-- Single self-contained HTML file (~5400 lines)
-- Vanilla JS + HTML5 Canvas for sections 01–03, 05–10; Three.js (CDN) for section 04
+- Single self-contained HTML file (~6200 lines)
+- Vanilla JS + HTML5 Canvas for sections 01–04, 06–11; Three.js (CDN) for section 05
 - Animated starfield background
 - Responsive design with dark theme
 - Tightened hero/section spacing for minimal dead space
@@ -162,3 +198,4 @@ https://sampsonb.github.io/ftl-impossibility/
 14. Added 3D Spherical view with concentric shells, cross-section rings, rain particles
 15. Spacetime curvature moved to section 04, all sections renumbered
 16. Multi-plane orbital demonstrations: inclination slider, 3-Plane/Solar System/Globular Cluster presets
+17. "Speed Limit of the Universe" section with 5 visual tabs, moved to section 01

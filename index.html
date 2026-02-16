@@ -391,9 +391,103 @@
   <div class="equation-hero">E = mc&sup2;</div>
 </header>
 
-<!-- Section 1: Twin Paradox -->
+<!-- Section 01: Speed Limit Explained Simply -->
+<section id="sec-speedlimit">
+  <h2><span class="num">01</span> The Speed Limit of the Universe</h2>
+  <p class="subtitle">No equations, no formulas &mdash; just visual stories that show why nothing can outrun light.</p>
+
+  <div class="card">
+    <p class="explain">
+      Everything in the universe is always moving through spacetime at exactly one speed: <strong>the speed of light</strong>.
+      You can trade speed through space for speed through time, but you can never exceed the total budget.
+      Move faster through space? You move slower through time. Here&rsquo;s what that looks and feels like.
+    </p>
+
+    <div class="tab-bar" id="speedlimit-tabs">
+      <button class="tab-btn active" data-tab="sl-speedometer">Speedometer</button>
+      <button class="tab-btn" data-tab="sl-astronaut">Astronaut</button>
+      <button class="tab-btn" data-tab="sl-photon">Photon&rsquo;s View</button>
+      <button class="tab-btn" data-tab="sl-wall">The Wall</button>
+      <button class="tab-btn" data-tab="sl-candles">Birthday Candles</button>
+    </div>
+
+    <!-- Tab 1: Speedometer of Spacetime -->
+    <div id="sl-speedometer" class="tab-content active">
+      <div class="slider-group">
+        <label>Your speed <span class="val" id="sl-speed-label">0.00c</span></label>
+        <input type="range" id="sl-speed" min="0" max="100" value="0" step="1">
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="sl-canvas" width="800" height="500"></canvas>
+      </div>
+    </div>
+
+    <!-- Tab 2: Astronaut Aging -->
+    <div id="sl-astronaut" class="tab-content">
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+        <button id="sl-astro-play" class="tab-btn active" style="flex:1;min-width:100px;">Start Aging</button>
+        <button id="sl-astro-reset" class="tab-btn" style="flex:1;min-width:100px;">Reset</button>
+      </div>
+      <div class="slider-group">
+        <label>Rocket speed <span class="val" id="sl-astro-vel-label">0.80c</span></label>
+        <input type="range" id="sl-astro-vel" min="10" max="99" value="80" step="1">
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="sl-astro-canvas" width="800" height="500"></canvas>
+      </div>
+    </div>
+
+    <!-- Tab 3: Photon's View -->
+    <div id="sl-photon" class="tab-content">
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+        <button id="sl-photon-play" class="tab-btn active" style="flex:1;min-width:100px;">Send Photon</button>
+        <button id="sl-photon-reset" class="tab-btn" style="flex:1;min-width:100px;">Reset</button>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="sl-photon-canvas" width="800" height="500"></canvas>
+      </div>
+    </div>
+
+    <!-- Tab 4: The Wall -->
+    <div id="sl-wall" class="tab-content">
+      <div class="slider-group">
+        <label>Push speed <span class="val" id="sl-wall-label">0.00c</span></label>
+        <input type="range" id="sl-wall-speed" min="0" max="100" value="0" step="1">
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="sl-wall-canvas" width="800" height="500"></canvas>
+      </div>
+    </div>
+
+    <!-- Tab 5: Birthday Candles -->
+    <div id="sl-candles" class="tab-content">
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+        <button id="sl-candle-play" class="tab-btn active" style="flex:1;min-width:100px;">Start Journey</button>
+        <button id="sl-candle-reset" class="tab-btn" style="flex:1;min-width:100px;">Reset</button>
+        <button id="sl-candle-speed" class="tab-btn" style="flex:1;min-width:100px;">Speed: 1&times;</button>
+      </div>
+      <div class="slider-group">
+        <label>Travel speed <span class="val" id="sl-candle-vel-label">0.80c</span></label>
+        <input type="range" id="sl-candle-vel" min="10" max="99" value="80" step="1">
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="sl-candle-canvas" width="800" height="500"></canvas>
+      </div>
+    </div>
+
+    <p class="explain">
+      Every visualization above shows the same truth from a different angle: <strong>moving through space and moving through time are connected</strong>.
+      The faster you go through space, the slower you go through time. At light speed, time stops completely.
+      The sections below explore the physics behind these effects in detail.
+    </p>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- Section 02: Twin Paradox -->
 <section id="sec-twins">
-  <h2><span class="num">01</span> The Twin Paradox</h2>
+  <h2><span class="num">02</span> The Twin Paradox</h2>
   <p class="subtitle">One twin stays home. The other rockets to a star and back. When they reunite, the traveler is younger. This is real.</p>
 
   <div class="card">
@@ -463,9 +557,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 02: Length Contraction -->
+<!-- Section 03: Length Contraction -->
 <section id="sec-contraction">
-  <h2><span class="num">02</span> Length Contraction</h2>
+  <h2><span class="num">03</span> Length Contraction</h2>
   <p class="subtitle">Moving objects physically shrink along their direction of motion &mdash; watch a starship compress as it accelerates toward c.</p>
 
   <div class="card">
@@ -520,9 +614,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 03: Causality Violation -->
+<!-- Section 04: Causality Violation -->
 <section id="sec-causality">
-  <h2><span class="num">03</span> Causality Violation &mdash; Why FTL Breaks Reality</h2>
+  <h2><span class="num">04</span> Causality Violation &mdash; Why FTL Breaks Reality</h2>
   <p class="subtitle">FTL doesn't just break a speed limit &mdash; it lets you receive messages before they were sent, destroying cause and effect.</p>
 
   <div class="card">
@@ -644,9 +738,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 04: Spacetime Curvature -->
+<!-- Section 05: Spacetime Curvature -->
 <section id="sec-curvature">
-  <h2><span class="num">04</span> Spacetime Curvature in 3D</h2>
+  <h2><span class="num">05</span> Spacetime Curvature in 3D</h2>
   <p class="subtitle">Mass warps spacetime. Objects follow the straightest possible paths through curved geometry &mdash; what we perceive as gravity.</p>
 
   <div class="card">
@@ -769,9 +863,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 05: Photon Clocks -->
+<!-- Section 06: Photon Clocks -->
 <section id="sec-clocks">
-  <h2><span class="num">05</span> Photon Clock &amp; Time Dilation</h2>
+  <h2><span class="num">06</span> Photon Clock &amp; Time Dilation</h2>
   <p class="subtitle">A photon bouncing between two mirrors reveals how time itself slows for moving objects.</p>
 
   <div class="card">
@@ -824,9 +918,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 05b: Spacetime Diagram -->
+<!-- Section 06b: Spacetime Diagram -->
 <section id="sec-spacetime">
-  <h2><span class="num">05b</span> Minkowski Spacetime Diagram</h2>
+  <h2><span class="num">06b</span> Minkowski Spacetime Diagram</h2>
   <p class="subtitle">The geometry of the universe &mdash; why the speed of light divides spacetime into reachable and forever-unreachable regions.</p>
 
   <div class="card">
@@ -884,9 +978,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 06: Lorentz Factor -->
+<!-- Section 07: Lorentz Factor -->
 <section id="sec-lorentz">
-  <h2><span class="num">06</span> The Lorentz Factor</h2>
+  <h2><span class="num">07</span> The Lorentz Factor</h2>
   <p class="subtitle">The mathematical heart of special relativity &mdash; and why it blows up at light speed.</p>
 
   <div class="card">
@@ -961,9 +1055,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 07: Energy -->
+<!-- Section 08: Energy -->
 <section id="sec-energy">
-  <h2><span class="num">07</span> The Infinite Energy Barrier</h2>
+  <h2><span class="num">08</span> The Infinite Energy Barrier</h2>
   <p class="subtitle">E = mc&sup2; is only the rest energy. The full picture shows why FTL requires infinite energy.</p>
 
   <div class="card">
@@ -1031,9 +1125,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 08: Real-World Examples -->
+<!-- Section 09: Real-World Examples -->
 <section id="sec-examples">
-  <h2><span class="num">08</span> Real-World Evidence</h2>
+  <h2><span class="num">09</span> Real-World Evidence</h2>
   <p class="subtitle">Special relativity isn't just theory &mdash; we measure its effects every day.</p>
 
   <div class="examples-grid">
@@ -1092,9 +1186,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 09: Relativistic Mass & E=mc² -->
+<!-- Section 10: Relativistic Mass & E=mc² -->
 <section id="sec-emc2">
-  <h2><span class="num">09</span> E = mc&sup2; and Mass-Energy Equivalence</h2>
+  <h2><span class="num">10</span> E = mc&sup2; and Mass-Energy Equivalence</h2>
   <p class="subtitle">Mass is frozen energy. Energy has inertia. This is why the speed limit exists.</p>
 
   <div class="card">
@@ -1136,9 +1230,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 10: Speed comparison -->
+<!-- Section 11: Speed comparison -->
 <section id="sec-compare">
-  <h2><span class="num">10</span> Putting It All Together</h2>
+  <h2><span class="num">11</span> Putting It All Together</h2>
   <p class="subtitle">Adjust the velocity and watch all relativistic effects simultaneously.</p>
 
   <div class="card">
@@ -5535,6 +5629,1107 @@ function setupCanvas(id) {
     loadPreset('earth');
     requestAnimationFrame(animate);
   }
+})();
+
+// ==================== SPEED LIMIT (Explained Simply) ====================
+(function initSpeedLimit() {
+  // ---- Tab switching ----
+  const tabBar = document.getElementById('speedlimit-tabs');
+  if (!tabBar) return;
+  let activeTab = 'sl-speedometer';
+  tabBar.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBar.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const tgt = btn.getAttribute('data-tab');
+      btn.closest('.card').querySelectorAll('.tab-content').forEach(tc => {
+        tc.classList.toggle('active', tc.id === tgt);
+      });
+      activeTab = tgt;
+    });
+  });
+
+  // ---- Canvas setup ----
+  const s1 = setupCanvas('sl-canvas');
+  const s2 = setupCanvas('sl-astro-canvas');
+  const s3 = setupCanvas('sl-photon-canvas');
+  const s4 = setupCanvas('sl-wall-canvas');
+  const s5 = setupCanvas('sl-candle-canvas');
+
+  // ---- Shared helpers ----
+  function drawStars(ctx, w, h, seed, speed, ts) {
+    const rng = (i) => ((seed * 9301 + i * 49297) % 233280) / 233280;
+    for (let i = 0; i < 40; i++) {
+      let sx = rng(i * 3) * w;
+      const sy = rng(i * 3 + 1) * h;
+      const sr = rng(i * 3 + 2) * 1.5 + 0.5;
+      if (speed > 0 && ts) {
+        sx = (sx + ts * speed * 0.05) % w;
+      }
+      ctx.fillStyle = `rgba(255,255,255,${0.3 + rng(i * 7) * 0.5})`;
+      ctx.beginPath();
+      ctx.arc(sx, sy, sr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawClockFace(ctx, cx, cy, r, fraction) {
+    // Outer ring
+    ctx.strokeStyle = '#334466';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.stroke();
+    // Tick marks
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2 - Math.PI / 2;
+      const inner = r * 0.82;
+      const outer = r * 0.95;
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = i % 3 === 0 ? 2.5 : 1;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * inner, cy + Math.sin(a) * inner);
+      ctx.lineTo(cx + Math.cos(a) * outer, cy + Math.sin(a) * outer);
+      ctx.stroke();
+    }
+    // Hour hand
+    const ha = (fraction * Math.PI * 2) - Math.PI / 2;
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(ha) * r * 0.55, cy + Math.sin(ha) * r * 0.55);
+    ctx.stroke();
+    // Minute hand
+    const ma = (fraction * 12 * Math.PI * 2) - Math.PI / 2;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(ma) * r * 0.75, cy + Math.sin(ma) * r * 0.75);
+    ctx.stroke();
+    ctx.lineCap = 'butt';
+    // Center dot
+    ctx.fillStyle = '#e2e8f0';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawAstronaut(ctx, cx, cy, scale, motion) {
+    const s = scale;
+    // Helmet
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.arc(cx, cy - 18 * s, 14 * s, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // Visor
+    ctx.fillStyle = motion > 0.95 ? '#fbbf24' : '#3b82f6';
+    ctx.beginPath();
+    ctx.arc(cx, cy - 18 * s, 9 * s, -0.5, Math.PI + 0.5);
+    ctx.fill();
+    // Body
+    ctx.fillStyle = '#e2e8f0';
+    ctx.beginPath();
+    ctx.roundRect(cx - 10 * s, cy - 2 * s, 20 * s, 26 * s, 5 * s);
+    ctx.fill();
+    // Backpack
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(cx + 10 * s, cy, 6 * s, 18 * s);
+    // Legs
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(cx - 8 * s, cy + 24 * s, 7 * s, 14 * s);
+    ctx.fillRect(cx + 1 * s, cy + 24 * s, 7 * s, 14 * s);
+    // Boots
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(cx - 9 * s, cy + 36 * s, 9 * s, 5 * s);
+    ctx.fillRect(cx, cy + 36 * s, 9 * s, 5 * s);
+  }
+
+  // =============================================================
+  //  TAB 1 — SPEEDOMETER OF SPACETIME
+  // =============================================================
+  let slBeta = 0;
+  document.getElementById('sl-speed').addEventListener('input', (e) => {
+    slBeta = e.target.value / 100;
+    document.getElementById('sl-speed-label').textContent = slBeta.toFixed(2) + 'c';
+  });
+
+  function drawSpeedometer(ts) {
+    const ctx = s1.ctx, w = s1.w, h = s1.h;
+    ctx.clearRect(0, 0, w, h);
+
+    // Background
+    ctx.fillStyle = '#080c16';
+    ctx.fillRect(0, 0, w, h);
+    drawStars(ctx, w, h, 42, 0, 0);
+
+    const cx = w / 2, cy = h / 2 + 20;
+    const R = Math.min(w, h) * 0.38;
+    const beta = slBeta;
+    const timeFrac = Math.sqrt(Math.max(0, 1 - beta * beta));
+
+    // Title
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = 'bold 18px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('Your Spacetime Speedometer', cx, 32);
+
+    // Quarter-circle arc
+    ctx.save();
+    ctx.translate(cx - R * 0.5, cy + R * 0.2);
+
+    const ox = 0, oy = 0;
+    // Axes
+    ctx.strokeStyle = '#334466';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(ox, oy);
+    ctx.lineTo(ox + R * 1.15, oy);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(ox, oy);
+    ctx.lineTo(ox, oy - R * 1.15);
+    ctx.stroke();
+
+    // Axis labels
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '13px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('Speed through SPACE \u2192', ox + R * 0.6, oy + 28);
+    ctx.save();
+    ctx.translate(ox - 28, oy - R * 0.6);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Speed through TIME \u2192', 0, 0);
+    ctx.restore();
+
+    // "c" labels at the ends
+    ctx.fillStyle = '#64748b';
+    ctx.font = 'italic 13px system-ui';
+    ctx.fillText('c', ox + R + 12, oy + 5);
+    ctx.textAlign = 'left';
+    ctx.fillText('c', ox - 8, oy - R - 8);
+    ctx.textAlign = 'center';
+
+    // Draw the arc
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(ox, oy, R, -Math.PI / 2, 0);
+    ctx.stroke();
+
+    // Filled arc glow
+    const arcGrad = ctx.createLinearGradient(ox, oy - R, ox + R, oy);
+    arcGrad.addColorStop(0, 'rgba(245,158,11,0.08)');
+    arcGrad.addColorStop(1, 'rgba(6,182,212,0.08)');
+    ctx.fillStyle = arcGrad;
+    ctx.beginPath();
+    ctx.moveTo(ox, oy);
+    ctx.arc(ox, oy, R, -Math.PI / 2, 0);
+    ctx.closePath();
+    ctx.fill();
+
+    // Dot position on arc
+    const dotX = ox + beta * R;
+    const dotY = oy - timeFrac * R;
+
+    // Projection lines
+    // Space (horizontal) — cyan
+    if (beta > 0.005) {
+      ctx.strokeStyle = '#06b6d4';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(dotX, oy);
+      ctx.stroke();
+      // Bar fill
+      ctx.fillStyle = 'rgba(6,182,212,0.15)';
+      ctx.fillRect(ox, oy - 6, beta * R, 6);
+    }
+    // Time (vertical) — amber
+    if (timeFrac > 0.005) {
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(ox, dotY);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(245,158,11,0.15)';
+      ctx.fillRect(ox - 6, dotY, 6, timeFrac * R);
+    }
+
+    // Dashed lines from dot to axes
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(dotX, dotY);
+    ctx.lineTo(dotX, oy);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(dotX, dotY);
+    ctx.lineTo(ox, dotY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // The dot
+    ctx.fillStyle = '#fff';
+    ctx.shadowColor = '#fff';
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    ctx.arc(dotX, dotY, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Dot label
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = 'bold 13px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText('YOU', dotX + 14, dotY - 4);
+
+    // Bar labels with values
+    ctx.font = 'bold 14px system-ui';
+    ctx.textAlign = 'center';
+    if (beta > 0.05) {
+      ctx.fillStyle = '#06b6d4';
+      ctx.fillText((beta * 100).toFixed(0) + '%', ox + beta * R / 2, oy + 48);
+      ctx.font = '11px system-ui';
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('through space', ox + beta * R / 2, oy + 63);
+    }
+    ctx.font = 'bold 14px system-ui';
+    if (timeFrac > 0.05) {
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillText((timeFrac * 100).toFixed(0) + '%', ox - 50, oy - timeFrac * R / 2 + 5);
+      ctx.font = '11px system-ui';
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('through time', ox - 50, oy - timeFrac * R / 2 + 20);
+    }
+
+    // Animated rocket icon on space axis
+    if (beta > 0.01) {
+      ctx.fillStyle = '#06b6d4';
+      ctx.font = '16px system-ui';
+      ctx.textAlign = 'center';
+      const rx = ox + beta * R;
+      ctx.fillText('\u{1F680}', rx, oy - 14);
+    }
+    // Clock icon on time axis
+    if (timeFrac > 0.01) {
+      ctx.font = '16px system-ui';
+      ctx.fillStyle = '#f59e0b';
+      const ty = oy - timeFrac * R;
+      ctx.fillText('\u{1F552}', ox + 14, ty + 5);
+    }
+
+    ctx.restore();
+
+    // Descriptive text below
+    ctx.textAlign = 'center';
+    ctx.font = '15px system-ui';
+    let msg = '', msgColor = '#94a3b8';
+    if (beta < 0.01) {
+      msg = 'Sitting still \u2014 ALL your speed goes through time. You age at full speed.';
+      msgColor = '#f59e0b';
+    } else if (beta < 0.3) {
+      msg = 'Moving slowly \u2014 almost all your speed still goes through time.';
+      msgColor = '#f59e0b';
+    } else if (beta < 0.6) {
+      msg = 'Getting fast! Time is noticeably slowing down for you.';
+      msgColor = '#e2e8f0';
+    } else if (beta < 0.85) {
+      msg = 'Very fast \u2014 you\'re aging significantly slower than someone standing still.';
+      msgColor = '#06b6d4';
+    } else if (beta < 0.95) {
+      msg = 'Extreme speed \u2014 most of your speed goes through space now. Time barely passes.';
+      msgColor = '#06b6d4';
+    } else if (beta < 1.0) {
+      msg = 'Nearly light speed \u2014 time has almost stopped for you!';
+      msgColor = '#ef4444';
+    } else {
+      msg = 'LIGHT SPEED \u2014 ALL speed through space, ZERO through time. Time STOPS.';
+      msgColor = '#ef4444';
+    }
+    ctx.fillStyle = msgColor;
+    ctx.fillText(msg, w / 2, h - 20);
+
+    // Budget label
+    ctx.fillStyle = '#475569';
+    ctx.font = '12px system-ui';
+    ctx.fillText('The dot always stays on the arc \u2014 your total speed through spacetime is always c', w / 2, h - 44);
+  }
+
+  // =============================================================
+  //  TAB 2 — ASTRONAUT AGING
+  // =============================================================
+  let astroRunning = false, astroTime = 0, astroPrevTs = null;
+  let astroBeta = 0.8;
+
+  document.getElementById('sl-astro-vel').addEventListener('input', (e) => {
+    astroBeta = e.target.value / 100;
+    document.getElementById('sl-astro-vel-label').textContent = astroBeta.toFixed(2) + 'c';
+  });
+  document.getElementById('sl-astro-play').addEventListener('click', () => {
+    const btn = document.getElementById('sl-astro-play');
+    if (astroRunning) { astroRunning = false; btn.textContent = 'Resume'; }
+    else { astroRunning = true; btn.textContent = 'Pause'; }
+  });
+  document.getElementById('sl-astro-reset').addEventListener('click', () => {
+    astroRunning = false; astroTime = 0; astroPrevTs = null;
+    document.getElementById('sl-astro-play').textContent = 'Start Aging';
+  });
+
+  function drawAstronaut_tab(ts) {
+    const ctx = s2.ctx, w = s2.w, h = s2.h;
+    if (astroPrevTs === null) astroPrevTs = ts;
+    const dt = Math.min(ts - astroPrevTs, 50);
+    astroPrevTs = ts;
+    if (astroRunning) astroTime += dt * 0.001;
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#080c16';
+    ctx.fillRect(0, 0, w, h);
+
+    const colW = w / 3;
+    const g = gamma(Math.min(astroBeta, 0.999));
+    const configs = [
+      { label: 'Sitting Still', speed: 0, beta: 0, color: '#f59e0b' },
+      { label: 'Fast Rocket (' + astroBeta.toFixed(2) + 'c)', speed: astroBeta, beta: astroBeta, color: '#06b6d4' },
+      { label: 'Photon (1.00c)', speed: 1, beta: 0.9999, color: '#ef4444' }
+    ];
+
+    configs.forEach((cfg, i) => {
+      const cx = colW * i + colW / 2;
+      const gLocal = cfg.speed >= 0.9999 ? Infinity : gamma(cfg.speed);
+      const ageRate = cfg.speed >= 0.9999 ? 0 : 1 / gLocal;
+      const age = astroTime * ageRate;
+
+      // Column background
+      ctx.fillStyle = 'rgba(255,255,255,0.02)';
+      ctx.beginPath();
+      ctx.roundRect(colW * i + 8, 8, colW - 16, h - 16, 12);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Stars (move if speed > 0)
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(colW * i + 8, 8, colW - 16, h - 16);
+      ctx.clip();
+      if (cfg.speed > 0 && cfg.speed < 1) {
+        for (let s = 0; s < 15; s++) {
+          const starSeed = i * 100 + s;
+          const sy = ((starSeed * 7919) % 233280) / 233280 * h;
+          const baseX = ((starSeed * 3571) % 233280) / 233280 * colW;
+          const sx = colW * i + ((baseX + ts * cfg.speed * 0.08) % colW);
+          const streak = cfg.speed * 12;
+          ctx.strokeStyle = `rgba(255,255,255,${0.2 + cfg.speed * 0.3})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(sx, sy);
+          ctx.lineTo(sx - streak, sy);
+          ctx.stroke();
+        }
+      } else if (cfg.speed >= 1) {
+        // Motion blur lines for photon
+        for (let s = 0; s < 30; s++) {
+          const starSeed = i * 100 + s;
+          const sy = ((starSeed * 7919) % 233280) / 233280 * h;
+          const sx = colW * i + ((starSeed * 3571) % 233280) / 233280 * colW;
+          ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(colW * i + 8, sy);
+          ctx.lineTo(colW * (i + 1) - 8, sy);
+          ctx.stroke();
+        }
+      } else {
+        drawStars(ctx, colW - 16, h - 16, i * 50 + 7, 0, 0);
+      }
+      ctx.restore();
+
+      // Column label
+      ctx.fillStyle = cfg.color;
+      ctx.font = 'bold 14px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(cfg.label, cx, 36);
+
+      // Clock
+      const clockFrac = age / 12;
+      drawClockFace(ctx, cx, 100, 36, clockFrac);
+
+      // Clock speed label
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '11px system-ui';
+      if (cfg.speed >= 0.9999) {
+        ctx.fillStyle = '#ef4444';
+        ctx.fillText('FROZEN', cx, 150);
+      } else if (cfg.speed === 0) {
+        ctx.fillText('Normal speed', cx, 150);
+      } else {
+        ctx.fillText('Ticking at ' + (ageRate * 100).toFixed(0) + '% speed', cx, 150);
+      }
+
+      // Astronaut figure
+      drawAstronaut(ctx, cx, 225, 1.6, cfg.speed);
+
+      // Age display
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 22px system-ui';
+      ctx.textAlign = 'center';
+      const displayAge = 30 + age;
+      ctx.fillText(displayAge.toFixed(1) + ' years old', cx, 340);
+
+      // Time elapsed
+      ctx.fillStyle = '#64748b';
+      ctx.font = '12px system-ui';
+      ctx.fillText('Elapsed: ' + age.toFixed(1) + ' years', cx, 360);
+
+      // Status text
+      ctx.font = '12px system-ui';
+      if (cfg.speed >= 0.9999) {
+        ctx.fillStyle = '#ef4444';
+        ctx.fillText('Doesn\'t age AT ALL', cx, 385);
+      } else if (cfg.speed === 0) {
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillText('Aging at full speed', cx, 385);
+      } else {
+        ctx.fillStyle = '#06b6d4';
+        const diff = astroTime - age;
+        if (diff > 0.05) ctx.fillText((diff.toFixed(1)) + ' years younger than still twin', cx, 385);
+      }
+    });
+
+    // Summary at bottom
+    if (astroTime > 1) {
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 14px system-ui';
+      ctx.textAlign = 'center';
+      const rocketAge = astroTime / g;
+      ctx.fillText('Same amount of real time passed \u2014 but they\'ve aged differently!', w / 2, h - 50);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '12px system-ui';
+      ctx.fillText('Moving through space steals from your speed through time.', w / 2, h - 30);
+    }
+  }
+
+  // =============================================================
+  //  TAB 3 — PHOTON'S VIEW
+  // =============================================================
+  let photonRunning = false, photonFrac = 0, photonPrevTs = null, photonDone = false;
+
+  document.getElementById('sl-photon-play').addEventListener('click', () => {
+    const btn = document.getElementById('sl-photon-play');
+    if (photonDone) return;
+    if (photonRunning) { photonRunning = false; btn.textContent = 'Resume'; }
+    else { photonRunning = true; btn.textContent = 'Pause'; }
+  });
+  document.getElementById('sl-photon-reset').addEventListener('click', () => {
+    photonRunning = false; photonFrac = 0; photonPrevTs = null; photonDone = false;
+    document.getElementById('sl-photon-play').textContent = 'Send Photon';
+  });
+
+  function drawPhoton(ts) {
+    const ctx = s3.ctx, w = s3.w, h = s3.h;
+    if (photonPrevTs === null) photonPrevTs = ts;
+    const dt = Math.min(ts - photonPrevTs, 50);
+    photonPrevTs = ts;
+    if (photonRunning && !photonDone) {
+      photonFrac += dt * 0.0002;
+      if (photonFrac >= 1) { photonFrac = 1; photonDone = true; photonRunning = false;
+        document.getElementById('sl-photon-play').textContent = 'Done!'; }
+    }
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#080c16';
+    ctx.fillRect(0, 0, w, h);
+
+    const midY = h / 2;
+
+    // ---- TOP HALF: YOUR VIEW ----
+    ctx.fillStyle = 'rgba(255,255,255,0.02)';
+    ctx.fillRect(20, 10, w - 40, midY - 20);
+
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = 'bold 16px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('YOUR VIEW (from Earth)', w / 2, 34);
+
+    // Sun
+    const sunX = 100, sunY = midY / 2 + 20, earthX = w - 100, earthY = sunY;
+    // Sun glow
+    const sunGrad = ctx.createRadialGradient(sunX, sunY, 5, sunX, sunY, 45);
+    sunGrad.addColorStop(0, '#fbbf24');
+    sunGrad.addColorStop(0.4, 'rgba(251,191,36,0.3)');
+    sunGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = sunGrad;
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, 45, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#1e293b';
+    ctx.font = 'bold 12px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('SUN', sunX, sunY + 4);
+
+    // Earth
+    ctx.fillStyle = '#3b82f6';
+    ctx.beginPath();
+    ctx.arc(earthX, earthY, 16, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#22c55e';
+    ctx.beginPath();
+    ctx.ellipse(earthX - 3, earthY - 2, 8, 5, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = 'bold 11px system-ui';
+    ctx.fillText('EARTH', earthX, earthY + 30);
+
+    // Distance label
+    ctx.fillStyle = '#64748b';
+    ctx.font = '11px system-ui';
+    ctx.fillText('150 million km', (sunX + earthX) / 2, sunY - 40);
+    // Dashed line
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = '#334466';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(sunX + 30, sunY - 30);
+    ctx.lineTo(earthX - 20, sunY - 30);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Photon traveling
+    if (photonFrac > 0) {
+      const px = sunX + 30 + photonFrac * (earthX - sunX - 50);
+      ctx.fillStyle = '#fbbf24';
+      ctx.shadowColor = '#fbbf24';
+      ctx.shadowBlur = 15;
+      ctx.beginPath();
+      ctx.arc(px, sunY, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      // Trail
+      ctx.strokeStyle = 'rgba(251,191,36,0.2)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(sunX + 30, sunY);
+      ctx.lineTo(px, sunY);
+      ctx.stroke();
+    }
+
+    // Timer
+    ctx.fillStyle = photonDone ? '#22c55e' : '#f59e0b';
+    ctx.font = 'bold 18px system-ui';
+    ctx.textAlign = 'center';
+    const mins = photonFrac * 8;
+    ctx.fillText('Time: ' + mins.toFixed(1) + ' minutes', w / 2, midY - 25);
+
+    // ---- DIVIDER ----
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(40, midY);
+    ctx.lineTo(w - 40, midY);
+    ctx.stroke();
+    ctx.fillStyle = '#475569';
+    ctx.font = '11px system-ui';
+    ctx.fillText('\u2193 Same journey, different perspective \u2193', w / 2, midY + 14);
+
+    // ---- BOTTOM HALF: PHOTON'S VIEW ----
+    ctx.fillStyle = 'rgba(255,255,255,0.02)';
+    ctx.fillRect(20, midY + 20, w - 40, midY - 30);
+
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 16px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('PHOTON\'S VIEW', w / 2, midY + 44);
+
+    const bCenterY = midY + h / 4 + 30;
+    // Length contraction squishes everything together
+    const squeeze = photonFrac > 0 ? Math.max(0.01, 1 - photonFrac * 0.99) : 1;
+    const bSunX = w / 2 - (earthX - sunX) / 2 * squeeze;
+    const bEarthX = w / 2 + (earthX - sunX) / 2 * squeeze;
+
+    if (photonFrac === 0) {
+      // Before sending - show normal spacing fading to squished
+      const bSunGrad = ctx.createRadialGradient(bSunX, bCenterY, 3, bSunX, bCenterY, 30);
+      bSunGrad.addColorStop(0, '#fbbf24');
+      bSunGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = bSunGrad;
+      ctx.beginPath();
+      ctx.arc(bSunX, bCenterY, 30, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(bSunX, bCenterY, 15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#3b82f6';
+      ctx.beginPath();
+      ctx.arc(bEarthX, bCenterY, 12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '13px system-ui';
+      ctx.fillText('Press "Send Photon" to see what the photon experiences', w / 2, h - 25);
+    } else {
+      // Squished view - Sun and Earth nearly touching
+      const bSunGrad = ctx.createRadialGradient(bSunX, bCenterY, 2, bSunX, bCenterY, 25 * squeeze + 5);
+      bSunGrad.addColorStop(0, '#fbbf24');
+      bSunGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = bSunGrad;
+      ctx.beginPath();
+      ctx.arc(bSunX, bCenterY, 25 * squeeze + 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(bSunX, bCenterY, Math.max(8, 15 * squeeze), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#3b82f6';
+      ctx.beginPath();
+      ctx.arc(bEarthX, bCenterY, Math.max(6, 12 * squeeze), 0, Math.PI * 2);
+      ctx.fill();
+
+      // Flash effect when arriving
+      if (photonDone) {
+        const flash = Math.max(0, 1 - (ts % 2000) / 1000);
+        ctx.fillStyle = `rgba(251,191,36,${flash * 0.3})`;
+        ctx.beginPath();
+        ctx.arc(w / 2, bCenterY, 60, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Labels
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = 'bold 16px system-ui';
+      ctx.fillText('Time: 0 seconds (instant!)', w / 2, bCenterY + 60);
+
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 13px system-ui';
+      if (photonDone) {
+        ctx.fillText('To the photon, the entire universe is squished flat!', w / 2, bCenterY + 82);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '12px system-ui';
+        ctx.fillText('Distance = 0. Time = 0. Birth and death are the same instant.', w / 2, bCenterY + 100);
+      } else {
+        ctx.fillText('Distance contracts to nearly zero...', w / 2, bCenterY + 82);
+      }
+    }
+  }
+
+  // =============================================================
+  //  TAB 4 — THE WALL
+  // =============================================================
+  let wallBeta = 0;
+  document.getElementById('sl-wall-speed').addEventListener('input', (e) => {
+    wallBeta = e.target.value / 100;
+    document.getElementById('sl-wall-label').textContent = wallBeta.toFixed(2) + 'c';
+  });
+
+  function drawWall(ts) {
+    const ctx = s4.ctx, w = s4.w, h = s4.h;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#080c16';
+    ctx.fillRect(0, 0, w, h);
+    drawStars(ctx, w, h, 99, 0, 0);
+
+    const beta = wallBeta;
+    const groundY = h - 60;
+    const hillLeft = 80, hillRight = w - 60;
+    const hillW = hillRight - hillLeft;
+
+    // Title
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = 'bold 18px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('The Energy Hill', w / 2, 30);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '13px system-ui';
+    ctx.fillText('The faster you push, the steeper the hill gets', w / 2, 50);
+
+    // Draw the hill curve
+    // At beta=0: flat. At beta=1: vertical wall.
+    // Use gamma-1 to shape the curve height
+    ctx.beginPath();
+    ctx.moveTo(hillLeft, groundY);
+    const hillPts = 100;
+    for (let i = 0; i <= hillPts; i++) {
+      const t = i / hillPts;
+      const bAt = t; // beta at this x-position
+      const g = 1 / Math.sqrt(Math.max(0.001, 1 - bAt * bAt));
+      const energyFrac = Math.min(1, (g - 1) / 15);
+      const px = hillLeft + t * hillW;
+      const py = groundY - energyFrac * (groundY - 70);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.lineTo(hillRight, 70);
+    ctx.lineTo(hillRight, groundY);
+    ctx.closePath();
+
+    // Hill gradient: green → yellow → red
+    const hillGrad = ctx.createLinearGradient(hillLeft, groundY, hillRight, 70);
+    hillGrad.addColorStop(0, 'rgba(34,197,94,0.3)');
+    hillGrad.addColorStop(0.3, 'rgba(245,158,11,0.3)');
+    hillGrad.addColorStop(0.7, 'rgba(239,68,68,0.3)');
+    hillGrad.addColorStop(1, 'rgba(239,68,68,0.5)');
+    ctx.fillStyle = hillGrad;
+    ctx.fill();
+
+    // Hill outline
+    ctx.beginPath();
+    ctx.moveTo(hillLeft, groundY);
+    for (let i = 0; i <= hillPts; i++) {
+      const t = i / hillPts;
+      const bAt = t;
+      const g = 1 / Math.sqrt(Math.max(0.001, 1 - bAt * bAt));
+      const energyFrac = Math.min(1, (g - 1) / 15);
+      const px = hillLeft + t * hillW;
+      const py = groundY - energyFrac * (groundY - 70);
+      ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Speed labels along bottom
+    ctx.fillStyle = '#475569';
+    ctx.font = '11px system-ui';
+    ctx.textAlign = 'center';
+    [0, 0.25, 0.5, 0.75, 0.9, 0.99].forEach(b => {
+      const px = hillLeft + b * hillW;
+      ctx.fillText(b.toFixed(2) + 'c', px, groundY + 18);
+    });
+    // "c" at the wall
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 13px system-ui';
+    ctx.fillText('c', hillRight, groundY + 18);
+
+    // WALL at c
+    ctx.fillStyle = 'rgba(239,68,68,0.15)';
+    ctx.fillRect(hillRight - 4, 60, 30, groundY - 60);
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(hillRight, groundY);
+    ctx.lineTo(hillRight, 60);
+    ctx.stroke();
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 14px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText('WALL', hillRight + 6, 100);
+    ctx.font = '11px system-ui';
+    ctx.fillText('Infinite', hillRight + 6, 116);
+    ctx.fillText('energy', hillRight + 6, 130);
+    ctx.fillText('needed!', hillRight + 6, 144);
+
+    // Position of the figure on the hill
+    const figBeta = Math.min(beta, 0.995);
+    const figG = 1 / Math.sqrt(Math.max(0.001, 1 - figBeta * figBeta));
+    const figEnergyFrac = Math.min(1, (figG - 1) / 15);
+    const figX = hillLeft + figBeta * hillW;
+    const figY = groundY - figEnergyFrac * (groundY - 70);
+
+    // Compute slope angle at this point
+    const dBeta = 0.01;
+    const bNext = Math.min(figBeta + dBeta, 0.999);
+    const gNext = 1 / Math.sqrt(1 - bNext * bNext);
+    const eNext = Math.min(1, (gNext - 1) / 15);
+    const yNext = groundY - eNext * (groundY - 70);
+    const xNext = hillLeft + bNext * hillW;
+    const slopeAngle = Math.atan2(figY - yNext, xNext - figX);
+
+    // Boulder
+    const boulderR = 14;
+    ctx.fillStyle = '#94a3b8';
+    ctx.beginPath();
+    ctx.arc(figX, figY - boulderR - 2, boulderR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // Boulder cracks
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(figX - 4, figY - boulderR - 8);
+    ctx.lineTo(figX + 2, figY - boulderR);
+    ctx.lineTo(figX - 1, figY - boulderR + 6);
+    ctx.stroke();
+
+    // Figure pushing (behind boulder)
+    const figScale = 0.7;
+    const figLean = Math.min(slopeAngle * 0.5, 0.8);
+    ctx.save();
+    ctx.translate(figX - 25, figY - 2);
+    ctx.rotate(-figLean * 0.3);
+    // Stick figure
+    // Head
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.arc(0, -30 * figScale, 7 * figScale, 0, Math.PI * 2);
+    ctx.fill();
+    // Body
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(0, -23 * figScale);
+    ctx.lineTo(0, 0);
+    ctx.stroke();
+    // Arms (pushing forward)
+    ctx.beginPath();
+    ctx.moveTo(0, -15 * figScale);
+    ctx.lineTo(18 * figScale, -12 * figScale);
+    ctx.stroke();
+    // Legs
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(-8 * figScale, 15 * figScale);
+    ctx.moveTo(0, 0);
+    ctx.lineTo(5 * figScale, 15 * figScale);
+    ctx.stroke();
+
+    // Strain indicators (sweat drops at high speed)
+    if (beta > 0.5) {
+      const numDrops = Math.floor((beta - 0.5) * 8);
+      for (let d = 0; d < numDrops; d++) {
+        const dy = -35 * figScale - d * 6;
+        const dx = -10 + Math.sin(ts * 0.003 + d) * 4;
+        ctx.fillStyle = '#3b82f6';
+        ctx.beginPath();
+        ctx.arc(dx, dy, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+
+    // Difficulty label
+    ctx.textAlign = 'center';
+    ctx.font = '13px system-ui';
+    if (beta < 0.1) {
+      ctx.fillStyle = '#22c55e';
+      ctx.fillText('Easy! The hill is nearly flat.', w / 2, groundY + 40);
+    } else if (beta < 0.5) {
+      ctx.fillStyle = '#22c55e';
+      ctx.fillText('Getting steeper, but manageable.', w / 2, groundY + 40);
+    } else if (beta < 0.8) {
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillText('Steep! Takes a LOT more energy to go a little faster.', w / 2, groundY + 40);
+    } else if (beta < 0.95) {
+      ctx.fillStyle = '#ef4444';
+      ctx.fillText('Nearly vertical! Enormous energy for tiny speed gains.', w / 2, groundY + 40);
+    } else {
+      ctx.fillStyle = '#ef4444';
+      ctx.font = 'bold 14px system-ui';
+      ctx.fillText('IMPOSSIBLY STEEP! No amount of energy is enough!', w / 2, groundY + 40);
+    }
+
+    // Photon floating over the wall
+    const photonY = 50 + Math.sin(ts * 0.002) * 8;
+    ctx.fillStyle = '#fbbf24';
+    ctx.shadowColor = '#fbbf24';
+    ctx.shadowBlur = 20;
+    ctx.beginPath();
+    ctx.arc(hillRight + 15, photonY, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = '11px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText('Photon', hillRight + 26, photonY + 4);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '10px system-ui';
+    ctx.fillText('(massless \u2014 no', hillRight + 26, photonY + 17);
+    ctx.fillText('hill to climb!)', hillRight + 26, photonY + 29);
+  }
+
+  // =============================================================
+  //  TAB 5 — BIRTHDAY CANDLES
+  // =============================================================
+  let candleRunning = false, candleTime = 0, candlePrevTs = null, candleDone = false;
+  let candleBeta = 0.8, candleSimSpeed = 1;
+
+  document.getElementById('sl-candle-vel').addEventListener('input', (e) => {
+    candleBeta = e.target.value / 100;
+    document.getElementById('sl-candle-vel-label').textContent = candleBeta.toFixed(2) + 'c';
+  });
+  document.getElementById('sl-candle-play').addEventListener('click', () => {
+    const btn = document.getElementById('sl-candle-play');
+    if (candleDone) return;
+    if (candleRunning) { candleRunning = false; btn.textContent = 'Resume'; }
+    else { candleRunning = true; btn.textContent = 'Pause'; }
+  });
+  document.getElementById('sl-candle-reset').addEventListener('click', () => {
+    candleRunning = false; candleTime = 0; candlePrevTs = null; candleDone = false;
+    document.getElementById('sl-candle-play').textContent = 'Start Journey';
+  });
+  const candleSpeeds = [1, 2, 5, 10];
+  let candleSpeedIdx = 0;
+  document.getElementById('sl-candle-speed').addEventListener('click', () => {
+    candleSpeedIdx = (candleSpeedIdx + 1) % candleSpeeds.length;
+    candleSimSpeed = candleSpeeds[candleSpeedIdx];
+    document.getElementById('sl-candle-speed').innerHTML = 'Speed: ' + candleSimSpeed + '&times;';
+  });
+
+  function drawCandle(ctx, cx, baseY, lit, flicker) {
+    // Candle stick
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(cx - 3, baseY - 22, 6, 22);
+    // Wick
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(cx - 1, baseY - 26, 2, 5);
+    if (lit) {
+      // Flame
+      const fh = 8 + flicker * 3;
+      const fGrad = ctx.createRadialGradient(cx, baseY - 26 - fh / 2, 1, cx, baseY - 26 - fh / 2, fh);
+      fGrad.addColorStop(0, '#fbbf24');
+      fGrad.addColorStop(0.5, '#f59e0b');
+      fGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = fGrad;
+      ctx.beginPath();
+      ctx.ellipse(cx, baseY - 26 - fh / 2, 4, fh / 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawCandles(ts) {
+    const ctx = s5.ctx, w = s5.w, h = s5.h;
+    if (candlePrevTs === null) candlePrevTs = ts;
+    const dt = Math.min(ts - candlePrevTs, 50);
+    candlePrevTs = ts;
+
+    const tripYears = 20;
+    if (candleRunning && !candleDone) {
+      candleTime += dt * 0.001 * candleSimSpeed * 0.5;
+      if (candleTime >= tripYears) { candleTime = tripYears; candleDone = true; candleRunning = false;
+        document.getElementById('sl-candle-play').textContent = 'Journey Complete!'; }
+    }
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#080c16';
+    ctx.fillRect(0, 0, w, h);
+
+    const g = gamma(Math.min(candleBeta, 0.999));
+    const earthAge = candleTime;
+    const travAge = candleTime / g;
+    const earthCandles = Math.floor(earthAge);
+    const travCandles = Math.floor(travAge);
+
+    const colW = w / 2;
+
+    // Two columns
+    [{ label: 'Earth Twin', age: earthAge, candles: earthCandles, color: '#f59e0b', x: 0 },
+     { label: 'Traveler Twin (' + candleBeta.toFixed(2) + 'c)', age: travAge, candles: travCandles, color: '#06b6d4', x: colW }
+    ].forEach((twin) => {
+      const cx = twin.x + colW / 2;
+
+      // Column background
+      ctx.fillStyle = 'rgba(255,255,255,0.02)';
+      ctx.beginPath();
+      ctx.roundRect(twin.x + 10, 10, colW - 20, h - 20, 12);
+      ctx.fill();
+
+      // Label
+      ctx.fillStyle = twin.color;
+      ctx.font = 'bold 16px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(twin.label, cx, 38);
+
+      // Clock
+      drawClockFace(ctx, cx, 95, 35, twin.age / 12);
+
+      // Age display
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 20px system-ui';
+      ctx.fillText((30 + twin.age).toFixed(1) + ' years old', cx, 160);
+
+      // Birthday cake
+      const cakeY = 280;
+      const cakeW = Math.min(colW - 60, twin.candles * 14 + 40);
+      const cakeX = cx - cakeW / 2;
+
+      // Cake body
+      ctx.fillStyle = '#7c3aed';
+      ctx.beginPath();
+      ctx.roundRect(cakeX, cakeY, cakeW, 40, 8);
+      ctx.fill();
+      // Frosting
+      ctx.fillStyle = '#a78bfa';
+      ctx.beginPath();
+      ctx.roundRect(cakeX, cakeY, cakeW, 14, [8, 8, 0, 0]);
+      ctx.fill();
+      // Frosting drips
+      for (let d = 0; d < cakeW / 15; d++) {
+        const dx = cakeX + 10 + d * 15;
+        const dh = 4 + Math.sin(d * 2.3) * 3;
+        ctx.fillStyle = '#a78bfa';
+        ctx.beginPath();
+        ctx.ellipse(dx, cakeY + 14, 4, dh, 0, 0, Math.PI);
+        ctx.fill();
+      }
+
+      // Candles on the cake
+      const maxVisible = Math.min(twin.candles, 20);
+      const candleSpacing = maxVisible > 0 ? Math.min(14, (cakeW - 20) / maxVisible) : 14;
+      const candleStart = cx - (maxVisible * candleSpacing) / 2 + candleSpacing / 2;
+      const flicker = Math.sin(ts * 0.005) * 0.5 + 0.5;
+      for (let c = 0; c < maxVisible; c++) {
+        drawCandle(ctx, candleStart + c * candleSpacing, cakeY, true, flicker + Math.sin(c * 1.7) * 0.3);
+      }
+
+      // Candle count
+      ctx.fillStyle = twin.color;
+      ctx.font = 'bold 18px system-ui';
+      ctx.textAlign = 'center';
+      if (twin.candles > 0) {
+        ctx.fillText(twin.candles + (twin.candles === 1 ? ' candle' : ' candles'), cx, cakeY + 70);
+      }
+      if (twin.candles > 20) {
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px system-ui';
+        ctx.fillText('(showing 20 of ' + twin.candles + ')', cx, cakeY + 86);
+      }
+    });
+
+    // Comparison at bottom
+    if (candleTime > 0.5) {
+      const diff = earthCandles - travCandles;
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 14px system-ui';
+      ctx.textAlign = 'center';
+      if (diff > 0) {
+        ctx.fillText('The traveler has ' + diff + ' fewer birthday' + (diff === 1 ? '' : 's') + '!', w / 2, h - 50);
+      }
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '12px system-ui';
+      ctx.fillText('Same trip, same duration \u2014 but the traveler aged less because time ran slower.', w / 2, h - 30);
+    } else if (!candleRunning && !candleDone) {
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '13px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('Press "Start Journey" to send one twin on a ' + tripYears + '-year round trip', w / 2, h - 30);
+    }
+  }
+
+  // =============================================================
+  //  MAIN ANIMATION LOOP
+  // =============================================================
+  function mainDraw(ts) {
+    if (activeTab === 'sl-speedometer') drawSpeedometer(ts);
+    else if (activeTab === 'sl-astronaut') drawAstronaut_tab(ts);
+    else if (activeTab === 'sl-photon') drawPhoton(ts);
+    else if (activeTab === 'sl-wall') drawWall(ts);
+    else if (activeTab === 'sl-candles') drawCandles(ts);
+    requestAnimationFrame(mainDraw);
+  }
+  requestAnimationFrame(mainDraw);
 })();
 
 // ==================== ROUNDRECT POLYFILL ====================

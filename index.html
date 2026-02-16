@@ -644,420 +644,9 @@
 
 <div class="section-divider"><hr></div>
 
-<!-- Section 04: Photon Clocks -->
-<section id="sec-clocks">
-  <h2><span class="num">04</span> Photon Clock &amp; Time Dilation</h2>
-  <p class="subtitle">A photon bouncing between two mirrors reveals how time itself slows for moving objects.</p>
-
-  <div class="card">
-    <p class="explain">
-      A <strong>photon clock</strong> bounces a photon between two mirrors. At rest, the photon travels straight up and down.
-      But when the clock moves, the photon must travel a longer diagonal path. Since light speed is constant (c),
-      <strong>the moving clock ticks slower</strong> &mdash; this is time dilation.
-    </p>
-
-    <div class="slider-group">
-      <label>Velocity <span class="val" id="clock-vel-label">0.00c</span></label>
-      <input type="range" id="clock-vel" min="0" max="99" value="0" step="1">
-    </div>
-
-    <div class="clock-row">
-      <div>
-        <div class="clock-label">Stationary Clock</div>
-        <div class="canvas-wrap">
-          <canvas id="clock-rest" width="400" height="300"></canvas>
-        </div>
-      </div>
-      <div>
-        <div class="clock-label">Moving Clock (v = <span id="clock-v-display">0.00c</span>)</div>
-        <div class="canvas-wrap">
-          <canvas id="clock-moving" width="400" height="300"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <div class="readouts">
-      <div class="readout">
-        <div class="label">Velocity</div>
-        <div class="value cyan" id="r-vel">0.00c</div>
-      </div>
-      <div class="readout">
-        <div class="label">Lorentz Factor (γ)</div>
-        <div class="value purple" id="r-gamma">1.000</div>
-      </div>
-      <div class="readout">
-        <div class="label">Time Dilation</div>
-        <div class="value yellow" id="r-dilation">1.000×</div>
-      </div>
-      <div class="readout">
-        <div class="label">1 Earth Hour =</div>
-        <div class="value blue" id="r-traveler">60.0 min</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"><hr></div>
-
-<!-- Section 04b: Spacetime Diagram -->
-<section id="sec-spacetime">
-  <h2><span class="num">04b</span> Minkowski Spacetime Diagram</h2>
-  <p class="subtitle">The geometry of the universe &mdash; why the speed of light divides spacetime into reachable and forever-unreachable regions.</p>
-
-  <div class="card">
-    <p class="explain">
-      A <strong>spacetime diagram</strong> plots space (horizontal) against time (vertical, in units of ct).
-      Light always travels at 45&deg; lines, forming the <strong>light cone</strong>. Any massive object's worldline
-      must stay <em>inside</em> the cone (steeper than 45&deg;). To go faster than light would mean leaving
-      the cone &mdash; entering a region where cause and effect break down.
-    </p>
-
-    <div class="slider-group">
-      <label>Observer velocity <span class="val" id="st-vel-label">0.00c</span></label>
-      <input type="range" id="st-vel" min="0" max="990" value="0" step="10">
-    </div>
-
-    <div class="canvas-wrap">
-      <canvas id="spacetime-canvas" width="800" height="600"></canvas>
-    </div>
-
-    <div class="st-legend">
-      <div class="st-legend-item"><span class="swatch" style="background:rgba(250,204,21,0.4)"></span> Future light cone (reachable)</div>
-      <div class="st-legend-item"><span class="swatch" style="background:rgba(96,165,250,0.25)"></span> Spacelike region (FTL needed)</div>
-      <div class="st-legend-item"><span class="swatch" style="background:#f59e0b"></span> Light (45&deg;, c)</div>
-      <div class="st-legend-item"><span class="swatch" style="background:#06b6d4"></span> Object worldline</div>
-      <div class="st-legend-item"><span class="swatch" style="background:#a855f7"></span> Simultaneity line (moving frame)</div>
-    </div>
-
-    <div class="readouts">
-      <div class="readout">
-        <div class="label">Worldline angle</div>
-        <div class="value cyan" id="st-angle">90.0&deg;</div>
-      </div>
-      <div class="readout">
-        <div class="label">Light cone angle</div>
-        <div class="value yellow" id="st-cone">45.0&deg;</div>
-      </div>
-      <div class="readout">
-        <div class="label">Proper time ratio</div>
-        <div class="value purple" id="st-proper">1.000</div>
-      </div>
-      <div class="readout">
-        <div class="label">Simultaneity tilt</div>
-        <div class="value blue" id="st-simtilt">0.0&deg;</div>
-      </div>
-    </div>
-
-    <p class="explain">
-      As velocity increases, the worldline tilts toward the light cone and the <strong>simultaneity line</strong>
-      (what the moving observer calls "now") tilts symmetrically. At v = c, both collapse onto the light cone.
-      Beyond c, the worldline would enter the <strong>spacelike region</strong> &mdash; the object would arrive
-      before it left in some reference frames, violating causality.
-    </p>
-  </div>
-</section>
-
-<div class="section-divider"><hr></div>
-
-<!-- Section 05: Lorentz Factor -->
-<section id="sec-lorentz">
-  <h2><span class="num">05</span> The Lorentz Factor</h2>
-  <p class="subtitle">The mathematical heart of special relativity &mdash; and why it blows up at light speed.</p>
-
-  <div class="card">
-    <div class="canvas-wrap">
-      <canvas id="lorentz-graph" width="800" height="400"></canvas>
-    </div>
-
-    <div class="slider-group">
-      <label>Explore velocity <span class="val" id="lorentz-vel-label">0.00c</span></label>
-      <input type="range" id="lorentz-vel" min="0" max="999" value="0" step="1">
-    </div>
-
-    <div class="readouts">
-      <div class="readout">
-        <div class="label">v / c</div>
-        <div class="value cyan" id="l-v">0.000</div>
-      </div>
-      <div class="readout">
-        <div class="label">γ (Lorentz Factor)</div>
-        <div class="value purple" id="l-gamma">1.000</div>
-      </div>
-      <div class="readout">
-        <div class="label">Length Contraction</div>
-        <div class="value blue" id="l-length">100.0%</div>
-      </div>
-      <div class="readout">
-        <div class="label">Relativistic Mass</div>
-        <div class="value yellow" id="l-mass">1.000× m₀</div>
-      </div>
-    </div>
-
-    <div class="derivation">
-      <h4>Derivation from the Photon Clock</h4>
-      <div class="deriv-step">
-        <span class="step-num">1</span>
-        <span>Light path at rest: L = c&middot;t₀</span>
-        <span class="annotation">straight up-down</span>
-      </div>
-      <div class="deriv-step">
-        <span class="step-num">2</span>
-        <span>Light path moving: D = c&middot;t</span>
-        <span class="annotation">diagonal path</span>
-      </div>
-      <div class="deriv-step">
-        <span class="step-num">3</span>
-        <span>(c&middot;t)&sup2; = (v&middot;t)&sup2; + (c&middot;t₀)&sup2;</span>
-        <span class="annotation">Pythagorean theorem</span>
-      </div>
-      <div class="deriv-step">
-        <span class="step-num">4</span>
-        <span>c&sup2;t&sup2; &minus; v&sup2;t&sup2; = c&sup2;t₀&sup2;</span>
-        <span class="annotation">rearrange</span>
-      </div>
-      <div class="deriv-step">
-        <span class="step-num">5</span>
-        <span>t&sup2;(1 &minus; v&sup2;/c&sup2;) = t₀&sup2;</span>
-        <span class="annotation">factor out t&sup2;</span>
-      </div>
-      <div class="deriv-step">
-        <span class="step-num">6</span>
-        <span>t = t₀ / &radic;(1 &minus; v&sup2;/c&sup2;) = γ&middot;t₀</span>
-        <span class="annotation">time dilation!</span>
-      </div>
-      <div class="deriv-step">
-        <span class="step-num">7</span>
-        <span>γ = 1 / &radic;(1 &minus; v&sup2;/c&sup2;)</span>
-        <span class="annotation">Lorentz factor</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"><hr></div>
-
-<!-- Section 06: Energy -->
-<section id="sec-energy">
-  <h2><span class="num">06</span> The Infinite Energy Barrier</h2>
-  <p class="subtitle">E = mc&sup2; is only the rest energy. The full picture shows why FTL requires infinite energy.</p>
-
-  <div class="card">
-    <div class="tab-bar">
-      <button class="tab-btn active" data-tab="energy-ke">Kinetic Energy</button>
-      <button class="tab-btn" data-tab="energy-total">Total Energy</button>
-      <button class="tab-btn" data-tab="energy-momentum">Momentum</button>
-    </div>
-
-    <div id="energy-ke" class="tab-content active">
-      <div class="canvas-wrap">
-        <canvas id="ke-graph" width="800" height="400"></canvas>
-      </div>
-      <p class="explain">
-        Relativistic kinetic energy: <strong>KE = (γ - 1)mc&sup2;</strong>. As v approaches c, γ approaches infinity,
-        so the energy needed grows without bound. No finite energy source can accelerate mass to light speed.
-      </p>
-    </div>
-
-    <div id="energy-total" class="tab-content">
-      <div class="canvas-wrap">
-        <canvas id="total-graph" width="800" height="400"></canvas>
-      </div>
-      <p class="explain">
-        Total relativistic energy: <strong>E = γmc&sup2;</strong>. At rest (v=0), this reduces to E = mc&sup2;.
-        The rest mass energy of a 1 kg object is <strong>9 × 10&sup1;&sup6; joules</strong> &mdash; equivalent to ~21 megatons of TNT.
-      </p>
-    </div>
-
-    <div id="energy-momentum" class="tab-content">
-      <div class="canvas-wrap">
-        <canvas id="momentum-graph" width="800" height="400"></canvas>
-      </div>
-      <p class="explain">
-        Relativistic momentum: <strong>p = γmv</strong>. Unlike classical p = mv, this diverges as v &rarr; c.
-        The energy-momentum relation: <strong>E&sup2; = (pc)&sup2; + (mc&sup2;)&sup2;</strong> unifies energy, momentum, and mass.
-      </p>
-    </div>
-
-    <div class="slider-group">
-      <label>Object velocity <span class="val" id="energy-vel-label">0.00c</span></label>
-      <input type="range" id="energy-vel" min="0" max="999" value="0" step="1">
-    </div>
-
-    <div class="readouts">
-      <div class="readout">
-        <div class="label">Rest Energy (mc&sup2;)</div>
-        <div class="value blue" id="e-rest">1.00</div>
-      </div>
-      <div class="readout">
-        <div class="label">Kinetic Energy</div>
-        <div class="value yellow" id="e-ke">0.00</div>
-      </div>
-      <div class="readout">
-        <div class="label">Total Energy (γmc&sup2;)</div>
-        <div class="value red" id="e-total">1.00</div>
-      </div>
-      <div class="readout">
-        <div class="label">Momentum (γmv)</div>
-        <div class="value purple" id="e-mom">0.00</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"><hr></div>
-
-<!-- Section 07: Real-World Examples -->
-<section id="sec-examples">
-  <h2><span class="num">07</span> Real-World Evidence</h2>
-  <p class="subtitle">Special relativity isn't just theory &mdash; we measure its effects every day.</p>
-
-  <div class="examples-grid">
-    <div class="example-card">
-      <div class="icon">&#x1F6F0;</div>
-      <h4>GPS Satellites</h4>
-      <p>GPS satellites move at ~3.9 km/s. Without relativistic corrections, positioning would drift by ~11 km/day. Both special and general relativity corrections are applied.</p>
-      <div class="stat">v = 0.0000130c | &Delta;t = 7 &mu;s/day (SR)</div>
-    </div>
-    <div class="example-card">
-      <div class="icon">&#x269B;</div>
-      <h4>Muon Decay</h4>
-      <p>Cosmic ray muons should decay in ~2.2&mu;s and travel only ~660m. But we detect them at sea level because time dilation at 0.998c extends their lifetime by ~15x.</p>
-      <div class="stat">v = 0.998c | γ &asymp; 15.8 | range: ~10 km</div>
-    </div>
-    <div class="example-card">
-      <div class="icon">&#x1F500;</div>
-      <h4>Particle Accelerators</h4>
-      <p>At the LHC, protons reach 0.999999991c. Their relativistic mass is ~7,454 times rest mass. Each proton carries energy comparable to a flying mosquito &mdash; in a single subatomic particle.</p>
-      <div class="stat">v = 0.999999991c | γ &asymp; 7,454</div>
-    </div>
-    <div class="example-card">
-      <div class="icon">&#x2B50;</div>
-      <h4>Stellar Aberration</h4>
-      <p>Stars appear slightly shifted due to Earth's orbital velocity (~30 km/s). This aberration angle matches relativistic predictions exactly, not Newtonian ones.</p>
-      <div class="stat">v = 0.0001c | aberration &asymp; 20.5&quot;</div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-top: 24px;">
-    <h3>Interactive: Muon Decay Simulation</h3>
-    <p class="explain">Watch muons created at 15 km altitude travel toward Earth. At rest, they'd decay after ~660m. Time dilation lets them reach the surface.</p>
-    <div class="canvas-wrap">
-      <canvas id="muon-canvas" width="800" height="300"></canvas>
-    </div>
-    <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
-      <button id="muon-start" class="tab-btn active" style="flex:1;min-width:120px;">Start Simulation</button>
-      <button id="muon-reset" class="tab-btn" style="flex:1;min-width:120px;">Reset</button>
-    </div>
-    <div class="readouts" style="margin-top:16px;">
-      <div class="readout">
-        <div class="label">Classical Muons Surviving</div>
-        <div class="value yellow" id="muon-classical">100%</div>
-      </div>
-      <div class="readout">
-        <div class="label">Relativistic Muons Surviving</div>
-        <div class="value cyan" id="muon-relativistic">100%</div>
-      </div>
-      <div class="readout">
-        <div class="label">Altitude</div>
-        <div class="value blue" id="muon-alt">15.0 km</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"><hr></div>
-
-<!-- Section 08: Relativistic Mass & E=mc² -->
-<section id="sec-emc2">
-  <h2><span class="num">08</span> E = mc&sup2; and Mass-Energy Equivalence</h2>
-  <p class="subtitle">Mass is frozen energy. Energy has inertia. This is why the speed limit exists.</p>
-
-  <div class="card">
-    <div class="canvas-wrap">
-      <canvas id="emc2-graph" width="800" height="400"></canvas>
-    </div>
-
-    <div class="slider-group">
-      <label>Mass (kg) <span class="val" id="mass-label">1.00 kg</span></label>
-      <input type="range" id="mass-slider" min="1" max="100" value="1" step="1">
-    </div>
-
-    <div class="readouts">
-      <div class="readout">
-        <div class="label">Rest Energy</div>
-        <div class="value cyan" id="emc2-rest">9.0 &times; 10&sup1;&sup6; J</div>
-      </div>
-      <div class="readout">
-        <div class="label">Equivalent TNT</div>
-        <div class="value yellow" id="emc2-tnt">21.5 MT</div>
-      </div>
-      <div class="readout">
-        <div class="label">Could Power</div>
-        <div class="value blue" id="emc2-power">A city for 2.9 years</div>
-      </div>
-    </div>
-
-    <p class="explain" style="margin-top:16px;">
-      <strong>Why does E = mc&sup2; create a speed limit?</strong> When you push an object, you add energy.
-      That energy increases its inertia (resistance to further acceleration). The faster it goes,
-      the more energy each additional m/s requires. Approaching c, the energy requirement
-      diverges to infinity. The object's inertia becomes infinite before it can reach c.
-      <br><br>
-      Massless particles (photons) <em>must</em> travel at exactly c &mdash; they have no rest frame.
-      Anything with mass is forever trapped below c.
-    </p>
-  </div>
-</section>
-
-<div class="section-divider"><hr></div>
-
-<!-- Section 09: Speed comparison -->
-<section id="sec-compare">
-  <h2><span class="num">09</span> Putting It All Together</h2>
-  <p class="subtitle">Adjust the velocity and watch all relativistic effects simultaneously.</p>
-
-  <div class="card">
-    <div class="slider-group">
-      <label>Velocity <span class="val" id="master-vel-label">0.00c</span></label>
-      <input type="range" id="master-vel" min="0" max="9999" value="0" step="1">
-    </div>
-
-    <div class="canvas-wrap">
-      <canvas id="combined-graph" width="800" height="400"></canvas>
-    </div>
-
-    <div class="readouts">
-      <div class="readout">
-        <div class="label">γ (Lorentz)</div>
-        <div class="value purple" id="c-gamma">1.000</div>
-      </div>
-      <div class="readout">
-        <div class="label">Time Dilation</div>
-        <div class="value yellow" id="c-time">1.000&times;</div>
-      </div>
-      <div class="readout">
-        <div class="label">Length (% of rest)</div>
-        <div class="value cyan" id="c-length">100.0%</div>
-      </div>
-      <div class="readout">
-        <div class="label">Energy (units mc&sup2;)</div>
-        <div class="value red" id="c-energy">1.000</div>
-      </div>
-    </div>
-
-    <p class="explain">
-      The vertical dashed line marks your chosen velocity. Notice how <strong>all quantities diverge
-      simultaneously</strong> as v &rarr; c. This isn't a coincidence &mdash; it's the geometry of spacetime itself.
-      The speed of light isn't just a speed limit for light; it's woven into the fabric of the universe.
-    </p>
-  </div>
-</section>
-
-<div class="section-divider"><hr></div>
-
-<!-- Section 10: Spacetime Curvature -->
+<!-- Section 04: Spacetime Curvature -->
 <section id="sec-curvature">
-  <h2><span class="num">10</span> Spacetime Curvature in 3D</h2>
+  <h2><span class="num">04</span> Spacetime Curvature in 3D</h2>
   <p class="subtitle">Mass warps spacetime. Objects follow the straightest possible paths through curved geometry &mdash; what we perceive as gravity.</p>
 
   <div class="card">
@@ -1156,6 +745,417 @@
       to drop test objects from above, below, and all sides &mdash; they all experience identical curvature.
       An orbiting planet isn't being &ldquo;pulled&rdquo; &mdash; it's following the straightest possible path (a <strong>geodesic</strong>)
       through warped spacetime.
+    </p>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- Section 05: Photon Clocks -->
+<section id="sec-clocks">
+  <h2><span class="num">05</span> Photon Clock &amp; Time Dilation</h2>
+  <p class="subtitle">A photon bouncing between two mirrors reveals how time itself slows for moving objects.</p>
+
+  <div class="card">
+    <p class="explain">
+      A <strong>photon clock</strong> bounces a photon between two mirrors. At rest, the photon travels straight up and down.
+      But when the clock moves, the photon must travel a longer diagonal path. Since light speed is constant (c),
+      <strong>the moving clock ticks slower</strong> &mdash; this is time dilation.
+    </p>
+
+    <div class="slider-group">
+      <label>Velocity <span class="val" id="clock-vel-label">0.00c</span></label>
+      <input type="range" id="clock-vel" min="0" max="99" value="0" step="1">
+    </div>
+
+    <div class="clock-row">
+      <div>
+        <div class="clock-label">Stationary Clock</div>
+        <div class="canvas-wrap">
+          <canvas id="clock-rest" width="400" height="300"></canvas>
+        </div>
+      </div>
+      <div>
+        <div class="clock-label">Moving Clock (v = <span id="clock-v-display">0.00c</span>)</div>
+        <div class="canvas-wrap">
+          <canvas id="clock-moving" width="400" height="300"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="readouts">
+      <div class="readout">
+        <div class="label">Velocity</div>
+        <div class="value cyan" id="r-vel">0.00c</div>
+      </div>
+      <div class="readout">
+        <div class="label">Lorentz Factor (γ)</div>
+        <div class="value purple" id="r-gamma">1.000</div>
+      </div>
+      <div class="readout">
+        <div class="label">Time Dilation</div>
+        <div class="value yellow" id="r-dilation">1.000×</div>
+      </div>
+      <div class="readout">
+        <div class="label">1 Earth Hour =</div>
+        <div class="value blue" id="r-traveler">60.0 min</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- Section 05b: Spacetime Diagram -->
+<section id="sec-spacetime">
+  <h2><span class="num">05b</span> Minkowski Spacetime Diagram</h2>
+  <p class="subtitle">The geometry of the universe &mdash; why the speed of light divides spacetime into reachable and forever-unreachable regions.</p>
+
+  <div class="card">
+    <p class="explain">
+      A <strong>spacetime diagram</strong> plots space (horizontal) against time (vertical, in units of ct).
+      Light always travels at 45&deg; lines, forming the <strong>light cone</strong>. Any massive object's worldline
+      must stay <em>inside</em> the cone (steeper than 45&deg;). To go faster than light would mean leaving
+      the cone &mdash; entering a region where cause and effect break down.
+    </p>
+
+    <div class="slider-group">
+      <label>Observer velocity <span class="val" id="st-vel-label">0.00c</span></label>
+      <input type="range" id="st-vel" min="0" max="990" value="0" step="10">
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="spacetime-canvas" width="800" height="600"></canvas>
+    </div>
+
+    <div class="st-legend">
+      <div class="st-legend-item"><span class="swatch" style="background:rgba(250,204,21,0.4)"></span> Future light cone (reachable)</div>
+      <div class="st-legend-item"><span class="swatch" style="background:rgba(96,165,250,0.25)"></span> Spacelike region (FTL needed)</div>
+      <div class="st-legend-item"><span class="swatch" style="background:#f59e0b"></span> Light (45&deg;, c)</div>
+      <div class="st-legend-item"><span class="swatch" style="background:#06b6d4"></span> Object worldline</div>
+      <div class="st-legend-item"><span class="swatch" style="background:#a855f7"></span> Simultaneity line (moving frame)</div>
+    </div>
+
+    <div class="readouts">
+      <div class="readout">
+        <div class="label">Worldline angle</div>
+        <div class="value cyan" id="st-angle">90.0&deg;</div>
+      </div>
+      <div class="readout">
+        <div class="label">Light cone angle</div>
+        <div class="value yellow" id="st-cone">45.0&deg;</div>
+      </div>
+      <div class="readout">
+        <div class="label">Proper time ratio</div>
+        <div class="value purple" id="st-proper">1.000</div>
+      </div>
+      <div class="readout">
+        <div class="label">Simultaneity tilt</div>
+        <div class="value blue" id="st-simtilt">0.0&deg;</div>
+      </div>
+    </div>
+
+    <p class="explain">
+      As velocity increases, the worldline tilts toward the light cone and the <strong>simultaneity line</strong>
+      (what the moving observer calls "now") tilts symmetrically. At v = c, both collapse onto the light cone.
+      Beyond c, the worldline would enter the <strong>spacelike region</strong> &mdash; the object would arrive
+      before it left in some reference frames, violating causality.
+    </p>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- Section 06: Lorentz Factor -->
+<section id="sec-lorentz">
+  <h2><span class="num">06</span> The Lorentz Factor</h2>
+  <p class="subtitle">The mathematical heart of special relativity &mdash; and why it blows up at light speed.</p>
+
+  <div class="card">
+    <div class="canvas-wrap">
+      <canvas id="lorentz-graph" width="800" height="400"></canvas>
+    </div>
+
+    <div class="slider-group">
+      <label>Explore velocity <span class="val" id="lorentz-vel-label">0.00c</span></label>
+      <input type="range" id="lorentz-vel" min="0" max="999" value="0" step="1">
+    </div>
+
+    <div class="readouts">
+      <div class="readout">
+        <div class="label">v / c</div>
+        <div class="value cyan" id="l-v">0.000</div>
+      </div>
+      <div class="readout">
+        <div class="label">γ (Lorentz Factor)</div>
+        <div class="value purple" id="l-gamma">1.000</div>
+      </div>
+      <div class="readout">
+        <div class="label">Length Contraction</div>
+        <div class="value blue" id="l-length">100.0%</div>
+      </div>
+      <div class="readout">
+        <div class="label">Relativistic Mass</div>
+        <div class="value yellow" id="l-mass">1.000× m₀</div>
+      </div>
+    </div>
+
+    <div class="derivation">
+      <h4>Derivation from the Photon Clock</h4>
+      <div class="deriv-step">
+        <span class="step-num">1</span>
+        <span>Light path at rest: L = c&middot;t₀</span>
+        <span class="annotation">straight up-down</span>
+      </div>
+      <div class="deriv-step">
+        <span class="step-num">2</span>
+        <span>Light path moving: D = c&middot;t</span>
+        <span class="annotation">diagonal path</span>
+      </div>
+      <div class="deriv-step">
+        <span class="step-num">3</span>
+        <span>(c&middot;t)&sup2; = (v&middot;t)&sup2; + (c&middot;t₀)&sup2;</span>
+        <span class="annotation">Pythagorean theorem</span>
+      </div>
+      <div class="deriv-step">
+        <span class="step-num">4</span>
+        <span>c&sup2;t&sup2; &minus; v&sup2;t&sup2; = c&sup2;t₀&sup2;</span>
+        <span class="annotation">rearrange</span>
+      </div>
+      <div class="deriv-step">
+        <span class="step-num">5</span>
+        <span>t&sup2;(1 &minus; v&sup2;/c&sup2;) = t₀&sup2;</span>
+        <span class="annotation">factor out t&sup2;</span>
+      </div>
+      <div class="deriv-step">
+        <span class="step-num">6</span>
+        <span>t = t₀ / &radic;(1 &minus; v&sup2;/c&sup2;) = γ&middot;t₀</span>
+        <span class="annotation">time dilation!</span>
+      </div>
+      <div class="deriv-step">
+        <span class="step-num">7</span>
+        <span>γ = 1 / &radic;(1 &minus; v&sup2;/c&sup2;)</span>
+        <span class="annotation">Lorentz factor</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- Section 07: Energy -->
+<section id="sec-energy">
+  <h2><span class="num">07</span> The Infinite Energy Barrier</h2>
+  <p class="subtitle">E = mc&sup2; is only the rest energy. The full picture shows why FTL requires infinite energy.</p>
+
+  <div class="card">
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="energy-ke">Kinetic Energy</button>
+      <button class="tab-btn" data-tab="energy-total">Total Energy</button>
+      <button class="tab-btn" data-tab="energy-momentum">Momentum</button>
+    </div>
+
+    <div id="energy-ke" class="tab-content active">
+      <div class="canvas-wrap">
+        <canvas id="ke-graph" width="800" height="400"></canvas>
+      </div>
+      <p class="explain">
+        Relativistic kinetic energy: <strong>KE = (γ - 1)mc&sup2;</strong>. As v approaches c, γ approaches infinity,
+        so the energy needed grows without bound. No finite energy source can accelerate mass to light speed.
+      </p>
+    </div>
+
+    <div id="energy-total" class="tab-content">
+      <div class="canvas-wrap">
+        <canvas id="total-graph" width="800" height="400"></canvas>
+      </div>
+      <p class="explain">
+        Total relativistic energy: <strong>E = γmc&sup2;</strong>. At rest (v=0), this reduces to E = mc&sup2;.
+        The rest mass energy of a 1 kg object is <strong>9 × 10&sup1;&sup6; joules</strong> &mdash; equivalent to ~21 megatons of TNT.
+      </p>
+    </div>
+
+    <div id="energy-momentum" class="tab-content">
+      <div class="canvas-wrap">
+        <canvas id="momentum-graph" width="800" height="400"></canvas>
+      </div>
+      <p class="explain">
+        Relativistic momentum: <strong>p = γmv</strong>. Unlike classical p = mv, this diverges as v &rarr; c.
+        The energy-momentum relation: <strong>E&sup2; = (pc)&sup2; + (mc&sup2;)&sup2;</strong> unifies energy, momentum, and mass.
+      </p>
+    </div>
+
+    <div class="slider-group">
+      <label>Object velocity <span class="val" id="energy-vel-label">0.00c</span></label>
+      <input type="range" id="energy-vel" min="0" max="999" value="0" step="1">
+    </div>
+
+    <div class="readouts">
+      <div class="readout">
+        <div class="label">Rest Energy (mc&sup2;)</div>
+        <div class="value blue" id="e-rest">1.00</div>
+      </div>
+      <div class="readout">
+        <div class="label">Kinetic Energy</div>
+        <div class="value yellow" id="e-ke">0.00</div>
+      </div>
+      <div class="readout">
+        <div class="label">Total Energy (γmc&sup2;)</div>
+        <div class="value red" id="e-total">1.00</div>
+      </div>
+      <div class="readout">
+        <div class="label">Momentum (γmv)</div>
+        <div class="value purple" id="e-mom">0.00</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- Section 08: Real-World Examples -->
+<section id="sec-examples">
+  <h2><span class="num">08</span> Real-World Evidence</h2>
+  <p class="subtitle">Special relativity isn't just theory &mdash; we measure its effects every day.</p>
+
+  <div class="examples-grid">
+    <div class="example-card">
+      <div class="icon">&#x1F6F0;</div>
+      <h4>GPS Satellites</h4>
+      <p>GPS satellites move at ~3.9 km/s. Without relativistic corrections, positioning would drift by ~11 km/day. Both special and general relativity corrections are applied.</p>
+      <div class="stat">v = 0.0000130c | &Delta;t = 7 &mu;s/day (SR)</div>
+    </div>
+    <div class="example-card">
+      <div class="icon">&#x269B;</div>
+      <h4>Muon Decay</h4>
+      <p>Cosmic ray muons should decay in ~2.2&mu;s and travel only ~660m. But we detect them at sea level because time dilation at 0.998c extends their lifetime by ~15x.</p>
+      <div class="stat">v = 0.998c | γ &asymp; 15.8 | range: ~10 km</div>
+    </div>
+    <div class="example-card">
+      <div class="icon">&#x1F500;</div>
+      <h4>Particle Accelerators</h4>
+      <p>At the LHC, protons reach 0.999999991c. Their relativistic mass is ~7,454 times rest mass. Each proton carries energy comparable to a flying mosquito &mdash; in a single subatomic particle.</p>
+      <div class="stat">v = 0.999999991c | γ &asymp; 7,454</div>
+    </div>
+    <div class="example-card">
+      <div class="icon">&#x2B50;</div>
+      <h4>Stellar Aberration</h4>
+      <p>Stars appear slightly shifted due to Earth's orbital velocity (~30 km/s). This aberration angle matches relativistic predictions exactly, not Newtonian ones.</p>
+      <div class="stat">v = 0.0001c | aberration &asymp; 20.5&quot;</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 24px;">
+    <h3>Interactive: Muon Decay Simulation</h3>
+    <p class="explain">Watch muons created at 15 km altitude travel toward Earth. At rest, they'd decay after ~660m. Time dilation lets them reach the surface.</p>
+    <div class="canvas-wrap">
+      <canvas id="muon-canvas" width="800" height="300"></canvas>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
+      <button id="muon-start" class="tab-btn active" style="flex:1;min-width:120px;">Start Simulation</button>
+      <button id="muon-reset" class="tab-btn" style="flex:1;min-width:120px;">Reset</button>
+    </div>
+    <div class="readouts" style="margin-top:16px;">
+      <div class="readout">
+        <div class="label">Classical Muons Surviving</div>
+        <div class="value yellow" id="muon-classical">100%</div>
+      </div>
+      <div class="readout">
+        <div class="label">Relativistic Muons Surviving</div>
+        <div class="value cyan" id="muon-relativistic">100%</div>
+      </div>
+      <div class="readout">
+        <div class="label">Altitude</div>
+        <div class="value blue" id="muon-alt">15.0 km</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- Section 09: Relativistic Mass & E=mc² -->
+<section id="sec-emc2">
+  <h2><span class="num">09</span> E = mc&sup2; and Mass-Energy Equivalence</h2>
+  <p class="subtitle">Mass is frozen energy. Energy has inertia. This is why the speed limit exists.</p>
+
+  <div class="card">
+    <div class="canvas-wrap">
+      <canvas id="emc2-graph" width="800" height="400"></canvas>
+    </div>
+
+    <div class="slider-group">
+      <label>Mass (kg) <span class="val" id="mass-label">1.00 kg</span></label>
+      <input type="range" id="mass-slider" min="1" max="100" value="1" step="1">
+    </div>
+
+    <div class="readouts">
+      <div class="readout">
+        <div class="label">Rest Energy</div>
+        <div class="value cyan" id="emc2-rest">9.0 &times; 10&sup1;&sup6; J</div>
+      </div>
+      <div class="readout">
+        <div class="label">Equivalent TNT</div>
+        <div class="value yellow" id="emc2-tnt">21.5 MT</div>
+      </div>
+      <div class="readout">
+        <div class="label">Could Power</div>
+        <div class="value blue" id="emc2-power">A city for 2.9 years</div>
+      </div>
+    </div>
+
+    <p class="explain" style="margin-top:16px;">
+      <strong>Why does E = mc&sup2; create a speed limit?</strong> When you push an object, you add energy.
+      That energy increases its inertia (resistance to further acceleration). The faster it goes,
+      the more energy each additional m/s requires. Approaching c, the energy requirement
+      diverges to infinity. The object's inertia becomes infinite before it can reach c.
+      <br><br>
+      Massless particles (photons) <em>must</em> travel at exactly c &mdash; they have no rest frame.
+      Anything with mass is forever trapped below c.
+    </p>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- Section 10: Speed comparison -->
+<section id="sec-compare">
+  <h2><span class="num">10</span> Putting It All Together</h2>
+  <p class="subtitle">Adjust the velocity and watch all relativistic effects simultaneously.</p>
+
+  <div class="card">
+    <div class="slider-group">
+      <label>Velocity <span class="val" id="master-vel-label">0.00c</span></label>
+      <input type="range" id="master-vel" min="0" max="9999" value="0" step="1">
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="combined-graph" width="800" height="400"></canvas>
+    </div>
+
+    <div class="readouts">
+      <div class="readout">
+        <div class="label">γ (Lorentz)</div>
+        <div class="value purple" id="c-gamma">1.000</div>
+      </div>
+      <div class="readout">
+        <div class="label">Time Dilation</div>
+        <div class="value yellow" id="c-time">1.000&times;</div>
+      </div>
+      <div class="readout">
+        <div class="label">Length (% of rest)</div>
+        <div class="value cyan" id="c-length">100.0%</div>
+      </div>
+      <div class="readout">
+        <div class="label">Energy (units mc&sup2;)</div>
+        <div class="value red" id="c-energy">1.000</div>
+      </div>
+    </div>
+
+    <p class="explain">
+      The vertical dashed line marks your chosen velocity. Notice how <strong>all quantities diverge
+      simultaneously</strong> as v &rarr; c. This isn't a coincidence &mdash; it's the geometry of spacetime itself.
+      The speed of light isn't just a speed limit for light; it's woven into the fabric of the universe.
     </p>
   </div>
 </section>

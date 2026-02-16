@@ -679,6 +679,7 @@
       <button class="tab-btn" id="curv-mode-drop">Drop Particle</button>
       <button class="tab-btn" id="curv-mode-orbit">Launch Orbit</button>
       <button class="tab-btn" id="curv-mode-rain">Rain Particles</button>
+      <button class="tab-btn" id="curv-mode-orbits">Orbital Planes</button>
     </div>
 
     <!-- Toggles -->
@@ -705,6 +706,23 @@
         <input type="range" id="curv-launch-speed" min="1" max="100" value="50" step="1">
       </div>
     </div>
+
+    <!-- Inclination slider (hidden until orbit/orbits mode) -->
+    <div id="curv-inclination-group" style="display:none;margin-top:8px;">
+      <div class="slider-group" style="min-width:200px;">
+        <label>Orbital inclination <span class="val" id="curv-incl-label">0&deg;</span></label>
+        <input type="range" id="curv-inclination" min="0" max="180" value="0" step="1">
+      </div>
+    </div>
+
+    <!-- Orbital plane presets (hidden until orbits mode) -->
+    <div id="curv-orbit-presets" style="display:none;gap:8px;flex-wrap:wrap;margin:8px 0;">
+      <span style="color:var(--muted);font-size:0.85rem;line-height:2.2;">Demos:</span>
+      <button class="tab-btn" id="curv-orbpreset-3plane">3-Plane Demo</button>
+      <button class="tab-btn" id="curv-orbpreset-solar">Solar System</button>
+      <button class="tab-btn" id="curv-orbpreset-globular">Globular Cluster</button>
+    </div>
+    <div id="curv-orbit-info" style="display:none;color:var(--muted);font-size:0.85rem;padding:4px 0;line-height:1.5;font-style:italic;"></div>
 
     <!-- Three.js container -->
     <div id="curvature-container" style="width:100%;height:600px;border-radius:12px;overflow:hidden;background:#060a14;position:relative;margin:16px 0;cursor:crosshair;">
@@ -4735,7 +4753,7 @@ function setupCanvas(id) {
     const masses = [];
     const particles = [];
     const MAX_MASSES = 5;
-    const MAX_PARTICLES = 10;
+    const MAX_PARTICLES = 12;
     const TRAIL_LEN = 300;
     const massGroup = new THREE.Group();
     const particleGroup = new THREE.Group();
@@ -5224,13 +5242,18 @@ function setupCanvas(id) {
       } else if (currentMode === 'drop') {
         const py = view3D ? 12 : 0;
         addParticle(ix, py, iz, 0, 0, 0);
-      } else if (currentMode === 'orbit') {
+      } else if (currentMode === 'orbit' || currentMode === 'orbits') {
         const speed = parseFloat(document.getElementById('curv-launch-speed').value) / 100;
+        const inclDeg = parseFloat(document.getElementById('curv-inclination').value);
+        const incl = inclDeg * Math.PI / 180;
         const nm = nearestMass(ix, iz);
         if (nm) {
           const dx = ix - nm.x, dz = iz - nm.z;
           const d = Math.max(Math.sqrt(dx * dx + dz * dz), 0.1);
-          addParticle(ix, 0, iz, (-dz / d) * speed * 8, 0, (dx / d) * speed * 8);
+          const spd = speed * 8;
+          const ci = Math.cos(incl), si = Math.sin(incl);
+          const hx = -dz / d, hz = dx / d;
+          addParticle(ix, 0, iz, hx * spd * ci, spd * si, hz * spd * ci);
         } else {
           addParticle(ix, 0, iz, speed * 8, 0, 0);
         }
@@ -5265,12 +5288,20 @@ function setupCanvas(id) {
 
     // ---- Controls wiring ----
     // ---- Mode buttons ----
-    const modeMap = { 'curv-mode-place': 'place', 'curv-mode-drop': 'drop', 'curv-mode-orbit': 'orbit', 'curv-mode-rain': 'rain' };
+    const modeMap = { 'curv-mode-place': 'place', 'curv-mode-drop': 'drop', 'curv-mode-orbit': 'orbit', 'curv-mode-rain': 'rain', 'curv-mode-orbits': 'orbits' };
     const modeIds = Object.keys(modeMap);
     Object.entries(modeMap).forEach(([id, mode]) => {
       document.getElementById(id).addEventListener('click', () => {
         currentMode = mode;
         modeIds.forEach(bid => document.getElementById(bid).classList.toggle('active', bid === id));
+        // Show inclination slider for orbit modes
+        document.getElementById('curv-inclination-group').style.display = (mode === 'orbit' || mode === 'orbits') ? 'block' : 'none';
+        // Show orbital presets for orbits mode
+        document.getElementById('curv-orbit-presets').style.display = mode === 'orbits' ? 'flex' : 'none';
+        if (mode !== 'orbits') {
+          document.getElementById('curv-orbit-info').style.display = 'none';
+          document.getElementById('curv-orbit-info').textContent = '';
+        }
         if (mode === 'rain') {
           rainParticles();
           container.style.cursor = 'default';
@@ -5303,6 +5334,9 @@ function setupCanvas(id) {
     });
     document.getElementById('curv-launch-speed').addEventListener('input', (e) => {
       document.getElementById('curv-speed-label').textContent = (e.target.value / 100).toFixed(2);
+    });
+    document.getElementById('curv-inclination').addEventListener('input', (e) => {
+      document.getElementById('curv-incl-label').textContent = e.target.value + '\u00B0';
     });
 
     // ---- 2D / 3D view toggle ----
@@ -5371,6 +5405,92 @@ function setupCanvas(id) {
         document.getElementById('curv-orbit-period').innerHTML = '&mdash;';
       }
     }
+
+    // ---- Orbital plane presets ----
+    function hslToHex(h, s, l) {
+      s /= 100; l /= 100;
+      const k = n => (n + h / 30) % 12;
+      const a = s * Math.min(l, 1 - l);
+      const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+      return (Math.round(f(0) * 255) << 16) + (Math.round(f(8) * 255) << 8) + Math.round(f(4) * 255);
+    }
+
+    const orbitalPresets = {
+      '3plane': {
+        massStrength: 5.0,
+        info: 'Three identical orbits in perpendicular planes. Same mass, same distance, same speed \u2014 only the orientation differs. All are equally stable, proving gravity has no preferred direction.',
+        orbits: [
+          { distance: 8, inclination: 0,              azimuth: 0,            color: 0x06b6d4 },
+          { distance: 8, inclination: Math.PI / 2,    azimuth: Math.PI / 2,  color: 0xef4444 },
+          { distance: 8, inclination: Math.PI / 4,    azimuth: Math.PI,      color: 0x22c55e },
+        ]
+      },
+      'solar': {
+        massStrength: 5.0,
+        info: 'Planets orbit mostly near the ecliptic plane, but Pluto\u2019s 17\u00B0 tilt and comets at extreme angles show gravity works identically in every orientation. The ecliptic is not special \u2014 it\u2019s just where the dust happened to settle.',
+        orbits: [
+          { distance: 6,  inclination: 7    * Math.PI / 180, azimuth: 0,               color: 0x9ca3af },
+          { distance: 8,  inclination: 0,                    azimuth: Math.PI / 3,      color: 0x3b82f6 },
+          { distance: 10, inclination: 1.85 * Math.PI / 180, azimuth: 2 * Math.PI / 3, color: 0xef4444 },
+          { distance: 13, inclination: 17   * Math.PI / 180, azimuth: Math.PI,          color: 0xa855f7 },
+          { distance: 15, inclination: 62   * Math.PI / 180, azimuth: 4 * Math.PI / 3, color: 0xf59e0b },
+        ]
+      },
+      'globular': {
+        massStrength: 8.0,
+        info: 'Stars in a globular cluster orbit in every direction \u2014 no preferred plane. This is gravity\u2019s natural state: truly spherically symmetric. Every orientation is equally valid.',
+        orbits: null
+      }
+    };
+
+    function generateGlobularOrbits() {
+      const orbits = [];
+      const count = 8;
+      const hueStep = 360 / count;
+      for (let i = 0; i < count; i++) {
+        const t = (i + 0.5) / count;
+        const inclination = Math.acos(2 * t - 1);
+        const azimuth = i * 2.3998;
+        const distance = 7 + (i % 3) * 2.5;
+        orbits.push({ distance, inclination, azimuth, color: hslToHex(i * hueStep, 80, 60) });
+      }
+      return orbits;
+    }
+
+    function launchOrbitalPreset(name) {
+      const preset = orbitalPresets[name];
+      if (!preset) return;
+      clearMasses();
+      clearParticles();
+      addMass(0, 0, preset.massStrength, name === 'globular');
+      // Switch to 3D before adding particles (switchView clears particles)
+      if (!view3D) switchView(true);
+      document.getElementById('curv-mass-slider').value = preset.massStrength * 10;
+      document.getElementById('curv-mass-label').textContent = preset.massStrength.toFixed(1);
+      document.querySelectorAll('#sec-curvature [data-preset]').forEach(b => b.classList.remove('active'));
+      updateSphereShells();
+      updateCrossRings();
+      const orbits = name === 'globular' ? generateGlobularOrbits() : preset.orbits;
+      for (const orb of orbits) {
+        const px = orb.distance * Math.cos(orb.azimuth);
+        const pz = orb.distance * Math.sin(orb.azimuth);
+        const d = orb.distance;
+        const hx = -pz / d, hz = px / d;
+        const spd = Math.sqrt(preset.massStrength / d) * 5.0;
+        const ci = Math.cos(orb.inclination), si = Math.sin(orb.inclination);
+        addParticle(px, 0, pz, hx * spd * ci, spd * si, hz * spd * ci, orb.color);
+      }
+      document.getElementById('curv-orbit-info').textContent = preset.info;
+      document.getElementById('curv-orbit-info').style.display = 'block';
+    }
+
+    ['3plane', 'solar', 'globular'].forEach(name => {
+      document.getElementById('curv-orbpreset-' + name).addEventListener('click', () => {
+        document.querySelectorAll('#curv-orbit-presets .tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('curv-orbpreset-' + name).classList.add('active');
+        launchOrbitalPreset(name);
+      });
+    });
 
     // ---- Animation loop ----
     let prevTime = null;

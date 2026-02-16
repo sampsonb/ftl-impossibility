@@ -69,9 +69,15 @@ https://sampsonb.github.io/ftl-impossibility/
 - Click to place masses (up to 5), raycasting onto XZ plane
 - Particle simulation with full 3D Verlet integration following geodesics
   - Drop mode: particles fall from rest into gravity wells
-  - Orbit mode: tangential launch for orbital mechanics
+  - Orbit mode: tangential launch for orbital mechanics (inclination-aware)
   - **Rain mode**: 6 particles from ±X, ±Y, ±Z all fall inward — proves omnidirectional curvature
+  - **Orbital Planes mode**: multi-plane orbital demonstrations
   - Trail rendering (300-point ring buffer)
+- Orbital inclination slider (0°–180°) for orbit and orbital planes modes
+- **Orbital plane presets** (auto-switch to 3D view):
+  - **3-Plane Demo**: equatorial (0°), polar (90°), tilted (45°) — all equally stable
+  - **Solar System**: Mercury (7°), Earth (0°), Mars (1.9°), Pluto (17°), comet (62°)
+  - **Globular Cluster**: 8 stars with uniformly distributed inclinations — truly spherical
 - Presets: Earth (gentle), Sun (moderate), Black Hole (extreme + accretion ring), Binary Stars
 - Toggle between 2D Sheet and 3D Spherical views
 - Show/hide cross-section rings, grid, geodesic straightness
@@ -155,3 +161,4 @@ https://sampsonb.github.io/ftl-impossibility/
 13. 3D spacetime curvature section (10) with Three.js visualization
 14. Added 3D Spherical view with concentric shells, cross-section rings, rain particles
 15. Spacetime curvature moved to section 04, all sections renumbered
+16. Multi-plane orbital demonstrations: inclination slider, 3-Plane/Solar System/Globular Cluster presets

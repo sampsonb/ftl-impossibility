@@ -2819,11 +2819,20 @@ function setupCanvas(id) {
     ctx.fillText('Earth Twin', twinEarthX, twinBaseY + 2);
 
     if (phase === 'ready' || phase === 'reunited') {
+      // Traveler standing next to Earth twin
       drawPerson(ctx, twinTravX, twinBaseY - 40, 1.15, '#fcd6a8', '#a855f7', travAge);
       ctx.fillStyle = '#94a3b8';
       ctx.font = '10px system-ui';
       ctx.textAlign = 'center';
       ctx.fillText('Traveler', twinTravX, twinBaseY + 2);
+    } else {
+      // Traveler riding above the rocket during flight
+      const travRocketY = rocketY - 34 * rocketScale;
+      drawPerson(ctx, rocketX, travRocketY, 0.75, '#fcd6a8', '#a855f7', travAge);
+      ctx.fillStyle = '#a855f7';
+      ctx.font = '10px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('Traveler', rocketX, travRocketY - 26);
     }
 
     // Age difference highlight on reunion

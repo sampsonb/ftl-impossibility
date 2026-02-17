@@ -207,8 +207,23 @@ https://sampsonb.github.io/ftl-impossibility/
 - **Equation/derivation hiding**: `.eq-only` blocks hidden in beginner mode, `.deriv-only` shown only in advanced
 - **Per-section override**: cards support local level override classes for "Show Simple / Show Full" toggling
 
+## Netflix-Style Landing Page
+- Full-viewport hero with progress bar and scroll hint animation
+- Module card grid: 12 interactive cards with emoji icons, difficulty badges, hover effects
+- Card layout: thumbnail area with gradient background → body with title, description, status
+- Progress tracking: IntersectionObserver marks sections as "visited" after 2-second dwell
+- localStorage persistence: visited sections saved across sessions
+- Overall progress bar in hero and sticky nav (gradient fill, percentage)
+- Module cards show visited/not-visited status with green dot
+- Sticky navigation bar: appears when scrolling past module grid, highlights current section
+- Backdrop-blur glass effect, horizontal scroll for section buttons
+- Mini progress bar in nav with percentage
+- Smooth scroll: clicking cards or nav items scrolls to section with `scroll-margin-top` offset
+- Keyboard accessible: cards are focusable with Enter/Space activation
+- Responsive: 3-column grid on desktop, single column on mobile
+
 ## Technical Details
-- Single self-contained HTML file (~7100 lines)
+- Single self-contained HTML file (~8200 lines)
 - Vanilla JS + HTML5 Canvas for sections 01–04, 06–11; Three.js (CDN) for section 05
 - Animated starfield background
 - Responsive design with dark theme
@@ -238,3 +253,5 @@ https://sampsonb.github.io/ftl-impossibility/
 18. Adaptive difficulty level system: 3-level toggle, adaptive content, badges, tooltips, classroom mode
 19. Major 3D curvature overhaul: physics fixes, dynamic masses, scenarios (ISS/Moon/Binary/Figure-8), pause/speed/camera/fullscreen controls, labels, force vectors
 20. 3D centering fix: masses at center of spherical grid, axis labels, Front view, enhanced curvature visibility
+21. Netflix-style landing page: module card grid, progress tracking, sticky nav, smooth scroll
+22. 3D curvature polish: labeled presets, wireframe legend, axis arrowheads, camera help, time elapsed, trail visibility

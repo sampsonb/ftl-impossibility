@@ -445,6 +445,329 @@
   .card.level-override-adv .level-adv { display: block !important; }
   .card.level-override-adv .level-int { display: none !important; }
   .card.level-override-adv .level-beg { display: none !important; }
+
+  /* ==================== NETFLIX LANDING PAGE ==================== */
+  html { scroll-behavior: smooth; }
+  section[id] { scroll-margin-top: 60px; }
+
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 60px;
+    position: relative;
+  }
+  .hero > * { width: 100%; }
+
+  .hero-scroll-hint {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--dim);
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    animation: hero-bounce 2s ease-in-out infinite;
+    width: auto !important;
+  }
+  .hero-scroll-hint .chevron {
+    width: 20px; height: 20px;
+    border-right: 2px solid var(--dim);
+    border-bottom: 2px solid var(--dim);
+    transform: rotate(45deg);
+  }
+  @keyframes hero-bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  .hero-progress {
+    max-width: 500px;
+    margin: 24px auto 0;
+  }
+  .hero-progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .hero-progress-label .progress-pct {
+    color: var(--accent3);
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+  }
+  .hero-progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .hero-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+    border-radius: 3px;
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Module card grid */
+  .module-grid-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+  .module-grid-heading {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .module-grid-heading h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 8px;
+  }
+  .module-grid-heading p {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  @media (min-width: 1100px) {
+    .module-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .module-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .module-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    box-shadow: 0 12px 40px rgba(59,130,246,0.15), 0 0 0 1px rgba(59,130,246,0.1);
+  }
+  .module-card.visited { border-color: rgba(34,197,94,0.3); }
+  .module-card.visited:hover {
+    border-color: rgba(34,197,94,0.6);
+    box-shadow: 0 12px 40px rgba(34,197,94,0.12);
+  }
+
+  .module-card-thumb {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .module-card-thumb.thumb-beginner {
+    background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(6,182,212,0.06) 100%);
+  }
+  .module-card-thumb.thumb-intermediate {
+    background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(139,92,246,0.06) 100%);
+  }
+  .module-card-thumb.thumb-advanced {
+    background: linear-gradient(135deg, rgba(239,68,68,0.08) 0%, rgba(245,158,11,0.06) 100%);
+  }
+  .module-card-thumb::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  .module-card-icon {
+    font-size: 2.4rem;
+    opacity: 0.9;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 1;
+  }
+  .module-card:hover .module-card-icon { transform: scale(1.15); }
+
+  .module-card-body {
+    padding: 18px 20px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .module-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .module-card-num {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.05em;
+  }
+  .module-card-header .section-badge { margin-left: 0; }
+  .module-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .module-card-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.5;
+    flex: 1;
+  }
+  .module-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .module-card-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  .module-card-status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+  .module-card.visited .module-card-status-dot {
+    background: #22c55e;
+    box-shadow: 0 0 6px rgba(34,197,94,0.5);
+  }
+  .module-card.visited .module-card-status { color: #22c55e; }
+  .module-card-arrow {
+    color: var(--dim);
+    font-size: 1rem;
+    transition: transform 0.3s, color 0.3s;
+  }
+  .module-card:hover .module-card-arrow {
+    color: var(--accent);
+    transform: translateX(4px);
+  }
+
+  /* Sticky navigation */
+  .sticky-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: rgba(10,14,26,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    transform: translateY(-100%);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .sticky-nav.visible {
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .sticky-nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    height: 52px;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .sticky-nav-inner::-webkit-scrollbar { display: none; }
+  .sticky-nav-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    white-space: nowrap;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  .sticky-nav-item {
+    background: transparent;
+    border: none;
+    color: var(--dim);
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.2s, background 0.2s;
+    flex-shrink: 0;
+  }
+  .sticky-nav-item:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.05);
+  }
+  .sticky-nav-item.active {
+    color: var(--accent);
+    background: rgba(59,130,246,0.1);
+  }
+  .sticky-nav-progress {
+    margin-left: auto;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sticky-nav-progress-bar {
+    width: 60px; height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .sticky-nav-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    border-radius: 2px;
+    transition: width 0.4s;
+  }
+  .sticky-nav-progress-text {
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+  }
+
+  @media (max-width: 700px) {
+    .module-grid { grid-template-columns: 1fr; gap: 14px; }
+    .module-card-thumb { height: 80px; }
+    .sticky-nav-title { display: none; }
+    .sticky-nav-item { font-size: 0.7rem; padding: 5px 8px; }
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js" defer></script>
@@ -454,6 +777,31 @@
 <canvas id="starfield"></canvas>
 
 <div class="content-wrap">
+
+<!-- Sticky Navigation -->
+<nav class="sticky-nav" id="sticky-nav">
+  <div class="sticky-nav-inner">
+    <span class="sticky-nav-title">FTL</span>
+    <button class="sticky-nav-item" data-target="sec-speedlimit">01 Speed</button>
+    <button class="sticky-nav-item" data-target="sec-twins">02 Twins</button>
+    <button class="sticky-nav-item" data-target="sec-contraction">03 Length</button>
+    <button class="sticky-nav-item" data-target="sec-causality">04 Causality</button>
+    <button class="sticky-nav-item" data-target="sec-curvature">05 Gravity</button>
+    <button class="sticky-nav-item" data-target="sec-clocks">06 Clock</button>
+    <button class="sticky-nav-item" data-target="sec-spacetime">06b Diagram</button>
+    <button class="sticky-nav-item" data-target="sec-lorentz">07 Lorentz</button>
+    <button class="sticky-nav-item" data-target="sec-energy">08 Energy</button>
+    <button class="sticky-nav-item" data-target="sec-examples">09 Evidence</button>
+    <button class="sticky-nav-item" data-target="sec-emc2">10 E=mc&sup2;</button>
+    <button class="sticky-nav-item" data-target="sec-compare">11 Summary</button>
+    <div class="sticky-nav-progress">
+      <div class="sticky-nav-progress-bar">
+        <div class="sticky-nav-progress-fill" id="nav-progress-fill"></div>
+      </div>
+      <span class="sticky-nav-progress-text" id="nav-progress-text">0%</span>
+    </div>
+  </div>
+</nav>
 
 <!-- Hero -->
 <header class="hero">
@@ -481,7 +829,140 @@
   <div class="rec-path level-beg">
     <strong>Recommended path:</strong> Start with sections 01, 02, 03, 06, then 09 for real-world proof!
   </div>
+
+  <div class="hero-progress" id="hero-progress">
+    <div class="hero-progress-label">
+      <span>Your Progress</span>
+      <span class="progress-pct" id="hero-progress-pct">0 / 12 modules</span>
+    </div>
+    <div class="hero-progress-bar">
+      <div class="hero-progress-fill" id="hero-progress-fill"></div>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <span>Explore Modules</span>
+    <div class="chevron"></div>
+  </div>
 </header>
+
+<!-- Module Card Grid -->
+<div class="module-grid-section" id="module-grid">
+  <div class="module-grid-heading">
+    <h2>Choose Your Module</h2>
+    <p>12 interactive explorations from beginner to advanced</p>
+  </div>
+  <div class="module-grid">
+    <div class="module-card" data-section="sec-speedlimit">
+      <div class="module-card-thumb thumb-beginner"><span class="module-card-icon">&#x1F680;</span></div>
+      <div class="module-card-body">
+        <div class="module-card-header"><span class="module-card-num">01</span><span class="section-badge badge-beginner">Start Here</span></div>
+        <div class="module-card-title">The Speed Limit of the Universe</div>
+        <div class="module-card-desc">No equations &mdash; just visual stories that show why nothing can outrun light.</div>
+        <div class="module-card-footer"><div class="module-card-status"><span class="module-card-status-dot"></span><span class="module-card-status-text">Not visited</span></div><span class="module-card-arrow">&#x2192;</span></div>
+      </div>
+    </div>
+    <div class="module-card" data-section="sec-twins">
+      <div class="module-card-thumb thumb-beginner"><span class="module-card-icon">&#x1F46F;</span></div>
+      <div class="module-card-body">
+        <div class="module-card-header"><span class="module-card-num">02</span><span class="section-badge badge-beginner">Beginner</span></div>
+        <div class="module-card-title">The Twin Paradox</div>
+        <div class="module-card-desc">One twin rockets away and returns younger. Watch them age at different rates in real time.</div>
+        <div class="module-card-footer"><div class="module-card-status"><span class="module-card-status-dot"></span><span class="module-card-status-text">Not visited</span></div><span class="module-card-arrow">&#x2192;</span></div>
+      </div>
+    </div>
+    <div class="module-card" data-section="sec-contraction">
+      <div class="module-card-thumb thumb-beginner"><span class="module-card-icon">&#x2194;&#xFE0F;</span></div>
+      <div class="module-card-body">
+        <div class="module-card-header"><span class="module-card-num">03</span><span class="section-badge badge-beginner">Beginner</span></div>
+        <div class="module-card-title">Length Contraction</div>
+        <div class="module-card-desc">Moving objects physically shrink &mdash; watch a starship compress as it approaches light speed.</div>
+        <div class="module-card-footer"><div class="module-card-status"><span class="module-card-status-dot"></span><span class="module-card-status-text">Not visited</span></div><span class="module-card-arrow">&#x2192;</span></div>
+      </div>
+    </div>
+    <div class="module-card" data-section="sec-causality">
+      <div class="module-card-thumb thumb-intermediate"><span class="module-card-icon">&#x26A0;&#xFE0F;</span></div>
+      <div class="module-card-body">
+        <div class="module-card-header"><span class="module-card-num">04</span><span class="section-badge badge-intermediate">Intermediate</span></div>
+        <div class="module-card-title">Causality Violation</div>
+        <div class="module-card-desc">FTL doesn't just break a speed limit &mdash; it lets you receive messages before they were sent.</div>
+        <div class="module-card-footer"><div class="module-card-status"><span class="module-card-status-dot"></span><span class="module-card-status-text">Not visited</span></div><span class="module-card-arrow">&#x2192;</span></div>
+      </div>
+    </div>
+    <div class="module-card" data-section="sec-curvature">
+      <div class="module-card-thumb thumb-intermediate"><span class="module-card-icon">&#x1F30D;</span></div>
+      <div class="module-card-body">
+        <div class="module-card-header"><span class="module-card-num">05</span><span class="section-badge badge-intermediate">Intermediate</span></div>
+        <div class="module-card-title">Spacetime Curvature in 3D</div>
+        <div class="module-card-desc">Interactive 3D gravity: place masses, launch orbits, and see spacetime warp in real time.</div>
+        <div class="module-card-footer"><div class="module-card-status"><span class="module-card-status-dot"></span><span class="module-card-status-text">Not visited</span></div><span class="module-card-arrow">&#x2192;</span></div>
+      </div>
+    </div>
+    <div class="module-card" data-section="sec-clocks">
+      <div class="module-card-thumb thumb-beginner"><span class="module-card-icon">&#x23F1;&#xFE0F;</span></div>
+      <div class="module-card-body">
+        <div class="module-card-header"><span class="module-card-num">06</span><span class="section-badge badge-beginner">Beginner</span></div>
+        <div class="module-card-title">Photon Clock &amp; Time Dilation</div>
+        <div class="module-card-desc">A photon bouncing between mirrors reveals how time itself slows for moving objects.</div>
+        <div class="module-card-footer"><div class="module-card-status"><span class="module-card-status-dot"></span><span class="module-card-status-text">Not visited</span></div><span class="module-card-arrow">&#x2192;</span></div>
+      </div>
+    </div>
+    <div class="module-card" data-section="sec-spacetime">
+      <div class="module-card-thumb thumb-intermediate"><span class="module-card-icon">&#x1F4C8;</span></div>
+      <div class="module-card-body">
+        <div class="module-card-header"><span class="module-card-num">06b</span><span class="section-badge badge-intermediate">Intermediate</span></div>
+        <div class="module-card-title">Minkowski Spacetime Diagram</div>
+        <div class="module-card-desc">The geometry of the universe &mdash; why light speed divides spacetime into reachable and unreachable.</div>
+        <div class="module-card-footer"><div class="module-card-status"><span class="module-card-status-dot"></span><span class="module-card-status-text">Not visited</span></div><span class="module-card-arrow">&#x2192;</span></div>
+      </div>
+    </div>
+    <div class="module-card" data-section="sec-lorentz">
+      <div class="module-card-thumb thumb-intermediate"><span class="module-card-icon">&#x1D6FE;</span></div>
+      <div class="module-card-body">
+        <div class="module-card-header"><span class="module-card-num">07</span><span class="section-badge badge-intermediate">Intermediate</span></div>
+        <div class="module-card-title">The Lorentz Factor</div>
+        <div class="module-card-desc">The mathematical heart of special relativity &mdash; and why it blows up at light speed.</div>
+        <div class="module-card-footer"><div class="module-card-status"><span class="module-card-status-dot"></span><span class="module-card-status-text">Not visited</span></div><span class="module-card-arrow">&#x2192;</span></div>
+      </div>
+    </div>
+    <div class="module-card" data-section="sec-energy">
+      <div class="module-card-thumb thumb-advanced"><span class="module-card-icon">&#x221E;</span></div>
+      <div class="module-card-body">
+        <div class="module-card-header"><span class="module-card-num">08</span><span class="section-badge badge-advanced">Advanced</span></div>
+        <div class="module-card-title">The Infinite Energy Barrier</div>
+        <div class="module-card-desc">Reaching light speed requires infinite energy. See the relativistic vs classical curves diverge.</div>
+        <div class="module-card-footer"><div class="module-card-status"><span class="module-card-status-dot"></span><span class="module-card-status-text">Not visited</span></div><span class="module-card-arrow">&#x2192;</span></div>
+      </div>
+    </div>
+    <div class="module-card" data-section="sec-examples">
+      <div class="module-card-thumb thumb-beginner"><span class="module-card-icon">&#x1F6F0;&#xFE0F;</span></div>
+      <div class="module-card-body">
+        <div class="module-card-header"><span class="module-card-num">09</span><span class="section-badge badge-beginner">Beginner</span></div>
+        <div class="module-card-title">Real-World Evidence</div>
+        <div class="module-card-desc">GPS satellites, muon decay, particle accelerators &mdash; we measure relativity every day.</div>
+        <div class="module-card-footer"><div class="module-card-status"><span class="module-card-status-dot"></span><span class="module-card-status-text">Not visited</span></div><span class="module-card-arrow">&#x2192;</span></div>
+      </div>
+    </div>
+    <div class="module-card" data-section="sec-emc2">
+      <div class="module-card-thumb thumb-intermediate"><span class="module-card-icon">&#x2699;&#xFE0F;</span></div>
+      <div class="module-card-body">
+        <div class="module-card-header"><span class="module-card-num">10</span><span class="section-badge badge-intermediate">Intermediate</span></div>
+        <div class="module-card-title">E = mc&sup2; and Mass-Energy</div>
+        <div class="module-card-desc">Mass is frozen energy. Energy has inertia. This equivalence drives the cosmic speed limit.</div>
+        <div class="module-card-footer"><div class="module-card-status"><span class="module-card-status-dot"></span><span class="module-card-status-text">Not visited</span></div><span class="module-card-arrow">&#x2192;</span></div>
+      </div>
+    </div>
+    <div class="module-card" data-section="sec-compare">
+      <div class="module-card-thumb thumb-intermediate"><span class="module-card-icon">&#x1F52C;</span></div>
+      <div class="module-card-body">
+        <div class="module-card-header"><span class="module-card-num">11</span><span class="section-badge badge-intermediate">Intermediate</span></div>
+        <div class="module-card-title">Putting It All Together</div>
+        <div class="module-card-desc">Adjust velocity and watch all relativistic effects &mdash; time, length, energy &mdash; simultaneously.</div>
+        <div class="module-card-footer"><div class="module-card-status"><span class="module-card-status-dot"></span><span class="module-card-status-text">Not visited</span></div><span class="module-card-arrow">&#x2192;</span></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Section 01: Speed Limit Explained Simply -->
 <section id="sec-speedlimit">
@@ -1081,6 +1562,16 @@
         <div>Time dilation: <span id="curv-tip-dilation" style="color:var(--accent);">--</span></div>
       </div>
       <div id="curv-labels" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:5;"></div>
+      <div id="curv-cam-help" style="position:absolute;bottom:10px;right:10px;background:rgba(17,24,39,0.8);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:0.7rem;color:var(--dim);pointer-events:none;z-index:5;line-height:1.5;">
+        Drag: Rotate &nbsp;|&nbsp; Right-drag: Pan &nbsp;|&nbsp; Scroll: Zoom
+      </div>
+      <div id="curv-shell-legend" style="display:none;position:absolute;top:10px;left:10px;background:rgba(17,24,39,0.85);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:0.75rem;color:var(--muted);pointer-events:none;z-index:5;line-height:1.6;max-width:220px;">
+        <strong style="color:var(--text);">Spherical Grid</strong><br>
+        Nested shells show spacetime curvature.<br>
+        <span style="color:#ef4444;">&#9632;</span> Red = strong curvature (near mass)<br>
+        <span style="color:#3b82f6;">&#9632;</span> Blue = flat spacetime (far away)<br>
+        Shells compress inward where gravity is strongest.
+      </div>
       <button id="curv-fullscreen-close" style="display:none;position:absolute;top:16px;left:16px;z-index:10001;background:rgba(17,24,39,0.85);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.9rem;font-family:inherit;">Exit Fullscreen</button>
       <div id="curv-fullscreen-instructions" style="display:none;position:absolute;bottom:16px;left:16px;z-index:10001;background:rgba(17,24,39,0.85);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.8rem;color:var(--muted);max-width:300px;line-height:1.5;">
         <strong style="color:var(--text);">Controls:</strong><br>
@@ -1121,6 +1612,10 @@
       <div class="readout readout-adv">
         <div class="label">Escape Velocity</div>
         <div class="value red" id="curv-escape-vel">&mdash;</div>
+      </div>
+      <div class="readout">
+        <div class="label">Time Elapsed</div>
+        <div class="value cyan" id="curv-elapsed-time">0.0s</div>
       </div>
     </div>
 
@@ -5264,6 +5759,7 @@ function setupCanvas(id) {
     let mouseDownPos = null;
     let paused = false;
     let simSpeed = 1.0;
+    let simElapsed = 0;
     let showTrails = true;
     let showForces = false;
     let followTarget = null;
@@ -5404,10 +5900,20 @@ function setupCanvas(id) {
         new THREE.Vector3(dir.x * AXIS_LEN, dir.y * AXIS_LEN, dir.z * AXIS_LEN)
       ];
       const geo = new THREE.BufferGeometry().setFromPoints(pts);
-      const mat = new THREE.LineDashedMaterial({ color: axisColors[ai], transparent: true, opacity: 0.35, dashSize: 0.8, gapSize: 0.4 });
+      const mat = new THREE.LineDashedMaterial({ color: axisColors[ai], transparent: true, opacity: 0.5, dashSize: 0.8, gapSize: 0.4 });
       const line = new THREE.Line(geo, mat);
       line.computeLineDistances();
       axisGroup.add(line);
+      // Arrowhead cone at positive end
+      const coneGeo = new THREE.ConeGeometry(0.4, 1.2, 8);
+      const coneMat = new THREE.MeshBasicMaterial({ color: axisColors[ai], transparent: true, opacity: 0.6 });
+      const cone = new THREE.Mesh(coneGeo, coneMat);
+      cone.position.set(dir.x * AXIS_LEN, dir.y * AXIS_LEN, dir.z * AXIS_LEN);
+      // Rotate cone to point along axis
+      if (ai === 0) cone.rotation.z = -Math.PI / 2; // X axis
+      else if (ai === 2) cone.rotation.x = Math.PI / 2; // Z axis
+      // Y axis: default cone orientation is fine
+      axisGroup.add(cone);
     }
 
     function updateAxisLabels() {
@@ -5416,7 +5922,7 @@ function setupCanvas(id) {
       if (!lc) return;
       for (var ai = 0; ai < 3; ai++) {
         var dir = axisDirs[ai];
-        var pos3 = new THREE.Vector3(dir.x * (AXIS_LEN + 1.5), dir.y * (AXIS_LEN + 1.5), dir.z * (AXIS_LEN + 1.5));
+        var pos3 = new THREE.Vector3(dir.x * (AXIS_LEN + 2.5), dir.y * (AXIS_LEN + 2.5), dir.z * (AXIS_LEN + 2.5));
         var v = pos3.clone().project(camera);
         if (v.z > 1) continue;
         var cx = (v.x * 0.5 + 0.5) * container.clientWidth;
@@ -5424,7 +5930,7 @@ function setupCanvas(id) {
         var el = document.createElement('div');
         el.textContent = axisNames[ai];
         var hex = '#' + axisColors[ai].toString(16).padStart(6, '0');
-        el.style.cssText = 'position:absolute;left:' + cx + 'px;top:' + cy + 'px;transform:translate(-50%,-50%);color:' + hex + ';font-size:14px;font-weight:bold;font-family:monospace;pointer-events:none;text-shadow:0 0 6px ' + hex + ',0 0 12px rgba(0,0,0,0.8);';
+        el.style.cssText = 'position:absolute;left:' + cx + 'px;top:' + cy + 'px;transform:translate(-50%,-50%);color:' + hex + ';font-size:16px;font-weight:bold;font-family:monospace;pointer-events:none;text-shadow:0 0 8px ' + hex + ',0 0 15px rgba(0,0,0,0.9);';
         lc.appendChild(el);
       }
     }
@@ -5605,7 +6111,7 @@ function setupCanvas(id) {
       }
       const tGeo = new THREE.BufferGeometry();
       tGeo.setAttribute('position', new THREE.BufferAttribute(trailPos, 3));
-      const tMat = new THREE.LineBasicMaterial({ color: c, transparent: true, opacity: 0.35 });
+      const tMat = new THREE.LineBasicMaterial({ color: c, transparent: true, opacity: 0.55 });
       const trail = new THREE.Line(tGeo, tMat);
       trail.visible = showTrails;
       const p = {
@@ -5832,17 +6338,18 @@ function setupCanvas(id) {
 
     // ---- Presets ----
     const PRESETS = {
-      earth:     [{ x: 0, z: 0, strength: 1.5, bh: false }],
-      sun:       [{ x: 0, z: 0, strength: 5.0, bh: false }],
-      blackhole: [{ x: 0, z: 0, strength: 15.0, bh: true }],
-      binary:    [{ x: -5, z: 0, strength: 4.0, bh: false }, { x: 5, z: 0, strength: 4.0, bh: false }]
+      earth:     [{ x: 0, z: 0, strength: 1.5, bh: false, label: 'Earth', color: 0x3b82f6 }],
+      sun:       [{ x: 0, z: 0, strength: 5.0, bh: false, label: 'Sun', color: 0xf59e0b }],
+      blackhole: [{ x: 0, z: 0, strength: 15.0, bh: true, label: 'Black Hole', color: 0x000000 }],
+      binary:    [{ x: -5, z: 0, strength: 4.0, bh: false, label: 'Star A', color: 0xf59e0b }, { x: 5, z: 0, strength: 4.0, bh: false, label: 'Star B', color: 0xef4444 }]
     };
 
     function loadPreset(name) {
       clearMasses(); clearParticles();
+      simElapsed = 0;
       const preset = PRESETS[name];
       if (!preset) return;
-      for (const p of preset) addMass(p.x, p.z, p.strength, p.bh);
+      for (const p of preset) addMass(p.x, p.z, p.strength, p.bh, { label: p.label, color: p.color });
       document.getElementById('curv-mass-slider').value = preset[0].strength * 10;
       document.getElementById('curv-mass-label').textContent = preset[0].strength.toFixed(1);
     }
@@ -6050,6 +6557,8 @@ function setupCanvas(id) {
       axisGroup.visible = to3D;
       var hint3D = document.getElementById('curv-3d-hint');
       if (hint3D) hint3D.style.display = to3D ? 'block' : 'none';
+      var shellLeg = document.getElementById('curv-shell-legend');
+      if (shellLeg) shellLeg.style.display = to3D ? 'block' : 'none';
       if (to3D) {
         updateSphereShells();
         updateCrossRings();
@@ -6118,6 +6627,13 @@ function setupCanvas(id) {
         document.getElementById('curv-orbit-period').innerHTML = '&mdash;';
         altEl.innerHTML = '&mdash;';
         escEl.innerHTML = '&mdash;';
+      }
+      // Elapsed time
+      var etEl = document.getElementById('curv-elapsed-time');
+      if (etEl) {
+        if (simElapsed < 60) etEl.textContent = simElapsed.toFixed(1) + 's';
+        else if (simElapsed < 3600) etEl.textContent = (simElapsed / 60).toFixed(1) + ' min';
+        else etEl.textContent = (simElapsed / 3600).toFixed(2) + ' hr';
       }
     }
 
@@ -6213,7 +6729,7 @@ function setupCanvas(id) {
         name: 'ISS Orbiting Earth',
         description: 'ISS orbits at 408 km altitude in ~90 minutes. Scaled to our grid: Earth at center, ISS in circular orbit.',
         setup: function() {
-          clearMasses(); clearParticles();
+          clearMasses(); clearParticles(); simElapsed = 0;
           addMass(0, 0, 3.0, false, { color: 0x3b82f6, label: 'Earth', radius: 1.2 });
           var d = 6, vCirc = Math.sqrt(3.0 / d);
           addParticle(d, 0, 0, 0, 0, vCirc, 0x06b6d4, 'ISS');
@@ -6224,18 +6740,18 @@ function setupCanvas(id) {
         name: 'Moon Orbiting Earth',
         description: 'The Moon orbits Earth at 384,400 km (27.3-day period). Scaled with a larger orbit distance.',
         setup: function() {
-          clearMasses(); clearParticles();
+          clearMasses(); clearParticles(); simElapsed = 0;
           addMass(0, 0, 2.0, false, { color: 0x3b82f6, label: 'Earth', radius: 1.0 });
           var d = 12, vCirc = Math.sqrt(2.0 / d);
           addParticle(d, 0, 0, 0, 0, vCirc, 0x9ca3af, 'Moon');
-          setSimSpeed(2.0);
+          setSimSpeed(1.0);
         }
       },
       earthsun: {
         name: 'Earth Orbiting Sun',
         description: 'Earth orbits the Sun at ~150 million km (1 year period). The Sun contains 99.86% of the solar system\'s mass.',
         setup: function() {
-          clearMasses(); clearParticles();
+          clearMasses(); clearParticles(); simElapsed = 0;
           addMass(0, 0, 5.0, false, { color: 0xf59e0b, label: 'Sun', radius: 1.5 });
           var d = 10, vCirc = Math.sqrt(5.0 / d);
           addParticle(d, 0, 0, 0, 0, vCirc, 0x3b82f6, 'Earth');
@@ -6246,7 +6762,7 @@ function setupCanvas(id) {
         name: 'Binary Star System',
         description: 'Two equal-mass stars orbit their common center of mass. Watch the grid deform dynamically as both stars move!',
         setup: function() {
-          clearMasses(); clearParticles();
+          clearMasses(); clearParticles(); simElapsed = 0;
           var sep = 5, str = 4.0;
           var vOrbit = Math.sqrt(str / (2 * sep));
           addMass(sep, 0, str, false, { color: 0xf59e0b, label: 'Star A', dynamic: true, vx: 0, vz: vOrbit });
@@ -6259,7 +6775,7 @@ function setupCanvas(id) {
         name: 'Figure-8 Three-Body',
         description: 'The famous Chenciner-Montgomery stable 3-body orbit. Three equal masses trace a figure-8 path — incredibly rare and beautiful!',
         setup: function() {
-          clearMasses(); clearParticles();
+          clearMasses(); clearParticles(); simElapsed = 0;
           var scale = 5.0, str = 3.0;
           var vScale = Math.sqrt(str / scale);
           var vx3 = 0.347111 * vScale, vz3 = 0.532728 * vScale;
@@ -6311,6 +6827,7 @@ function setupCanvas(id) {
 
     document.getElementById('curv-reset-all').addEventListener('click', function() {
       clearMasses(); clearParticles();
+      simElapsed = 0;
       paused = false;
       document.getElementById('curv-pause').textContent = 'Pause';
       document.getElementById('curv-pause').classList.remove('active');
@@ -6404,6 +6921,7 @@ function setupCanvas(id) {
       const rawDt = Math.min((timestamp - prevTime) / 1000, 0.05);
       prevTime = timestamp;
       const dt = paused ? 0 : rawDt * simSpeed;
+      simElapsed += dt;
       frameCount++;
 
       controls.update();
@@ -7628,6 +8146,124 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
     this.closePath();
   };
 }
+
+// ==================== NETFLIX LANDING: PROGRESS, NAV, SCROLL ====================
+(function initLandingPage() {
+  'use strict';
+  var STORAGE_KEY = 'ftl-visited-sections';
+  var ALL_SECTIONS = [
+    'sec-speedlimit', 'sec-twins', 'sec-contraction', 'sec-causality',
+    'sec-curvature', 'sec-clocks', 'sec-spacetime', 'sec-lorentz',
+    'sec-energy', 'sec-examples', 'sec-emc2', 'sec-compare'
+  ];
+  var TOTAL = ALL_SECTIONS.length;
+
+  function getVisited() {
+    try { var raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; }
+    catch (e) { return []; }
+  }
+  function markVisited(sectionId) {
+    var visited = getVisited();
+    if (visited.indexOf(sectionId) === -1) {
+      visited.push(sectionId);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(visited));
+      updateAllProgressUI();
+    }
+  }
+  function updateAllProgressUI() {
+    var visited = getVisited();
+    var count = visited.length;
+    var pct = Math.round((count / TOTAL) * 100);
+    var heroFill = document.getElementById('hero-progress-fill');
+    var heroPct = document.getElementById('hero-progress-pct');
+    if (heroFill) heroFill.style.width = pct + '%';
+    if (heroPct) heroPct.textContent = count + ' / ' + TOTAL + ' modules';
+    var navFill = document.getElementById('nav-progress-fill');
+    var navText = document.getElementById('nav-progress-text');
+    if (navFill) navFill.style.width = pct + '%';
+    if (navText) navText.textContent = pct + '%';
+    document.querySelectorAll('.module-card').forEach(function(card) {
+      var target = card.getAttribute('data-section');
+      var isV = visited.indexOf(target) !== -1;
+      card.classList.toggle('visited', isV);
+      var st = card.querySelector('.module-card-status-text');
+      if (st) st.textContent = isV ? 'Visited' : 'Not visited';
+    });
+  }
+
+  // Mark sections visited after 2s dwell at 30% visibility
+  var sectionTimers = {};
+  var sectionObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      var id = entry.target.id;
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
+        if (!sectionTimers[id]) {
+          sectionTimers[id] = setTimeout(function() {
+            markVisited(id);
+            delete sectionTimers[id];
+          }, 2000);
+        }
+      } else {
+        if (sectionTimers[id]) { clearTimeout(sectionTimers[id]); delete sectionTimers[id]; }
+      }
+    });
+  }, { threshold: [0.25] });
+  ALL_SECTIONS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) sectionObserver.observe(el);
+  });
+
+  // Nav highlighting: track current section
+  var navHighlightObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        document.querySelectorAll('.sticky-nav-item').forEach(function(btn) {
+          btn.classList.toggle('active', btn.getAttribute('data-target') === entry.target.id);
+        });
+      }
+    });
+  }, { rootMargin: '-80px 0px -60% 0px', threshold: [0] });
+  ALL_SECTIONS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) navHighlightObserver.observe(el);
+  });
+
+  // Sticky nav: show when module grid leaves viewport
+  var stickyNav = document.getElementById('sticky-nav');
+  var moduleGrid = document.getElementById('module-grid');
+  if (stickyNav && moduleGrid) {
+    var navShowObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (!entry.isIntersecting) stickyNav.classList.add('visible');
+        else stickyNav.classList.remove('visible');
+      });
+    }, { threshold: [0] });
+    navShowObserver.observe(moduleGrid);
+  }
+
+  // Module card click → smooth scroll
+  document.querySelectorAll('.module-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+      var el = document.getElementById(card.getAttribute('data-section'));
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'button');
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+    });
+  });
+
+  // Sticky nav click → smooth scroll
+  document.querySelectorAll('.sticky-nav-item').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var el = document.getElementById(btn.getAttribute('data-target'));
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  updateAllProgressUI();
+})();
 </script>
 
 </body>

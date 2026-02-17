@@ -5959,24 +5959,24 @@ function setupCanvas(id) {
           let totalPull = 0;
           let px = ox, py = oy, pz = oz;
           for (const m of masses) {
-            const dx = ox - m.x, dy = oy, dz = oz - m.z;
-            const r = Math.max(Math.sqrt(dx*dx + dy*dy + dz*dz), 0.5);
-            // Radial pull: vertices compress inward toward mass (∝ M/r)
-            // curvatureScale amplifies the effect for educational clarity
-            const pull = m.strength / r * curvatureScale;
-            totalPull += m.strength / r;
-            px -= (dx / r) * pull;
-            py -= (dy / r) * pull;
-            pz -= (dz / r) * pull;
-          }
-          // Clamp: don't let vertices collapse past the mass center
-          for (const m of masses) {
-            const cdx = px - m.x, cdy = py, cdz = pz - m.z;
-            const cr = Math.sqrt(cdx*cdx + cdy*cdy + cdz*cdz);
-            if (cr < 0.8) {
-              px = m.x + cdx / cr * 0.8;
-              py = cdy / cr * 0.8;
-              pz = m.z + cdz / cr * 0.8;
+            // Horizontal distance from vertex to mass (XZ plane)
+            const dx = ox - m.x, dz = oz - m.z;
+            const rHoriz = Math.sqrt(dx * dx + dz * dz);
+            const r3D = Math.max(Math.sqrt(dx * dx + oy * oy + dz * dz), 0.5);
+            totalPull += m.strength / r3D;
+
+            // === Gravity funnel: pull vertices DOWN (Y axis) near mass ===
+            // Like the rubber-sheet analogy but in full 3D
+            // Deeper well for closer vertices, creating visible funnel shape
+            const softR = Math.max(rHoriz, 1.0);
+            const wellDepth = m.strength / softR * curvatureScale * 1.5;
+            py -= wellDepth;
+
+            // === Mild radial pull toward mass (XZ only) for grid compression ===
+            const radialPull = m.strength / r3D * curvatureScale * 0.3;
+            if (rHoriz > 0.1) {
+              px -= (dx / rHoriz) * radialPull;
+              pz -= (dz / rHoriz) * radialPull;
             }
           }
           pos[ix] = px; pos[ix+1] = py; pos[ix+2] = pz;

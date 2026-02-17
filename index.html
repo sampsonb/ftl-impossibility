@@ -5959,23 +5959,21 @@ function setupCanvas(id) {
           let totalPull = 0;
           let px = ox, py = oy, pz = oz;
           for (const m of masses) {
-            // Horizontal distance from vertex to mass (XZ plane)
             const dx = ox - m.x, dz = oz - m.z;
             const rHoriz = Math.sqrt(dx * dx + dz * dz);
             const r3D = Math.max(Math.sqrt(dx * dx + oy * oy + dz * dz), 0.5);
             totalPull += m.strength / r3D;
 
-            // === Gravity well: smooth bowl shape, clamped depth ===
-            // Well depth ∝ M/r but clamped to shell radius to prevent tail
-            const softR = Math.max(rHoriz, 0.8);
-            const maxWellDepth = sh.radius * 0.7;  // never deeper than 70% of shell radius
-            const rawDepth = m.strength / softR * curvatureScale;
-            const wellDepth = Math.min(rawDepth, maxWellDepth);
-            py -= wellDepth;
+            // === Gravity well: smooth wide bowl (Lorentzian profile) ===
+            // M / sqrt(r² + s²) creates a smooth rounded depression, no sharp tip
+            const soft = 2.0;
+            const rawDepth = m.strength * curvatureScale * 0.4 / Math.sqrt(rHoriz * rHoriz + soft * soft);
+            const maxDepth = sh.radius * 0.35;
+            py -= Math.min(rawDepth, maxDepth);
 
-            // === Radial compression toward mass (XZ only) ===
-            const radialPull = m.strength / r3D * curvatureScale * 0.2;
-            if (rHoriz > 0.1) {
+            // === Mild radial compression toward mass (XZ only) ===
+            if (rHoriz > 0.3) {
+              const radialPull = m.strength / (rHoriz + 2) * curvatureScale * 0.08;
               px -= (dx / rHoriz) * radialPull;
               pz -= (dz / rHoriz) * radialPull;
             }

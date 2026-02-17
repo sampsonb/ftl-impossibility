@@ -272,3 +272,4 @@ https://sampsonb.github.io/ftl-impossibility/
 22. 3D curvature polish: labeled presets, wireframe legend, axis arrowheads, camera help, time elapsed, trail visibility
 23. Physics rewrite: velocity-Verlet integrator, fixed sub-steps, energy conservation tracking, Step Forward debug button
 24. Curvature UI reorganization: bottom control panel, 3-column layout, collapsible sections, context-sensitive controls, info overlay, enhanced fullscreen
+25. Camera default mode: explicit mode toggle for mass/particle placement, keyboard shortcuts (M/P/O/Esc), mode indicator overlay

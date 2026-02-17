@@ -4,6 +4,31 @@ All changes from the February 2026 build session.
 
 ---
 
+## 25. Camera Default Mode — Fix Accidental Mass Placement
+**Prompt:** "Fix the accidental mass placement issue — separate camera controls from object placement. Default behavior should NEVER place objects."
+
+**Changes:**
+- Default mode changed from `place` to `camera` — clicking only controls the camera (OrbitControls)
+- Added Camera button to mode group (active by default, green highlight)
+- Place Mass, Drop Particle, Launch Orbit are now explicit opt-in toggles
+- Clicking an already-active mode button toggles back to Camera (radio behavior)
+- Mode indicator overlay (bottom-right of 3D container): color-coded by mode
+  - Green "Camera Controls" (default)
+  - Yellow "Click to Place Mass"
+  - Blue "Click to Drop Particle"
+  - Purple "Click to Launch Orbit"
+- Container border glow (inset box-shadow) when in any action mode
+- Keyboard shortcuts: M = toggle Place Mass, P = toggle Drop Particle, O = toggle Launch Orbit, Esc = Camera
+  - Only active when curvature section is in viewport
+  - Ignored when typing in input fields
+- Rain mode fires immediately then auto-returns to Camera
+- Presets, scenarios, Reset All, and Clear All all return to Camera mode
+- Default cursor changed from `crosshair` to `grab`
+- Mode button tooltips show keyboard shortcuts
+- **Commit:** `5e0ee88`
+
+---
+
 ## 24. Curvature UI Reorganization: Bottom Control Panel
 **Prompt:** "Reorganize the 3D Spacetime Curvature interface for better usability: Move ALL controls to the bottom, consolidate into organized sections (Quick Start, Simulation, Advanced), add collapsible sections, context-sensitive controls, compact info display, enhanced fullscreen, responsive design."
 

@@ -5899,8 +5899,8 @@ function setupCanvas(id) {
       { r: 0.2, g: 0.5, b: 1.0 }     // outer: light blue
     ];
     const shellWireColors = [0xff3333, 0xf59e0b, 0x3b82f6];
-    const shellOpacities = [0.12, 0.10, 0.08];
-    const shellWireOpacities = [0.35, 0.25, 0.18];
+    const shellOpacities = [0.05, 0.08, 0.07];
+    const shellWireOpacities = [0.20, 0.22, 0.16];
 
     for (let si = 0; si < shellRadii.length; si++) {
       const r = shellRadii[si];
@@ -6372,10 +6372,20 @@ function setupCanvas(id) {
         p.mesh.position.set(p.x, py, p.z);
         p.glowMesh.position.set(p.x, py, p.z);
 
-        // Trail
+        // Trail (ring buffer → reorder oldest-to-newest for Line rendering)
         p.trailIdx = (p.trailIdx + 1) % TRAIL_LEN;
+        if (!p.trailRing) p.trailRing = new Float32Array(TRAIL_LEN * 3);
         var ti = p.trailIdx * 3;
-        p.trailPos[ti] = p.x; p.trailPos[ti + 1] = py; p.trailPos[ti + 2] = p.z;
+        p.trailRing[ti] = p.x; p.trailRing[ti + 1] = py; p.trailRing[ti + 2] = p.z;
+        // Copy ring buffer in order: oldest (trailIdx+1) → newest (trailIdx)
+        var start = (p.trailIdx + 1) % TRAIL_LEN;
+        var dst = p.trailPos;
+        var src = p.trailRing;
+        for (var ri = 0; ri < TRAIL_LEN; ri++) {
+          var si = ((start + ri) % TRAIL_LEN) * 3;
+          var di = ri * 3;
+          dst[di] = src[si]; dst[di+1] = src[si+1]; dst[di+2] = src[si+2];
+        }
         p.trailGeo.attributes.position.needsUpdate = true;
 
         // Orbital angle tracking
@@ -6458,7 +6468,16 @@ function setupCanvas(id) {
           m.trailIdx = (m.trailIdx + 1) % TRAIL_LEN;
           var ti = m.trailIdx * 3;
           var my = view3D ? 0 : gridYAt(m.x, m.z);
-          m.trailPos[ti] = m.x; m.trailPos[ti + 1] = my; m.trailPos[ti + 2] = m.z;
+          if (!m.trailRing) m.trailRing = new Float32Array(TRAIL_LEN * 3);
+          m.trailRing[ti] = m.x; m.trailRing[ti + 1] = my; m.trailRing[ti + 2] = m.z;
+          // Copy ring buffer in order: oldest → newest
+          var start = (m.trailIdx + 1) % TRAIL_LEN;
+          var dst = m.trailPos, src = m.trailRing;
+          for (var ri = 0; ri < TRAIL_LEN; ri++) {
+            var si = ((start + ri) % TRAIL_LEN) * 3;
+            var di = ri * 3;
+            dst[di] = src[si]; dst[di+1] = src[si+1]; dst[di+2] = src[si+2];
+          }
           m.trailGeo.attributes.position.needsUpdate = true;
         }
       }
@@ -6716,7 +6735,7 @@ function setupCanvas(id) {
         // Geodesic highlight (trail on curved surface)
         const geoPoints = [];
         for (let i = 0; i < TRAIL_LEN; i++) {
-          const idx = ((p.trailIdx + 1 + i) % TRAIL_LEN) * 3;
+          const idx = i * 3;  // trailPos is already ordered oldest→newest
           geoPoints.push(new THREE.Vector3(
             p.trailPos[idx], p.trailPos[idx + 1] + 0.15, p.trailPos[idx + 2]
           ));
@@ -7154,9 +7173,9 @@ function setupCanvas(id) {
       }
     };
 
-    // Logarithmic speed mapping: slider 0-100 → speed 0.1x-100x
-    function sliderToSpeed(v) { return 0.1 * Math.pow(1000, v / 100); }
-    function speedToSlider(s) { return 100 * Math.log(s / 0.1) / Math.log(1000); }
+    // Logarithmic speed mapping: slider 0-100 → speed 0.1x-10x
+    function sliderToSpeed(v) { return 0.1 * Math.pow(100, v / 100); }
+    function speedToSlider(s) { return 100 * Math.log(s / 0.1) / Math.log(100); }
     function formatSpeed(s) { return s >= 10 ? Math.round(s) + 'x' : s.toFixed(1) + 'x'; }
 
     function setSimSpeed(val) {

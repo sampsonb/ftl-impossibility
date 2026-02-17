@@ -131,7 +131,7 @@ https://sampsonb.github.io/ftl-impossibility/
   - **Earth Orbiting Sun**: gold Sun, blue Earth at distance 10
   - **Binary Star System**: two equal dynamic masses orbiting common center of mass
   - **Figure-8 Three-Body**: Chenciner-Montgomery solution — 3 equal masses on figure-8 path
-- **Simulation controls**: Pause/Play, Reset All, logarithmic speed slider (0.1x–100x)
+- **Simulation controls**: Pause/Play, Reset All, logarithmic speed slider (0.1x–10x)
 - **3D centering fix**: masses positioned at CENTER of spherical grid (Y=0), not on deformed surface
 - **3D axis labels**: X (red), Y (green), Z (blue) dashed axis lines with projected labels — shows no preferred "down"
 - **Omnidirectional hint**: educational note appears in 3D mode explaining gravity curves space in ALL directions

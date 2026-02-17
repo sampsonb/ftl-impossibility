@@ -4,6 +4,26 @@ All changes from the February 2026 build session.
 
 ---
 
+## 26. Tractor-Beam Force Visualization
+**Prompt:** "Add gravitational force visualization to the 3D Spacetime view — tractor beam visual design with color gradients, force magnitude visualization, per-mass colored beams, educational features."
+
+**Changes:**
+- Rewrote `updateForceVectors()` from simple red ArrowHelper arrows to rich tractor-beam visualization
+- Added reusable `beamGeo` (CylinderGeometry) and `coneGeo` (ConeGeometry) shared across all beams
+- Per-mass beam coloring via `massBeamColor(m)`: purple for black holes, gold for stars/sun, blue for planets
+- Force-strength color gradient via `forceColor(baseCol, strength)`: blends source color → orange/red at high force
+- Beam thickness proportional to force: 0.03 (weak) → 0.25 (strong)
+- Beam opacity proportional to force: 0.15 (dim) → 0.7 (bright)
+- Gentle pulsing animation via `forcePulsePhase` (sinusoidal, per-particle/per-mass offset)
+- Glow halo: wider, more transparent cylinder layered behind each beam
+- Arrowhead cone at 82% along beam, pointing toward the attracting mass
+- Net force: white ArrowHelper showing combined force when multiple masses present
+- Force info row in top-right overlay: "Force ∝ 1/r²" label + peak force magnitude (red)
+- Context-sensitive: force info row shown/hidden based on Show Forces toggle state
+- **Commit:** (pending)
+
+---
+
 ## 25. Camera Default Mode — Fix Accidental Mass Placement
 **Prompt:** "Fix the accidental mass placement issue — separate camera controls from object placement. Default behavior should NEVER place objects."
 

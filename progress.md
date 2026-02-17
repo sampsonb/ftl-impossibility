@@ -136,7 +136,16 @@ https://sampsonb.github.io/ftl-impossibility/
 - **Full orbit freedom**: removed polar angle constraint — camera can view from any direction including below
 - **Fullscreen mode**: expands visualization to fill viewport, H key shows/hides controls, ESC to exit
 - **Visual improvements**: body sizes scaled by mass, custom colors per body (Earth blue, Moon gray, Sun gold, etc.), HTML label overlays projected from 3D positions
-- **Force vectors**: optional red ArrowHelper showing gravitational force on each particle
+- **Force visualization**: tractor-beam style gravitational force beams
+  - Per-mass colored beams from each particle to each mass (blue=planet, gold=star, purple=black hole)
+  - Beam thickness and opacity proportional to force magnitude (F = M/r²)
+  - Gentle pulsing animation for visual energy
+  - Glow halo (wider, more transparent cylinder) per beam
+  - Arrowhead cones at 82% along beam (pointing toward mass)
+  - Color gradient: source mass color → orange/red at high strength
+  - Net force white ArrowHelper when multiple masses present
+  - Force info in overlay: peak force value + "Force ∝ 1/r²" educational label
+  - Context-sensitive: force row shown only when Show Forces is active
 - **Educational readouts**: altitude (distance to nearest mass), escape velocity at current position
 - Orbital inclination slider (0°–180°) for orbit and orbital planes modes
 - **Orbital plane presets** (auto-switch to 3D view):
@@ -273,3 +282,4 @@ https://sampsonb.github.io/ftl-impossibility/
 23. Physics rewrite: velocity-Verlet integrator, fixed sub-steps, energy conservation tracking, Step Forward debug button
 24. Curvature UI reorganization: bottom control panel, 3-column layout, collapsible sections, context-sensitive controls, info overlay, enhanced fullscreen
 25. Camera default mode: explicit mode toggle for mass/particle placement, keyboard shortcuts (M/P/O/Esc), mode indicator overlay
+26. Tractor-beam force visualization: per-mass colored beams, thickness/opacity proportional to force, pulsing animation, glow halos, arrowhead cones, net force arrow, educational force info overlay

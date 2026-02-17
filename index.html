@@ -1562,6 +1562,7 @@
         <div class="curv-info-row"><span class="curv-info-label">Time</span> <span class="curv-info-val" id="curv-info-time">0.0s</span></div>
         <div class="curv-info-row"><span class="curv-info-label">Dilation</span> <span class="curv-info-val" id="curv-info-dilation">1.000</span></div>
         <div class="curv-info-row readout-adv"><span class="curv-info-label">Energy</span> <span class="curv-info-val" id="curv-info-energy">&mdash;</span></div>
+        <div class="curv-info-row" id="curv-info-force-row" style="display:none;border-top:1px solid rgba(255,255,255,0.08);padding-top:3px;margin-top:2px;"><span class="curv-info-label" style="color:var(--accent2);">Force &prop; 1/r&sup2;</span> <span class="curv-info-val" id="curv-info-force" style="color:#ef4444;">&mdash;</span></div>
       </div>
       <button id="curv-fullscreen-close" style="display:none;position:absolute;top:16px;left:16px;z-index:10001;background:rgba(17,24,39,0.85);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.9rem;font-family:inherit;">Exit Fullscreen</button>
       <div id="curv-fullscreen-instructions" style="display:none;position:absolute;bottom:16px;left:16px;z-index:10001;background:rgba(17,24,39,0.85);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.8rem;color:var(--muted);max-width:300px;line-height:1.5;">
@@ -6485,41 +6486,124 @@ function setupCanvas(id) {
     var forceGroup = new THREE.Group();
     scene.add(forceGroup);
 
+    // ---- Force beam geometry (reusable) ----
+    var beamGeo = new THREE.CylinderGeometry(1, 1, 1, 6, 1, true);
+    beamGeo.translate(0, 0.5, 0);  // pivot at base
+    beamGeo.rotateX(Math.PI / 2);  // align along Z axis
+    var coneGeo = new THREE.ConeGeometry(1, 1, 6);
+    coneGeo.rotateX(Math.PI / 2);  // point along Z
+
+    // Mass-source colors: blue=planet, gold=star, purple=BH, fallback=cyan
+    function massBeamColor(m) {
+      if (m.bh) return { r: 0.7, g: 0.1, b: 0.9 };     // purple for BH
+      if (m.bodyColor === 0xf59e0b || m.strength >= 4) return { r: 1.0, g: 0.7, b: 0.1 };  // gold for stars/sun
+      return { r: 0.2, g: 0.6, b: 1.0 };                 // blue for planets
+    }
+
+    // Strength-based color blend: weak=source color (dim), strong=hot (orange/red)
+    function forceColor(baseCol, strength) {
+      var t = Math.min(1, strength * 3);  // 0=weak, 1=very strong
+      var r = baseCol.r + (1.0 - baseCol.r) * t * 0.7;
+      var g = baseCol.g + (0.4 - baseCol.g) * t;
+      var b = baseCol.b * (1 - t * 0.6);
+      return new THREE.Color(r, g, b);
+    }
+
+    var forcePulsePhase = 0;
+
     function clearForceVectors() {
       while (forceGroup.children.length > 0) {
         var ch = forceGroup.children[0];
         forceGroup.remove(ch);
-        if (ch.dispose) ch.dispose();
-        else {
-          if (ch.geometry) ch.geometry.dispose();
-          if (ch.material) ch.material.dispose();
-        }
+        if (ch.geometry && ch.geometry !== beamGeo && ch.geometry !== coneGeo) ch.geometry.dispose();
+        if (ch.material) ch.material.dispose();
       }
     }
 
     function updateForceVectors() {
       clearForceVectors();
-      if (!showForces) return;
+      if (!showForces || masses.length === 0) return;
+      forcePulsePhase += 0.05;
+
       for (var pi = 0; pi < particles.length; pi++) {
         var p = particles[pi];
-        var fx = 0, fz = 0;
+        if (!p.alive) continue;
+        var py = view3D ? p.y : gridYAt(p.x, p.z) + 0.5;
+        var netFx = 0, netFy = 0, netFz = 0;
+
+        // Per-mass force beams
         for (var mi = 0; mi < masses.length; mi++) {
           var m = masses[mi];
-          var dx = p.x - m.x, dz = p.z - m.z;
-          var r2 = dx * dx + dz * dz;
-          var r = Math.max(Math.sqrt(r2), 0.4);
-          var r3 = r * r * r;
-          fx -= m.strength * dx / r3;
-          fz -= m.strength * dz / r3;
+          var dx = p.x - m.x;
+          var dy = view3D ? (p.y - 0) : 0;
+          var dz = p.z - m.z;
+          var r = Math.sqrt(dx * dx + dy * dy + dz * dz);
+          if (r < 0.2) r = 0.2;
+          var fMag = m.strength / (r * r);  // F ∝ M/r²
+          var fNorm = fMag / r;  // components: fMag * (-dx/r)
+          var fx = -fNorm * dx, fy = -fNorm * dy, fz = -fNorm * dz;
+          netFx += fx; netFy += fy; netFz += fz;
+
+          // Beam from particle toward mass
+          var baseCol = massBeamColor(m);
+          var strength01 = Math.min(1, fMag * 2);  // normalized 0-1
+          var col = forceColor(baseCol, strength01);
+
+          // Beam thickness: 0.03 (weak) to 0.25 (strong)
+          var thickness = 0.03 + strength01 * 0.22;
+          // Pulse animation
+          var pulse = 1 + 0.15 * Math.sin(forcePulsePhase + pi * 2 + mi * 1.5);
+          thickness *= pulse;
+          // Opacity: 0.15 (weak) to 0.7 (strong)
+          var opacity = 0.15 + strength01 * 0.55;
+
+          var my = view3D ? 0 : gridYAt(m.x, m.z);
+          var beamLen = r;
+          var beamDir = new THREE.Vector3(m.x - p.x, my - py, m.z - p.z).normalize();
+
+          // Beam cylinder
+          var mat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: opacity, depthWrite: false, side: THREE.DoubleSide });
+          var beam = new THREE.Mesh(beamGeo, mat);
+          beam.position.set(p.x, py, p.z);
+          beam.scale.set(thickness, thickness, beamLen * 0.85);
+          beam.lookAt(m.x, my, m.z);
+          forceGroup.add(beam);
+
+          // Arrowhead cone near the mass end
+          var coneScale = thickness * 2.5;
+          var coneMat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: Math.min(0.9, opacity + 0.2), depthWrite: false });
+          var cone = new THREE.Mesh(coneGeo, coneMat);
+          // Position: 85% along the beam toward the mass
+          var t = 0.82;
+          cone.position.set(p.x + (m.x - p.x) * t, py + (my - py) * t, p.z + (m.z - p.z) * t);
+          cone.scale.set(coneScale, coneScale, coneScale * 1.5);
+          cone.lookAt(m.x, my, m.z);
+          forceGroup.add(cone);
+
+          // Glow halo (wider, more transparent beam)
+          var glowMat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: opacity * 0.25, depthWrite: false, side: THREE.DoubleSide });
+          var glow = new THREE.Mesh(beamGeo, glowMat);
+          glow.position.set(p.x, py, p.z);
+          glow.scale.set(thickness * 3, thickness * 3, beamLen * 0.85);
+          glow.lookAt(m.x, my, m.z);
+          forceGroup.add(glow);
         }
-        var fMag = Math.sqrt(fx * fx + fz * fz);
-        if (fMag < 0.01) continue;
-        var scale = Math.min(4, fMag * 5);
-        var py = view3D ? p.y : gridYAt(p.x, p.z) + 0.5;
-        var dir = new THREE.Vector3(fx / fMag, 0, fz / fMag);
-        var origin = new THREE.Vector3(p.x, py, p.z);
-        var arrow = new THREE.ArrowHelper(dir, origin, scale, 0xef4444, 0.3, 0.2);
-        forceGroup.add(arrow);
+
+        // Net force vector (white arrow) if multiple masses
+        if (masses.length > 1) {
+          var netMag = Math.sqrt(netFx * netFx + netFy * netFy + netFz * netFz);
+          if (netMag > 0.01) {
+            var netDir = new THREE.Vector3(netFx / netMag, netFy / netMag, netFz / netMag);
+            var netScale = Math.min(5, netMag * 4);
+            var netOrigin = new THREE.Vector3(p.x, py, p.z);
+            var netArrow = new THREE.ArrowHelper(netDir, netOrigin, netScale, 0xffffff, 0.4, 0.25);
+            netArrow.line.material.transparent = true;
+            netArrow.line.material.opacity = 0.9;
+            netArrow.cone.material.transparent = true;
+            netArrow.cone.material.opacity = 0.9;
+            forceGroup.add(netArrow);
+          }
+        }
       }
     }
 
@@ -7300,6 +7384,29 @@ function setupCanvas(id) {
         var abtn = document.querySelector('#sec-curvature [data-scenario].active') ||
                    document.querySelector('#sec-curvature [data-preset].active');
         infoScenario.textContent = abtn ? abtn.textContent : 'Custom';
+      }
+      // Force info row — show peak force when forces visible
+      var forceRow = document.getElementById('curv-info-force-row');
+      var forceVal = document.getElementById('curv-info-force');
+      if (forceRow) {
+        forceRow.style.display = showForces ? 'flex' : 'none';
+        if (showForces && forceVal && particles.length > 0 && masses.length > 0) {
+          var peakF = 0;
+          for (var fi = 0; fi < particles.length; fi++) {
+            var fp = particles[fi];
+            if (!fp.alive) continue;
+            for (var fj = 0; fj < masses.length; fj++) {
+              var fm = masses[fj];
+              var fdx = fp.x - fm.x, fdz = fp.z - fm.z;
+              var fdy = view3D ? fp.y : 0;
+              var fr = Math.sqrt(fdx * fdx + fdy * fdy + fdz * fdz);
+              if (fr < 0.2) fr = 0.2;
+              var ff = fm.strength / (fr * fr);
+              if (ff > peakF) peakF = ff;
+            }
+          }
+          forceVal.textContent = peakF < 0.01 ? '~0' : peakF.toFixed(2);
+        }
       }
     }, 200);
 

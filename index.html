@@ -1499,6 +1499,7 @@
     <!-- Simulation controls -->
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;align-items:center;">
       <button class="tab-btn" id="curv-pause">Pause</button>
+      <button class="tab-btn" id="curv-step-fwd">Step +1</button>
       <button class="tab-btn" id="curv-reset-all">Reset All</button>
       <div class="slider-group" style="flex:1;min-width:180px;margin:0;">
         <label>Sim speed <span class="val" id="curv-sim-speed-label">1.0x</span></label>
@@ -1616,6 +1617,10 @@
       <div class="readout">
         <div class="label">Time Elapsed</div>
         <div class="value cyan" id="curv-elapsed-time">0.0s</div>
+      </div>
+      <div class="readout readout-adv">
+        <div class="label">Energy Drift</div>
+        <div class="value" id="curv-energy-drift" style="color:#22c55e;">&mdash;</div>
       </div>
     </div>
 
@@ -5764,7 +5769,7 @@ function setupCanvas(id) {
     let showForces = false;
     let followTarget = null;
     let cameraMode = 'free';
-    const VERLET_DT = 0.012;
+    // Physics sub-step size moved to PHYSICS_DT in stepParticles
 
     // ---- 3D Spherical shells ----
     const sphereGroup = new THREE.Group();
@@ -5990,8 +5995,6 @@ function setupCanvas(id) {
         x, z, strength, mesh: sphere, glowMesh: glow, extras: [],
         dynamic: opts.dynamic || false,
         vx: opts.vx || 0, vz: opts.vz || 0,
-        prevX: x - (opts.vx || 0) * VERLET_DT,
-        prevZ: z - (opts.vz || 0) * VERLET_DT,
         label: opts.label || null,
         bodyColor: bodyColor,
         trail: null, trailGeo: null, trailPos: null, trailIdx: 0
@@ -6094,6 +6097,8 @@ function setupCanvas(id) {
     }
 
     // ---- Particle system ----
+    var initialEnergy = null; // For energy conservation tracking
+
     function addParticle(px, py_in, pz, vx, vy_in, vz, color, label) {
       if (particles.length >= MAX_PARTICLES) removeParticle(0);
       const c = color || 0x06b6d4;
@@ -6115,8 +6120,8 @@ function setupCanvas(id) {
       const trail = new THREE.Line(tGeo, tMat);
       trail.visible = showTrails;
       const p = {
-        x: px, y: py, z: pz, vx, vy, vz,
-        prevX: px - vx * VERLET_DT, prevY: py - vy * VERLET_DT, prevZ: pz - vz * VERLET_DT,
+        x: px, y: py, z: pz,
+        vx: vx, vy: vy, vz: vz,
         mesh, glowMesh, trail, trailGeo: tGeo, trailPos,
         trailIdx: 0, totalAngle: 0, lastAngle: null,
         orbitTimer: 0, alive: true, startX: px, startY: py, startZ: pz,
@@ -6124,6 +6129,7 @@ function setupCanvas(id) {
       };
       particles.push(p);
       particleGroup.add(mesh); particleGroup.add(glowMesh); particleGroup.add(trail);
+      initialEnergy = computeTotalEnergy();
       updateReadouts();
     }
 
@@ -6155,52 +6161,104 @@ function setupCanvas(id) {
       updateReadouts();
     }
 
-    function stepParticles(dt) {
-      const STEP = 0.012;
-      const steps = Math.max(1, Math.ceil(dt / STEP));
-      const sDt = dt / steps;
-      for (const p of particles) {
+    // Compute gravitational acceleration at position (px, py, pz)
+    function gravAccel(px, py, pz) {
+      var ax = 0, ay = 0, az = 0;
+      for (var i = 0; i < masses.length; i++) {
+        var m = masses[i];
+        var dx = px - m.x;
+        var dy = view3D ? py : 0;
+        var dz = pz - m.z;
+        var r2 = dx * dx + dy * dy + dz * dz;
+        var r = Math.sqrt(r2);
+        if (r < 0.15) r = 0.15; // soft minimum to prevent singularity
+        var f = m.strength / (r * r * r); // GM/r³
+        ax -= f * dx;
+        if (view3D) ay -= f * dy;
+        az -= f * dz;
+      }
+      return { x: ax, y: ay, z: az };
+    }
+
+    // Compute total energy (kinetic + potential) for conservation check
+    function computeTotalEnergy() {
+      var E = 0;
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
         if (!p.alive) continue;
-        for (let s = 0; s < steps; s++) {
-          let ax = 0, ay = 0, az = 0;
-          for (const m of masses) {
-            const dx = p.x - m.x;
-            const dy = view3D ? p.y : 0;
-            const dz = p.z - m.z;
-            const r2 = dx*dx + dy*dy + dz*dz;
-            const r = Math.max(Math.sqrt(r2), 0.4);
-            const r3 = r * r * r;
-            ax -= m.strength * dx / r3;
-            if (view3D) ay -= m.strength * dy / r3;
-            az -= m.strength * dz / r3;
-          }
-          const nx = 2 * p.x - p.prevX + ax * sDt * sDt;
-          const nz = 2 * p.z - p.prevZ + az * sDt * sDt;
-          p.prevX = p.x; p.prevZ = p.z;
-          p.x = nx; p.z = nz;
-          if (view3D) {
-            const ny = 2 * p.y - p.prevY + ay * sDt * sDt;
-            p.prevY = p.y; p.y = ny;
-          }
+        // Kinetic: ½v²
+        E += 0.5 * (p.vx * p.vx + p.vy * p.vy + p.vz * p.vz);
+        // Potential: -strength/r for each mass
+        for (var j = 0; j < masses.length; j++) {
+          var m = masses[j];
+          var dx = p.x - m.x;
+          var dy = view3D ? p.y : 0;
+          var dz = p.z - m.z;
+          var r = Math.sqrt(dx * dx + dy * dy + dz * dz);
+          if (r < 0.15) r = 0.15;
+          E -= m.strength / r;
         }
-        p.vx = (p.x - p.prevX) / sDt;
-        p.vz = (p.z - p.prevZ) / sDt;
-        p.vy = view3D ? (p.y - p.prevY) / sDt : 0;
-        const py = view3D ? p.y : gridYAt(p.x, p.z) + 0.35;
-        if (!view3D) p.y = py;
+      }
+      return E;
+    }
+
+    // Velocity-Verlet integrator with fixed sub-steps
+    var PHYSICS_DT = 0.004; // Fixed sub-step size (small = accurate)
+
+    function stepParticles(dt) {
+      var remaining = dt;
+      while (remaining > 1e-8) {
+        var h = Math.min(remaining, PHYSICS_DT);
+        for (var i = 0; i < particles.length; i++) {
+          var p = particles[i];
+          if (!p.alive) continue;
+
+          // 1. Compute acceleration at current position
+          var a1 = gravAccel(p.x, p.y, p.z);
+
+          // 2. Half-step velocity
+          p.vx += 0.5 * a1.x * h;
+          if (view3D) p.vy += 0.5 * a1.y * h;
+          p.vz += 0.5 * a1.z * h;
+
+          // 3. Full-step position
+          p.x += p.vx * h;
+          if (view3D) p.y += p.vy * h;
+          p.z += p.vz * h;
+
+          // 4. Compute acceleration at new position
+          var a2 = gravAccel(p.x, p.y, p.z);
+
+          // 5. Half-step velocity with new acceleration
+          p.vx += 0.5 * a2.x * h;
+          if (view3D) p.vy += 0.5 * a2.y * h;
+          p.vz += 0.5 * a2.z * h;
+        }
+        remaining -= h;
+      }
+
+      // Update visuals, trails, bounds checks
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        if (!p.alive) continue;
+
+        var py = view3D ? p.y : gridYAt(p.x, p.z) + 0.35;
+        if (!view3D) p.y = 0; // Keep Y at 0 for physics in 2D mode
         p.mesh.position.set(p.x, py, p.z);
         p.glowMesh.position.set(p.x, py, p.z);
+
         // Trail
         p.trailIdx = (p.trailIdx + 1) % TRAIL_LEN;
-        const ti = p.trailIdx * 3;
-        p.trailPos[ti] = p.x; p.trailPos[ti+1] = py; p.trailPos[ti+2] = p.z;
+        var ti = p.trailIdx * 3;
+        p.trailPos[ti] = p.x; p.trailPos[ti + 1] = py; p.trailPos[ti + 2] = p.z;
         p.trailGeo.attributes.position.needsUpdate = true;
+
         // Orbital angle tracking
-        const nm = nearestMass(p.x, p.z);
+        var nm = nearestMass(p.x, p.z);
         if (nm) {
-          const angle = Math.atan2(p.z - nm.z, p.x - nm.x);
+          var angle = Math.atan2(p.z - nm.z, p.x - nm.x);
           if (p.lastAngle !== null) {
-            let da = angle - p.lastAngle;
+            var da = angle - p.lastAngle;
             if (da > Math.PI) da -= 2 * Math.PI;
             if (da < -Math.PI) da += 2 * Math.PI;
             p.totalAngle += Math.abs(da);
@@ -6208,56 +6266,74 @@ function setupCanvas(id) {
           p.lastAngle = angle;
           p.orbitTimer += dt;
         }
+
         // Kill if out of bounds
-        const hg = GRID_SIZE / 2 + 5;
+        var hg = GRID_SIZE / 2 + 5;
         if (Math.abs(p.x) > hg || Math.abs(p.z) > hg) p.alive = false;
         if (view3D && Math.abs(p.y) > hg) p.alive = false;
-        // Kill if absorbed
-        for (const m of masses) {
-          const dy2 = view3D ? p.y * p.y : 0;
-          const dr = Math.sqrt((p.x - m.x) ** 2 + dy2 + (p.z - m.z) ** 2);
-          if (dr < 0.25) p.alive = false;
+
+        // Kill if absorbed by mass
+        for (var j = 0; j < masses.length; j++) {
+          var m = masses[j];
+          var dy2 = view3D ? p.y * p.y : 0;
+          var dr = Math.sqrt((p.x - m.x) * (p.x - m.x) + dy2 + (p.z - m.z) * (p.z - m.z));
+          if (dr < 0.2) p.alive = false;
         }
       }
-      for (let i = particles.length - 1; i >= 0; i--) {
+      for (var i = particles.length - 1; i >= 0; i--) {
         if (!particles[i].alive) removeParticle(i);
       }
     }
 
-    // ---- Dynamic mass stepping ----
+    // ---- Dynamic mass stepping (velocity-Verlet) ----
+    function massAccel(m) {
+      var ax = 0, az = 0;
+      for (var i = 0; i < masses.length; i++) {
+        var other = masses[i];
+        if (other === m) continue;
+        var dx = m.x - other.x, dz = m.z - other.z;
+        var r2 = dx * dx + dz * dz;
+        var r = Math.sqrt(r2);
+        if (r < 0.3) r = 0.3;
+        var r3 = r * r * r;
+        ax -= other.strength * dx / r3;
+        az -= other.strength * dz / r3;
+      }
+      return { x: ax, z: az };
+    }
+
     function stepDynamicMasses(dt) {
       var dynMasses = masses.filter(function(m) { return m.dynamic; });
       if (dynMasses.length === 0) return;
-      var STEP = VERLET_DT;
-      var steps = Math.max(1, Math.ceil(dt / STEP));
-      var sDt = dt / steps;
+      var remaining = dt;
+      while (remaining > 1e-8) {
+        var h = Math.min(remaining, PHYSICS_DT);
+        for (var mi = 0; mi < dynMasses.length; mi++) {
+          var m = dynMasses[mi];
+          // 1. Acceleration at current position
+          var a1 = massAccel(m);
+          // 2. Half-step velocity
+          m.vx += 0.5 * a1.x * h;
+          m.vz += 0.5 * a1.z * h;
+          // 3. Full-step position
+          m.x += m.vx * h;
+          m.z += m.vz * h;
+          // 4. Acceleration at new position
+          var a2 = massAccel(m);
+          // 5. Half-step velocity with new acceleration
+          m.vx += 0.5 * a2.x * h;
+          m.vz += 0.5 * a2.z * h;
+        }
+        remaining -= h;
+      }
+      // Update trails
       for (var mi = 0; mi < dynMasses.length; mi++) {
         var m = dynMasses[mi];
-        for (var s = 0; s < steps; s++) {
-          var ax = 0, az = 0;
-          for (var oi = 0; oi < masses.length; oi++) {
-            var other = masses[oi];
-            if (other === m) continue;
-            var dx = m.x - other.x, dz = m.z - other.z;
-            var r2 = dx * dx + dz * dz;
-            var r = Math.max(Math.sqrt(r2), 0.5);
-            var r3 = r * r * r;
-            ax -= other.strength * dx / r3;
-            az -= other.strength * dz / r3;
-          }
-          var nx = 2 * m.x - m.prevX + ax * sDt * sDt;
-          var nz = 2 * m.z - m.prevZ + az * sDt * sDt;
-          m.prevX = m.x; m.prevZ = m.z;
-          m.x = nx; m.z = nz;
-        }
-        m.vx = (m.x - m.prevX) / sDt;
-        m.vz = (m.z - m.prevZ) / sDt;
-        // Update trail
         if (m.trail && m.trailPos) {
           m.trailIdx = (m.trailIdx + 1) % TRAIL_LEN;
           var ti = m.trailIdx * 3;
           var my = view3D ? 0 : gridYAt(m.x, m.z);
-          m.trailPos[ti] = m.x; m.trailPos[ti+1] = my; m.trailPos[ti+2] = m.z;
+          m.trailPos[ti] = m.x; m.trailPos[ti + 1] = my; m.trailPos[ti + 2] = m.z;
           m.trailGeo.attributes.position.needsUpdate = true;
         }
       }
@@ -6346,7 +6422,7 @@ function setupCanvas(id) {
 
     function loadPreset(name) {
       clearMasses(); clearParticles();
-      simElapsed = 0;
+      simElapsed = 0; initialEnergy = null;
       const preset = PRESETS[name];
       if (!preset) return;
       for (const p of preset) addMass(p.x, p.z, p.strength, p.bh, { label: p.label, color: p.color });
@@ -6635,6 +6711,17 @@ function setupCanvas(id) {
         else if (simElapsed < 3600) etEl.textContent = (simElapsed / 60).toFixed(1) + ' min';
         else etEl.textContent = (simElapsed / 3600).toFixed(2) + ' hr';
       }
+      // Energy conservation drift
+      var edEl = document.getElementById('curv-energy-drift');
+      if (edEl && particles.length > 0 && initialEnergy !== null && initialEnergy !== 0) {
+        var currentE = computeTotalEnergy();
+        var drift = Math.abs((currentE - initialEnergy) / initialEnergy) * 100;
+        edEl.textContent = drift.toFixed(4) + '%';
+        edEl.style.color = drift < 0.01 ? '#22c55e' : drift < 0.1 ? '#f59e0b' : '#ef4444';
+      } else if (edEl) {
+        edEl.innerHTML = '&mdash;';
+        edEl.style.color = '#22c55e';
+      }
     }
 
     // ---- Orbital plane presets ----
@@ -6825,9 +6912,25 @@ function setupCanvas(id) {
       document.getElementById('curv-pause').classList.toggle('active', paused);
     });
 
+    document.getElementById('curv-step-fwd').addEventListener('click', function() {
+      // Step forward one physics frame (0.016s at current sim speed)
+      if (!paused) {
+        paused = true;
+        document.getElementById('curv-pause').textContent = 'Play';
+        document.getElementById('curv-pause').classList.add('active');
+      }
+      var stepDt = 0.016 * simSpeed;
+      simElapsed += stepDt;
+      var hasDynamic = masses.some(function(m) { return m.dynamic; });
+      if (hasDynamic) { stepDynamicMasses(stepDt); if (view3D) { updateSphereShells(); updateCrossRings(); } }
+      if (masses.length > 0 && particles.length > 0) stepParticles(stepDt);
+      updateReadouts();
+    });
+
     document.getElementById('curv-reset-all').addEventListener('click', function() {
       clearMasses(); clearParticles();
       simElapsed = 0;
+      initialEnergy = null;
       paused = false;
       document.getElementById('curv-pause').textContent = 'Pause';
       document.getElementById('curv-pause').classList.remove('active');

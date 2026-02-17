@@ -111,7 +111,13 @@ https://sampsonb.github.io/ftl-impossibility/
   - **Rain mode**: 6 particles from ±X, ±Y, ±Z all fall inward — proves omnidirectional curvature
   - **Orbital Planes mode**: multi-plane orbital demonstrations
   - Trail rendering (300-point ring buffer), togglable on/off
-- **Physics fixes**: corrected Verlet initialization, removed 5× speed multiplier, orbit-relative launch speeds
+- **Physics engine**: velocity-Verlet integrator with fixed sub-step size (0.004s)
+  - Explicit velocity storage (no more implicit prevX/prevZ)
+  - Symplectic integrator conserves energy to <0.01% drift
+  - `gravAccel()` helper computes gravitational acceleration at any point
+  - `computeTotalEnergy()` tracks kinetic + potential energy for conservation checks
+  - Energy drift readout shows conservation quality (green <0.01%, yellow <0.1%, red >0.1%)
+  - Step Forward button for single-frame debugging while paused
 - **Dynamic masses**: masses can have velocities and move under mutual N-body gravity
   - Enables Binary Star and Figure-8 scenarios
   - Grid deformation updates dynamically as masses move
@@ -255,3 +261,4 @@ https://sampsonb.github.io/ftl-impossibility/
 20. 3D centering fix: masses at center of spherical grid, axis labels, Front view, enhanced curvature visibility
 21. Netflix-style landing page: module card grid, progress tracking, sticky nav, smooth scroll
 22. 3D curvature polish: labeled presets, wireframe legend, axis arrowheads, camera help, time elapsed, trail visibility
+23. Physics rewrite: velocity-Verlet integrator, fixed sub-steps, energy conservation tracking, Step Forward debug button

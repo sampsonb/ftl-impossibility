@@ -1550,12 +1550,12 @@
       <!-- Mode indicator -->
       <div id="curv-mode-indicator" style="position:absolute;bottom:10px;right:10px;background:rgba(17,24,39,0.85);border:1px solid #22c55e;border-radius:6px;padding:4px 10px;font-size:0.72rem;font-weight:600;color:#22c55e;pointer-events:none;z-index:6;">Camera Controls</div>
       <div id="curv-shell-legend" style="display:none;position:absolute;top:10px;left:10px;background:rgba(17,24,39,0.85);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:0.75rem;color:var(--muted);pointer-events:none;z-index:5;line-height:1.6;max-width:220px;">
-        <strong style="color:var(--text);">Gravitational Shells</strong><br>
-        Three nested shells show gravity strength:<br>
-        <span style="color:#ff3333;">&#9632;</span> Inner (red) = strongest gravity<br>
-        <span style="color:#f59e0b;">&#9632;</span> Middle (orange) = medium gravity<br>
-        <span style="color:#3b82f6;">&#9632;</span> Outer (blue) = weakest gravity<br>
-        Shells compress inward toward masses.
+        <strong style="color:var(--text);">Spacetime Curvature</strong><br>
+        Grid compresses near mass &mdash; this IS gravity!<br>
+        <span style="color:#ff3333;">&#9632;</span> Inner (red) = strongest curvature<br>
+        <span style="color:#f59e0b;">&#9632;</span> Middle (orange) = medium curvature<br>
+        <span style="color:#3b82f6;">&#9632;</span> Outer (blue) = nearly flat space<br>
+        Objects follow straight paths through this curved grid.
       </div>
       <!-- Info overlay (top-right, compact) -->
       <div id="curv-info-overlay">
@@ -1625,6 +1625,11 @@
           <label><input type="checkbox" id="curv-cross-sections" checked> Cross-Sections</label>
           <label><input type="checkbox" id="curv-show-forces"> Force Field</label>
           <label><input type="checkbox" id="curv-straightness"> Geodesics</label>
+          <label><input type="checkbox" id="curv-show-flat-ref"> Flat Space Ref</label>
+        </div>
+        <div class="slider-group">
+          <label>Curvature strength <span class="val" id="curv-warp-label">5.0</span></label>
+          <input type="range" id="curv-warp-slider" min="1" max="20" value="10" step="1">
         </div>
       </div>
 
@@ -5880,6 +5885,8 @@ function setupCanvas(id) {
     let simElapsed = 0;
     let showTrails = true;
     let showForces = false;
+    let showFlatRef = false;
+    let curvatureScale = 5.0;
     let followTarget = null;
     let cameraMode = 'free';
     // Physics sub-step size moved to PHYSICS_DT in stepParticles
@@ -5924,6 +5931,20 @@ function setupCanvas(id) {
       shellOrigPositions.push(new Float32Array(geo.attributes.position.array));
     }
 
+    // ---- Flat space reference shells (ghost wireframes, undeformed) ----
+    const flatRefGroup = new THREE.Group();
+    flatRefGroup.visible = false;
+    scene.add(flatRefGroup);
+    for (let si = 0; si < shellRadii.length; si++) {
+      const r = shellRadii[si];
+      const refGeo = new THREE.IcosahedronGeometry(r, shellDetail);
+      const refWGeo = new THREE.WireframeGeometry(refGeo);
+      const refWMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.08 });
+      const refWire = new THREE.LineSegments(refWGeo, refWMat);
+      flatRefGroup.add(refWire);
+      refGeo.dispose();  // Only need the wireframe
+    }
+
     function updateSphereShells() {
       for (let si = 0; si < shells.length; si++) {
         const sh = shells[si];
@@ -5940,17 +5961,29 @@ function setupCanvas(id) {
           for (const m of masses) {
             const dx = ox - m.x, dy = oy, dz = oz - m.z;
             const r = Math.max(Math.sqrt(dx*dx + dy*dy + dz*dz), 0.5);
-            const pull = m.strength / (r * r) * 3.5;
+            // Radial pull: vertices compress inward toward mass (∝ M/r)
+            // curvatureScale amplifies the effect for educational clarity
+            const pull = m.strength / r * curvatureScale;
             totalPull += m.strength / r;
             px -= (dx / r) * pull;
             py -= (dy / r) * pull;
             pz -= (dz / r) * pull;
           }
+          // Clamp: don't let vertices collapse past the mass center
+          for (const m of masses) {
+            const cdx = px - m.x, cdy = py, cdz = pz - m.z;
+            const cr = Math.sqrt(cdx*cdx + cdy*cdy + cdz*cdz);
+            if (cr < 0.8) {
+              px = m.x + cdx / cr * 0.8;
+              py = cdy / cr * 0.8;
+              pz = m.z + cdz / cr * 0.8;
+            }
+          }
           pos[ix] = px; pos[ix+1] = py; pos[ix+2] = pz;
           // Blend from shell's base color toward deep red near masses
           const phi = Math.min(totalPull * 0.08, 0.499);
           const tau = Math.sqrt(1 - 2 * phi);
-          col[ix]   = lerp(1.0, bc.r, tau);   // toward red near mass, shell base color far away
+          col[ix]   = lerp(1.0, bc.r, tau);
           col[ix+1] = lerp(0.1, bc.g, tau);
           col[ix+2] = lerp(0.05, bc.b, tau);
         }
@@ -6929,6 +6962,7 @@ function setupCanvas(id) {
       sphereGroup.visible = to3D;
       crossRingsGroup.visible = to3D && showCrossSections;
       axisGroup.visible = to3D;
+      flatRefGroup.visible = to3D && showFlatRef;
       var hint3D = document.getElementById('curv-3d-hint');
       if (hint3D) hint3D.style.display = to3D ? 'block' : 'none';
       var shellLeg = document.getElementById('curv-shell-legend');
@@ -7305,6 +7339,19 @@ function setupCanvas(id) {
     document.getElementById('curv-show-forces').addEventListener('change', function(e) {
       showForces = e.target.checked;
       if (!showForces) clearForceVectors();
+    });
+
+    // ---- Flat space reference toggle ----
+    document.getElementById('curv-show-flat-ref').addEventListener('change', function(e) {
+      showFlatRef = e.target.checked;
+      flatRefGroup.visible = showFlatRef && view3D;
+    });
+
+    // ---- Curvature strength slider ----
+    document.getElementById('curv-warp-slider').addEventListener('input', function(e) {
+      curvatureScale = parseFloat(e.target.value) / 2;
+      document.getElementById('curv-warp-label').textContent = curvatureScale.toFixed(1);
+      if (view3D) { updateSphereShells(); updateCrossRings(); }
     });
 
     // ---- Fullscreen ----

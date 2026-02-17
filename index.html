@@ -988,6 +988,9 @@
       <button class="tab-btn" id="curv-scenario-figure8" data-scenario="figure8">Figure-8</button>
     </div>
     <div id="curv-scenario-info" style="display:none;color:var(--muted);font-size:0.82rem;padding:4px 0;line-height:1.5;font-style:italic;"></div>
+    <div id="curv-3d-hint" style="display:none;color:var(--accent);font-size:0.82rem;padding:4px 0;line-height:1.5;">
+      <strong>3D Spherical view:</strong> The mass sits at the <em>center</em> of the grid &mdash; gravity curves space equally in ALL directions, not just &ldquo;down.&rdquo; Use Top/Side/Front views to see this from every angle.
+    </div>
 
     <!-- View mode toggle -->
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;align-items:center;">
@@ -997,6 +1000,7 @@
       <span style="color:var(--dim);font-size:0.75rem;margin-left:12px;line-height:2.2;">Camera:</span>
       <button class="tab-btn" id="curv-cam-top">Top</button>
       <button class="tab-btn" id="curv-cam-side">Side</button>
+      <button class="tab-btn" id="curv-cam-front">Front</button>
       <button class="tab-btn active" id="curv-cam-free">Free</button>
       <button class="tab-btn" id="curv-cam-follow">Follow</button>
       <button class="tab-btn" id="curv-fullscreen" style="margin-left:auto;">Fullscreen</button>
@@ -5180,7 +5184,7 @@ function setupCanvas(id) {
     controls.dampingFactor = 0.08;
     controls.minDistance = 10;
     controls.maxDistance = 80;
-    controls.maxPolarAngle = Math.PI * 0.85;
+    controls.maxPolarAngle = Math.PI; // Allow full rotation in 3D mode
     controls.target.set(0, -3, 0);
 
     // Lighting
@@ -5283,12 +5287,12 @@ function setupCanvas(id) {
       for (let i = 0; i < vc; i++) { cols[i*3]=0.2; cols[i*3+1]=0.4; cols[i*3+2]=1.0; }
       geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
       const mat = new THREE.MeshPhongMaterial({
-        vertexColors: true, transparent: true, opacity: 0.15 + si * 0.05,
+        vertexColors: true, transparent: true, opacity: 0.18 + si * 0.06,
         side: THREE.DoubleSide, shininess: 20, depthWrite: false
       });
       const mesh = new THREE.Mesh(geo, mat);
       const wGeo = new THREE.WireframeGeometry(geo);
-      const wMat = new THREE.LineBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.22 - si * 0.04 });
+      const wMat = new THREE.LineBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.28 - si * 0.04 });
       const wire = new THREE.LineSegments(wGeo, wMat);
       sphereGroup.add(mesh);
       sphereGroup.add(wire);
@@ -5311,7 +5315,7 @@ function setupCanvas(id) {
           for (const m of masses) {
             const dx = ox - m.x, dy = oy, dz = oz - m.z;
             const r = Math.max(Math.sqrt(dx*dx + dy*dy + dz*dz), 0.5);
-            const pull = m.strength / (r * r) * 2.5;
+            const pull = m.strength / (r * r) * 3.5;
             totalPull += m.strength / r;
             px -= (dx / r) * pull;
             py -= (dy / r) * pull;
@@ -5369,7 +5373,7 @@ function setupCanvas(id) {
           for (const m of masses) {
             const dx = x - m.x, dy2 = y, dz = z - m.z;
             const r = Math.max(Math.sqrt(dx*dx + dy2*dy2 + dz*dz), 0.5);
-            const pull = m.strength / (r * r) * 2.5;
+            const pull = m.strength / (r * r) * 3.5;
             x -= (dx / r) * pull;
             y -= (dy2 / r) * pull;
             z -= (dz / r) * pull;
@@ -5378,6 +5382,50 @@ function setupCanvas(id) {
           pts[ix] = x; pts[ix+1] = y; pts[ix+2] = z;
         }
         ring.geo.attributes.position.needsUpdate = true;
+      }
+    }
+
+    // ---- 3D Axis lines and labels ----
+    const axisGroup = new THREE.Group();
+    axisGroup.visible = false;
+    scene.add(axisGroup);
+    const AXIS_LEN = 22;
+    const axisColors = [0xef4444, 0x22c55e, 0x3b82f6]; // X=red, Y=green, Z=blue
+    const axisNames = ['X', 'Y', 'Z'];
+    const axisDirs = [
+      new THREE.Vector3(1, 0, 0),
+      new THREE.Vector3(0, 1, 0),
+      new THREE.Vector3(0, 0, 1)
+    ];
+    for (let ai = 0; ai < 3; ai++) {
+      const dir = axisDirs[ai];
+      const pts = [
+        new THREE.Vector3(-dir.x * AXIS_LEN, -dir.y * AXIS_LEN, -dir.z * AXIS_LEN),
+        new THREE.Vector3(dir.x * AXIS_LEN, dir.y * AXIS_LEN, dir.z * AXIS_LEN)
+      ];
+      const geo = new THREE.BufferGeometry().setFromPoints(pts);
+      const mat = new THREE.LineDashedMaterial({ color: axisColors[ai], transparent: true, opacity: 0.35, dashSize: 0.8, gapSize: 0.4 });
+      const line = new THREE.Line(geo, mat);
+      line.computeLineDistances();
+      axisGroup.add(line);
+    }
+
+    function updateAxisLabels() {
+      if (!view3D) return;
+      var lc = document.getElementById('curv-labels');
+      if (!lc) return;
+      for (var ai = 0; ai < 3; ai++) {
+        var dir = axisDirs[ai];
+        var pos3 = new THREE.Vector3(dir.x * (AXIS_LEN + 1.5), dir.y * (AXIS_LEN + 1.5), dir.z * (AXIS_LEN + 1.5));
+        var v = pos3.clone().project(camera);
+        if (v.z > 1) continue;
+        var cx = (v.x * 0.5 + 0.5) * container.clientWidth;
+        var cy = (-v.y * 0.5 + 0.5) * container.clientHeight;
+        var el = document.createElement('div');
+        el.textContent = axisNames[ai];
+        var hex = '#' + axisColors[ai].toString(16).padStart(6, '0');
+        el.style.cssText = 'position:absolute;left:' + cx + 'px;top:' + cy + 'px;transform:translate(-50%,-50%);color:' + hex + ';font-size:14px;font-weight:bold;font-family:monospace;pointer-events:none;text-shadow:0 0 6px ' + hex + ',0 0 12px rgba(0,0,0,0.8);';
+        lc.appendChild(el);
       }
     }
 
@@ -5477,12 +5525,16 @@ function setupCanvas(id) {
     function updateMassPositions() {
       for (const mass of masses) {
         let dy = 0;
-        for (const m of masses) {
-          const dx = mass.x - m.x, dz = mass.z - m.z;
-          const r = Math.max(Math.sqrt(dx * dx + dz * dz), 0.3);
-          dy -= m.strength / r;
+        if (!view3D) {
+          // 2D mode: masses sit on the deformed surface
+          for (const m of masses) {
+            const dx = mass.x - m.x, dz = mass.z - m.z;
+            const r = Math.max(Math.sqrt(dx * dx + dz * dz), 0.3);
+            dy -= m.strength / r;
+          }
+          dy = Math.max(dy, -25);
         }
-        dy = Math.max(dy, -25);
+        // 3D mode: masses stay at Y=0 (center of spherical shells)
         mass.mesh.position.set(mass.x, dy, mass.z);
         mass.glowMesh.position.set(mass.x, dy, mass.z);
         for (const e of mass.extras) e.position.set(mass.x, dy, mass.z);
@@ -5698,7 +5750,7 @@ function setupCanvas(id) {
         if (m.trail && m.trailPos) {
           m.trailIdx = (m.trailIdx + 1) % TRAIL_LEN;
           var ti = m.trailIdx * 3;
-          var my = gridYAt(m.x, m.z);
+          var my = view3D ? 0 : gridYAt(m.x, m.z);
           m.trailPos[ti] = m.x; m.trailPos[ti+1] = my; m.trailPos[ti+2] = m.z;
           m.trailGeo.attributes.position.needsUpdate = true;
         }
@@ -5732,6 +5784,8 @@ function setupCanvas(id) {
         el.style.cssText = 'position:absolute;left:' + cx + 'px;top:' + (cy - 22) + 'px;transform:translateX(-50%);color:' + hex + ';font-size:0.75rem;font-weight:600;text-shadow:0 0 6px rgba(0,0,0,0.9);white-space:nowrap;';
         labelContainer.appendChild(el);
       }
+      // Add axis labels in 3D mode
+      if (view3D) updateAxisLabels();
     }
 
     // ---- Force vectors ----
@@ -5993,12 +6047,17 @@ function setupCanvas(id) {
       // 3D elements
       sphereGroup.visible = to3D;
       crossRingsGroup.visible = to3D && showCrossSections;
+      axisGroup.visible = to3D;
+      var hint3D = document.getElementById('curv-3d-hint');
+      if (hint3D) hint3D.style.display = to3D ? 'block' : 'none';
       if (to3D) {
         updateSphereShells();
         updateCrossRings();
-        camera.position.set(0, 20, 45);
+        updateMassPositions();
+        camera.position.set(15, 18, 35);
         controls.target.set(0, 0, 0);
       } else {
+        updateMassPositions();
         camera.position.set(0, 28, 38);
         controls.target.set(0, -3, 0);
       }
@@ -6266,7 +6325,7 @@ function setupCanvas(id) {
 
     // ---- Camera controls ----
     function updateCamButtons() {
-      ['top', 'side', 'free', 'follow'].forEach(function(m) {
+      ['top', 'side', 'front', 'free', 'follow'].forEach(function(m) {
         document.getElementById('curv-cam-' + m).classList.toggle('active', cameraMode === m);
       });
     }
@@ -6281,6 +6340,13 @@ function setupCanvas(id) {
     document.getElementById('curv-cam-side').addEventListener('click', function() {
       cameraMode = 'side';
       camera.position.set(0, 0, 50);
+      controls.target.set(0, 0, 0);
+      updateCamButtons();
+    });
+
+    document.getElementById('curv-cam-front').addEventListener('click', function() {
+      cameraMode = 'front';
+      camera.position.set(50, 0, 0);
       controls.target.set(0, 0, 0);
       updateCamButtons();
     });

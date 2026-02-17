@@ -97,8 +97,9 @@ https://sampsonb.github.io/ftl-impossibility/
 ### 05 — Spacetime Curvature in 3D
 - Interactive 3D visualization using Three.js + OrbitControls
 - **2D Sheet view**: 60×60 vertex grid deforms downward (classic rubber-sheet analogy)
-- **3D Spherical view**: 3 concentric icosahedron shells (r=8, 14, 20) compress inward toward masses
-  - Demonstrates gravity curves space equally in ALL directions, not just "downward"
+- **3D Spherical view**: 3 concentric icosahedron shells (r=8, 14, 20) compress inward toward masses at center
+  - Masses sit at the CENTER of the shells — demonstrates gravity curves space equally in ALL directions
+  - Enhanced deformation (3.5× pull factor) for more visible curvature
   - 3 orthogonal cross-section rings (XZ amber, XY cyan, YZ purple) show curvature in each plane
 - Grid/shell vertex colors show gravitational time dilation (red = slow, blue = flat)
 - Schwarzschild-like potential: displacement ∝ -M/r (1.5× depth scale for dramatic wells)
@@ -122,7 +123,11 @@ https://sampsonb.github.io/ftl-impossibility/
   - **Binary Star System**: two equal dynamic masses orbiting common center of mass
   - **Figure-8 Three-Body**: Chenciner-Montgomery solution — 3 equal masses on figure-8 path
 - **Simulation controls**: Pause/Play, Reset All, speed slider (0.1x–5.0x)
-- **Camera controls**: Top View, Side View, Free Rotation presets; Follow Body mode
+- **3D centering fix**: masses positioned at CENTER of spherical grid (Y=0), not on deformed surface
+- **3D axis labels**: X (red), Y (green), Z (blue) dashed axis lines with projected labels — shows no preferred "down"
+- **Omnidirectional hint**: educational note appears in 3D mode explaining gravity curves space in ALL directions
+- **Camera controls**: Top View, Side View, Front View, Free Rotation presets; Follow Body mode
+- **Full orbit freedom**: removed polar angle constraint — camera can view from any direction including below
 - **Fullscreen mode**: expands visualization to fill viewport, ESC to exit, instructions overlay
 - **Visual improvements**: body sizes scaled by mass, custom colors per body (Earth blue, Moon gray, Sun gold, etc.), HTML label overlays projected from 3D positions
 - **Force vectors**: optional red ArrowHelper showing gravitational force on each particle
@@ -232,3 +237,4 @@ https://sampsonb.github.io/ftl-impossibility/
 17. "Speed Limit of the Universe" section with 5 visual tabs, moved to section 01
 18. Adaptive difficulty level system: 3-level toggle, adaptive content, badges, tooltips, classroom mode
 19. Major 3D curvature overhaul: physics fixes, dynamic masses, scenarios (ISS/Moon/Binary/Figure-8), pause/speed/camera/fullscreen controls, labels, force vectors
+20. 3D centering fix: masses at center of spherical grid, axis labels, Front view, enhanced curvature visibility

@@ -5959,24 +5959,21 @@ function setupCanvas(id) {
           let totalPull = 0;
           let px = ox, py = oy, pz = oz;
           for (const m of masses) {
-            const dx = ox - m.x, dz = oz - m.z;
-            const rHoriz = Math.sqrt(dx * dx + dz * dz);
-            const r3D = Math.max(Math.sqrt(dx * dx + oy * oy + dz * dz), 0.5);
-            totalPull += m.strength / r3D;
+            const dx = ox - m.x, dy = oy, dz = oz - m.z;
+            const r = Math.max(Math.sqrt(dx * dx + dy * dy + dz * dz), 0.8);
+            totalPull += m.strength / r;
 
-            // === Gravity well: smooth wide bowl (Lorentzian profile) ===
-            // M / sqrt(r² + s²) creates a smooth rounded depression, no sharp tip
-            const soft = 2.0;
-            const rawDepth = m.strength * curvatureScale * 0.4 / Math.sqrt(rHoriz * rHoriz + soft * soft);
-            const maxDepth = sh.radius * 0.35;
-            py -= Math.min(rawDepth, maxDepth);
-
-            // === Mild radial compression toward mass (XZ only) ===
-            if (rHoriz > 0.3) {
-              const radialPull = m.strength / (rHoriz + 2) * curvatureScale * 0.08;
-              px -= (dx / rHoriz) * radialPull;
-              pz -= (dz / rHoriz) * radialPull;
-            }
+            // === Radial compression: pull vertices toward mass ===
+            // Stronger pull on closer vertices (1/r) → grid compresses near mass
+            // curvatureScale amplifies the effect for educational visibility
+            const pull = m.strength / r * curvatureScale;
+            // Clamp: don't let vertex get closer than minR to mass
+            const minR = 1.0;
+            const newR = Math.max(r - pull, minR);
+            const scale = newR / r;
+            px = m.x + dx * scale;
+            py = dy * scale;
+            pz = m.z + dz * scale;
           }
           pos[ix] = px; pos[ix+1] = py; pos[ix+2] = pz;
           // Blend from shell's base color toward deep red near masses

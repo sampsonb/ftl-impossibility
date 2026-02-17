@@ -429,7 +429,7 @@
 
   /* Compact readout strip */
   #curv-readout-strip { padding: 8px 16px; }
-  #curv-readout-strip.readouts { gap: 8px; }
+  #curv-readout-strip.readouts { gap: 8px; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); margin: 8px 0; }
   #curv-readout-strip .readout { padding: 4px 8px; }
   #curv-readout-strip .readout .label { font-size: 0.65rem; }
   #curv-readout-strip .readout .value { font-size: 0.85rem; }

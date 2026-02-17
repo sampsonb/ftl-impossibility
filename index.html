@@ -1598,6 +1598,11 @@
           <button class="tab-btn" id="curv-scenario-figure8" data-scenario="figure8" title="Chenciner-Montgomery 3-body solution on a figure-8 path">Figure-8</button>
         </div>
         <div id="curv-scenario-info" style="display:none;color:var(--dim);font-size:0.7rem;padding:2px 0;line-height:1.4;font-style:italic;"></div>
+        <div class="curv-btn-group-label">View</div>
+        <div class="curv-btn-group">
+          <button class="tab-btn active" id="curv-view-2d">2D Sheet</button>
+          <button class="tab-btn" id="curv-view-3d">3D Spherical</button>
+        </div>
       </div>
 
       <!-- MIDDLE COLUMN: Simulation Controls -->
@@ -1625,18 +1630,13 @@
       <div class="curv-col" id="curv-col-right">
         <div class="curv-collapse-header" id="curv-adv-toggle">Advanced &#9660;</div>
         <div class="curv-collapse-body open" id="curv-adv-body">
-          <div class="curv-btn-group-label">View</div>
-          <div class="curv-btn-group">
-            <button class="tab-btn active" id="curv-view-2d">2D Sheet</button>
-            <button class="tab-btn" id="curv-view-3d">3D Spherical</button>
-          </div>
-          <div class="curv-btn-group-label">Camera</div>
-          <div class="curv-btn-group">
-            <button class="tab-btn" id="curv-cam-top">Top</button>
-            <button class="tab-btn" id="curv-cam-side">Side</button>
-            <button class="tab-btn" id="curv-cam-front">Front</button>
-            <button class="tab-btn active" id="curv-cam-free">Free</button>
-            <button class="tab-btn" id="curv-cam-follow">Follow</button>
+          <!-- Hidden camera buttons (JS references these by ID) -->
+          <div style="display:none;">
+            <button id="curv-cam-top">Top</button>
+            <button id="curv-cam-side">Side</button>
+            <button id="curv-cam-front">Front</button>
+            <button class="active" id="curv-cam-free">Free</button>
+            <button id="curv-cam-follow">Follow</button>
           </div>
           <div class="curv-btn-group-label">Mode <span style="color:var(--dim);font-size:0.6rem;font-weight:400;">(M/P/O keys)</span></div>
           <div class="curv-btn-group">

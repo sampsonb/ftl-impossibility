@@ -6520,7 +6520,7 @@ function setupCanvas(id) {
 
     // ---- Animated force field (flowing arrows toward masses) ----
     var fieldArrowGeo = new THREE.ConeGeometry(0.12, 0.4, 4);
-    fieldArrowGeo.rotateX(-Math.PI / 2);  // point along -Z (toward center)
+    fieldArrowGeo.rotateX(Math.PI / 2);  // point along +Z so lookAt(mass) aims tip toward mass
     var FIELD_POOL_SIZE = 600;
     var fieldArrows = [];
     var fieldExtraObjects = [];  // ArrowHelpers for per-object force vectors
@@ -6632,7 +6632,7 @@ function setupCanvas(id) {
         var dir = new THREE.Vector3(netFx/netMag, netFy/netMag, netFz/netMag);
         var origin = new THREE.Vector3(p.x, ppy, p.z);
         var arrowLen = Math.min(4, 0.5 + netMag * 3);
-        var forceArrow = new THREE.ArrowHelper(dir, origin, arrowLen, 0xffdd44, 0.3, 0.2);
+        var forceArrow = new THREE.ArrowHelper(dir, origin, arrowLen, 0xef4444, 0.3, 0.2);
         forceArrow.line.material.transparent = true;
         forceArrow.line.material.opacity = 0.9;
         forceArrow.cone.material.transparent = true;
@@ -6660,7 +6660,7 @@ function setupCanvas(id) {
         var ddir = new THREE.Vector3(dnFx/dnMag, dnFy/dnMag, dnFz/dnMag);
         var dorigin = new THREE.Vector3(dm.x, dmy, dm.z);
         var darrowLen = Math.min(4, 0.5 + dnMag * 3);
-        var dArrow = new THREE.ArrowHelper(ddir, dorigin, darrowLen, 0xffdd44, 0.3, 0.2);
+        var dArrow = new THREE.ArrowHelper(ddir, dorigin, darrowLen, 0xef4444, 0.3, 0.2);
         dArrow.line.material.transparent = true;
         dArrow.line.material.opacity = 0.9;
         dArrow.cone.material.transparent = true;

@@ -5946,47 +5946,54 @@ function setupCanvas(id) {
     }
 
     function updateSphereShells() {
+      // displacement = k × (GM/r) × (1/R²)
+      // CURVE_K scales the formula so default slider produces visible deformation
+      var CURVE_K = 120;
       for (let si = 0; si < shells.length; si++) {
         const sh = shells[si];
         const bc = sh.baseColor;
+        const R = sh.radius;
+        const invR2 = 1.0 / (R * R);
         const pos = sh.geo.attributes.position.array;
         const orig = shellOrigPositions[si];
         const col = sh.geo.attributes.color.array;
         const vc = sh.geo.attributes.position.count;
         for (let i = 0; i < vc; i++) {
           const ix = i * 3;
-          let ox = orig[ix], oy = orig[ix+1], oz = orig[ix+2];
-          let totalPull = 0;
-          let px = ox, py = oy, pz = oz;
+          var ox = orig[ix], oy = orig[ix + 1], oz = orig[ix + 2];
+          // Accumulate displacement vectors from all masses
+          var dispX = 0, dispY = 0, dispZ = 0;
           for (const m of masses) {
-            const dx = ox - m.x, dy = oy, dz = oz - m.z;
-            const r = Math.max(Math.sqrt(dx * dx + dy * dy + dz * dz), 0.8);
-            totalPull += m.strength / r;
-
-            // === Radial compression: pull vertices toward mass ===
-            // Stronger pull on closer vertices (1/r) → grid compresses near mass
-            // curvatureScale amplifies the effect for educational visibility
-            const pull = m.strength / r * curvatureScale;
-            // Clamp: don't let vertex get closer than minR to mass
-            const minR = 1.0;
-            const newR = Math.max(r - pull, minR);
-            const scale = newR / r;
-            px = m.x + dx * scale;
-            py = dy * scale;
-            pz = m.z + dz * scale;
+            // Vector from vertex toward mass
+            var dx = m.x - ox, dy = -oy, dz = m.z - oz;
+            var dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            if (dist < 0.5) dist = 0.5;
+            // displacement = k × (GM/r) × (1/R²)
+            var disp = curvatureScale * CURVE_K * (m.strength / dist) * invR2;
+            // Clamp: vertex can't move more than 80% of the way to the mass
+            if (disp > dist * 0.8) disp = dist * 0.8;
+            // Accumulate normalized direction × displacement
+            var invDist = 1.0 / dist;
+            dispX += dx * invDist * disp;
+            dispY += dy * invDist * disp;
+            dispZ += dz * invDist * disp;
           }
-          pos[ix] = px; pos[ix+1] = py; pos[ix+2] = pz;
-          // Blend from shell's base color toward deep red near masses
-          const phi = Math.min(totalPull * 0.08, 0.499);
-          const tau = Math.sqrt(1 - 2 * phi);
-          col[ix]   = lerp(1.0, bc.r, tau);
-          col[ix+1] = lerp(0.1, bc.g, tau);
-          col[ix+2] = lerp(0.05, bc.b, tau);
+          // Apply summed displacement
+          pos[ix]     = ox + dispX;
+          pos[ix + 1] = oy + dispY;
+          pos[ix + 2] = oz + dispZ;
+          // Color: blend from shell base color toward deep red by displacement
+          var totalDisp = Math.sqrt(dispX * dispX + dispY * dispY + dispZ * dispZ);
+          var t = totalDisp / R * 2;
+          if (t > 1) t = 1;
+          col[ix]     = bc.r + (1.0 - bc.r) * t;
+          col[ix + 1] = bc.g + (0.1 - bc.g) * t;
+          col[ix + 2] = bc.b + (0.05 - bc.b) * t;
         }
         sh.geo.attributes.position.needsUpdate = true;
         sh.geo.attributes.color.needsUpdate = true;
         sh.geo.computeVertexNormals();
-        // Rebuild wireframe
+        // Rebuild wireframe from deformed geometry
         sh.wire.geometry.dispose();
         sh.wire.geometry = new THREE.WireframeGeometry(sh.geo);
       }

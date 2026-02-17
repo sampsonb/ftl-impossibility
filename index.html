@@ -370,13 +370,96 @@
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-  /* Curvature section */
-  #curvature-container canvas { display: block; border-radius: 12px; }
-  #sec-curvature input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+  /* ==================== CURVATURE SECTION LAYOUT ==================== */
+
+  /* Card becomes flex column: container on top, controls on bottom */
+  #sec-curvature .card { display: flex; flex-direction: column; gap: 0; padding: 0; overflow: hidden; }
+  #sec-curvature .card > .explain { padding: 16px 20px 0; margin: 0; }
+  #sec-curvature .card > .explain:last-of-type { padding-bottom: 8px; }
+
+  /* 3D container fills top portion */
+  #curvature-container { width: 100% !important; height: 70vh !important; min-height: 500px; max-height: 80vh; border-radius: 0 !important; margin: 0 !important; position: relative; overflow: hidden; background: #060a14; cursor: crosshair; }
+  #curvature-container canvas { display: block; }
+
+  /* Info overlay (top-right of 3D view) */
+  #curv-info-overlay { position: absolute; top: 10px; right: 10px; background: rgba(17,24,39,0.85); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 0.72rem; color: var(--muted); pointer-events: none; z-index: 6; line-height: 1.6; min-width: 140px; }
+  #curv-info-overlay .curv-info-row { display: flex; justify-content: space-between; gap: 8px; }
+  #curv-info-overlay .curv-info-val { color: var(--accent3); font-family: 'JetBrains Mono', monospace; }
+  #curv-info-overlay .curv-info-label { color: var(--dim); }
+
+  /* Tooltip */
   #curv-tooltip { z-index: 10; backdrop-filter: blur(8px); }
-  #curvature-container.curv-fullscreen { position:fixed !important; top:0; left:0; width:100vw !important; height:100vh !important; z-index:9999; border-radius:0 !important; margin:0 !important; }
-  #curvature-container.curv-fullscreen #curv-fullscreen-close { display:block !important; }
-  #curvature-container.curv-fullscreen #curv-fullscreen-instructions { display:block !important; }
+
+  /* Control panel — bottom, 3 columns */
+  #curv-control-panel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; padding: 12px 16px; background: rgba(17,24,39,0.6); border-top: 1px solid var(--border); }
+
+  /* Column layout */
+  .curv-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .curv-col-header { font-size: 0.72rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 2px; }
+
+  /* Button groups */
+  .curv-btn-group { display: flex; gap: 4px; flex-wrap: wrap; }
+  .curv-btn-group .tab-btn { font-size: 0.75rem; padding: 4px 8px; }
+  .curv-btn-group-label { color: var(--dim); font-size: 0.68rem; margin-bottom: 1px; }
+
+  /* Compact sliders in control panel */
+  #curv-control-panel .slider-group { margin: 0; }
+  #curv-control-panel .slider-group label { font-size: 0.75rem; }
+  #curv-control-panel .slider-group input[type="range"] { height: 4px; }
+
+  /* 2-column checkbox grid */
+  .curv-check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px 10px; }
+  .curv-check-grid label { display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 0.73rem; color: var(--muted); white-space: nowrap; }
+  #sec-curvature input[type="checkbox"] { accent-color: var(--accent); width: 13px; height: 13px; cursor: pointer; }
+
+  /* Collapsible sections */
+  .curv-collapse-header { font-size: 0.72rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 0; cursor: pointer; user-select: none; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 2px; }
+  .curv-collapse-header:hover { color: var(--accent2); }
+  .curv-collapse-body { overflow: hidden; max-height: 0; transition: max-height 0.3s ease; display: flex; flex-direction: column; gap: 6px; }
+  .curv-collapse-body.open { max-height: 600px; }
+
+  /* Help section content */
+  #curv-help-body { font-size: 0.72rem; color: var(--dim); line-height: 1.5; padding-top: 4px; }
+  #curv-help-body p { margin: 0 0 4px; }
+  #curv-help-body strong { color: var(--muted); }
+
+  /* Context-sensitive states */
+  .curv-disabled { opacity: 0.35; filter: saturate(0.3); }
+  .curv-ctx-hidden { display: none !important; }
+
+  /* Compact readout strip */
+  #curv-readout-strip { padding: 8px 16px; }
+  #curv-readout-strip.readouts { gap: 8px; }
+  #curv-readout-strip .readout { padding: 4px 8px; }
+  #curv-readout-strip .readout .label { font-size: 0.65rem; }
+  #curv-readout-strip .readout .value { font-size: 0.85rem; }
+
+  /* Fullscreen */
+  #curvature-container.curv-fullscreen { position: fixed !important; top: 0; left: 0; width: 100vw !important; height: 100vh !important; max-height: none !important; z-index: 9999; border-radius: 0 !important; margin: 0 !important; }
+  #curvature-container.curv-fullscreen #curv-fullscreen-close { display: block !important; }
+  #curvature-container.curv-fullscreen #curv-fullscreen-instructions { display: block !important; }
+
+  /* In fullscreen, control panel becomes fixed overlay at bottom — hidden by default */
+  .curv-fs-active #curv-control-panel { display: none; }
+  .curv-fs-active.curv-fs-controls-visible #curv-control-panel { display: grid; position: fixed; bottom: 0; left: 0; right: 0; z-index: 10000; background: rgba(10,14,26,0.92); backdrop-filter: blur(12px); border-top: 1px solid var(--border); max-height: 40vh; overflow-y: auto; }
+  .curv-fs-active #curv-readout-strip { display: none; }
+  .curv-fs-active #curv-info-overlay { display: block !important; }
+
+  /* Post-container explanations */
+  #sec-curvature .card > .explain-bottom { padding: 12px 20px; margin: 0; }
+
+  /* Responsive: stack columns on narrow screens */
+  @media (max-width: 900px) {
+    #curv-control-panel { grid-template-columns: 1fr; gap: 10px; padding: 10px 12px; max-height: 50vh; overflow-y: auto; }
+    #curvature-container { height: 55vh !important; min-height: 350px; }
+    .curv-check-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    #curvature-container { height: 45vh !important; min-height: 280px; }
+    .curv-btn-group .tab-btn { font-size: 0.68rem; padding: 3px 6px; }
+    #curv-control-panel .slider-group label { font-size: 0.68rem; }
+    .curv-check-grid label { font-size: 0.66rem; }
+  }
 
   /* ==================== DIFFICULTY LEVEL SYSTEM ==================== */
 
@@ -1432,14 +1515,12 @@
     <p class="explain level-beg">
       Gravity isn&rsquo;t a pulling force &mdash; it&rsquo;s more like a curved path. Imagine rolling a marble on a trampoline
       with a bowling ball in the middle. The marble curves because the surface is curved, not because something is pulling it.
-      That&rsquo;s what mass does to space! Click on the grid below to place masses and watch space bend.
-      Then drop particles to see them follow the curves.
+      That&rsquo;s what mass does to space! Use the presets below to explore, or place your own masses.
     </p>
     <p class="explain level-int">
       Einstein's <strong>General Relativity</strong> reveals that gravity isn't a force &mdash; it's the curvature of spacetime
       caused by mass and energy. A planet orbiting a star is simply following the straightest possible path (a <span class="term">geodesic<span class="term-tip">The straightest possible path through curved spacetime</span></span>)
-      through warped spacetime. Place masses below to watch the fabric of spacetime deform, then drop test particles
-      to see them follow curved geodesics.
+      through warped spacetime. Use the presets below to explore scenarios, or place your own masses.
     </p>
     <p class="explain level-adv">
       General Relativity replaces Newtonian gravity with the Einstein field equations: G&mu;&nu; = 8&pi;G/c&sup4; T&mu;&nu;.
@@ -1450,121 +1531,14 @@
       This visualization uses a Newtonian potential proxy (&Phi; &prop; &minus;M/r) for computational simplicity.
     </p>
 
-    <!-- Preset buttons -->
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 8px;">
-      <button class="tab-btn active" id="curv-preset-earth" data-preset="earth">Earth</button>
-      <button class="tab-btn" id="curv-preset-sun" data-preset="sun">Sun</button>
-      <button class="tab-btn" id="curv-preset-bh" data-preset="blackhole">Black Hole</button>
-      <button class="tab-btn" id="curv-preset-binary" data-preset="binary">Binary Stars</button>
-      <button class="tab-btn" id="curv-clear" style="margin-left:auto;">Clear All</button>
-    </div>
-
-    <!-- Scenario presets -->
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 8px;align-items:center;">
-      <span style="color:var(--muted);font-size:0.85rem;line-height:2.2;">Scenarios:</span>
-      <button class="tab-btn" id="curv-scenario-iss" data-scenario="iss">ISS</button>
-      <button class="tab-btn" id="curv-scenario-moon" data-scenario="moon">Moon</button>
-      <button class="tab-btn" id="curv-scenario-earthsun" data-scenario="earthsun">Earth-Sun</button>
-      <button class="tab-btn" id="curv-scenario-binarystar" data-scenario="binarystar">Binary Stars</button>
-      <button class="tab-btn" id="curv-scenario-figure8" data-scenario="figure8">Figure-8</button>
-    </div>
-    <div id="curv-scenario-info" style="display:none;color:var(--muted);font-size:0.82rem;padding:4px 0;line-height:1.5;font-style:italic;"></div>
-    <div id="curv-3d-hint" style="display:none;color:var(--accent);font-size:0.82rem;padding:4px 0;line-height:1.5;">
-      <strong>3D Spherical view:</strong> The mass sits at the <em>center</em> of the grid &mdash; gravity curves space equally in ALL directions, not just &ldquo;down.&rdquo; Use Top/Side/Front views to see this from every angle.
-    </div>
-
-    <!-- View mode toggle -->
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;align-items:center;">
-      <span style="color:var(--muted);font-size:0.85rem;line-height:2.2;">View:</span>
-      <button class="tab-btn active" id="curv-view-2d">2D Sheet</button>
-      <button class="tab-btn" id="curv-view-3d">3D Spherical</button>
-      <span style="color:var(--dim);font-size:0.75rem;margin-left:12px;line-height:2.2;">Camera:</span>
-      <button class="tab-btn" id="curv-cam-top">Top</button>
-      <button class="tab-btn" id="curv-cam-side">Side</button>
-      <button class="tab-btn" id="curv-cam-front">Front</button>
-      <button class="tab-btn active" id="curv-cam-free">Free</button>
-      <button class="tab-btn" id="curv-cam-follow">Follow</button>
-      <button class="tab-btn" id="curv-fullscreen" style="margin-left:auto;">Fullscreen</button>
-    </div>
-
-    <!-- Mode buttons -->
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;">
-      <button class="tab-btn active" id="curv-mode-place">Place Mass</button>
-      <button class="tab-btn" id="curv-mode-drop">Drop Particle</button>
-      <button class="tab-btn" id="curv-mode-orbit">Launch Orbit</button>
-      <button class="tab-btn" id="curv-mode-rain">Rain Particles</button>
-      <button class="tab-btn" id="curv-mode-orbits">Orbital Planes</button>
-    </div>
-
-    <!-- Simulation controls -->
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;align-items:center;">
-      <button class="tab-btn" id="curv-pause">Pause</button>
-      <button class="tab-btn" id="curv-step-fwd">Step +1</button>
-      <button class="tab-btn" id="curv-reset-all">Reset All</button>
-      <div class="slider-group" style="flex:1;min-width:180px;margin:0;">
-        <label>Sim speed <span class="val" id="curv-sim-speed-label">1.0x</span></label>
-        <input type="range" id="curv-sim-speed" min="1" max="50" value="10" step="1">
-      </div>
-      <span style="color:var(--dim);font-size:0.7rem;">Drag: rotate &bull; Right-drag: pan &bull; Scroll: zoom</span>
-    </div>
-
-    <!-- Toggles -->
-    <div style="display:flex;gap:16px;flex-wrap:wrap;margin:12px 0;align-items:center;">
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.9rem;color:var(--muted);">
-        <input type="checkbox" id="curv-cross-sections" checked> Show Cross-Sections
-      </label>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.9rem;color:var(--muted);">
-        <input type="checkbox" id="curv-straightness"> Show Geodesic Straightness
-      </label>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.9rem;color:var(--muted);">
-        <input type="checkbox" id="curv-show-grid" checked> Show Grid
-      </label>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.9rem;color:var(--muted);">
-        <input type="checkbox" id="curv-show-trails" checked> Show Trails
-      </label>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.9rem;color:var(--muted);">
-        <input type="checkbox" id="curv-show-forces"> Show Forces
-      </label>
-    </div>
-
-    <!-- Sliders -->
-    <div style="display:flex;gap:16px;flex-wrap:wrap;">
-      <div class="slider-group" style="flex:1;min-width:200px;">
-        <label>Mass strength <span class="val" id="curv-mass-label">1.0</span></label>
-        <input type="range" id="curv-mass-slider" min="1" max="100" value="10" step="1">
-      </div>
-      <div class="slider-group" style="flex:1;min-width:200px;">
-        <label>Launch speed <span class="val" id="curv-speed-label">1.0x v<sub>circ</sub></span></label>
-        <input type="range" id="curv-launch-speed" min="1" max="100" value="50" step="1">
-      </div>
-    </div>
-
-    <!-- Inclination slider (hidden until orbit/orbits mode) -->
-    <div id="curv-inclination-group" style="display:none;margin-top:8px;">
-      <div class="slider-group" style="min-width:200px;">
-        <label>Orbital inclination <span class="val" id="curv-incl-label">0&deg;</span></label>
-        <input type="range" id="curv-inclination" min="0" max="180" value="0" step="1">
-      </div>
-    </div>
-
-    <!-- Orbital plane presets (hidden until orbits mode) -->
-    <div id="curv-orbit-presets" style="display:none;gap:8px;flex-wrap:wrap;margin:8px 0;">
-      <span style="color:var(--muted);font-size:0.85rem;line-height:2.2;">Demos:</span>
-      <button class="tab-btn" id="curv-orbpreset-3plane">3-Plane Demo</button>
-      <button class="tab-btn" id="curv-orbpreset-solar">Solar System</button>
-      <button class="tab-btn" id="curv-orbpreset-globular">Globular Cluster</button>
-    </div>
-    <div id="curv-orbit-info" style="display:none;color:var(--muted);font-size:0.85rem;padding:4px 0;line-height:1.5;font-style:italic;"></div>
-
-    <!-- Three.js container -->
-    <div id="curvature-container" style="width:100%;height:600px;border-radius:12px;overflow:hidden;background:#060a14;position:relative;margin:16px 0;cursor:crosshair;">
-      <div id="curv-tooltip" style="position:absolute;top:10px;right:10px;background:rgba(17,24,39,0.85);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:0.8rem;color:var(--muted);pointer-events:none;display:none;">
-        <div>Potential: <span id="curv-tip-potential" style="color:var(--accent3);">--</span></div>
-        <div>Time dilation: <span id="curv-tip-dilation" style="color:var(--accent);">--</span></div>
+    <!-- ===== 3D CONTAINER (TOP — fills 70-80% of space) ===== -->
+    <div id="curvature-container">
+      <div id="curv-tooltip" style="position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(17,24,39,0.85);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:0.75rem;color:var(--muted);pointer-events:none;display:none;z-index:10;white-space:nowrap;">
+        Potential: <span id="curv-tip-potential" style="color:var(--accent3);">--</span> &nbsp; Time dilation: <span id="curv-tip-dilation" style="color:var(--accent);">--</span>
       </div>
       <div id="curv-labels" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:5;"></div>
-      <div id="curv-cam-help" style="position:absolute;bottom:10px;right:10px;background:rgba(17,24,39,0.8);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:0.7rem;color:var(--dim);pointer-events:none;z-index:5;line-height:1.5;">
-        Drag: Rotate &nbsp;|&nbsp; Right-drag: Pan &nbsp;|&nbsp; Scroll: Zoom
+      <div id="curv-cam-help" style="position:absolute;bottom:10px;left:10px;background:rgba(17,24,39,0.7);border-radius:6px;padding:4px 8px;font-size:0.65rem;color:var(--dim);pointer-events:none;z-index:5;opacity:0.7;">
+        Drag: Rotate &nbsp;&bull;&nbsp; Right-drag: Pan &nbsp;&bull;&nbsp; Scroll: Zoom
       </div>
       <div id="curv-shell-legend" style="display:none;position:absolute;top:10px;left:10px;background:rgba(17,24,39,0.85);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:0.75rem;color:var(--muted);pointer-events:none;z-index:5;line-height:1.6;max-width:220px;">
         <strong style="color:var(--text);">Spherical Grid</strong><br>
@@ -1573,6 +1547,13 @@
         <span style="color:#3b82f6;">&#9632;</span> Blue = flat spacetime (far away)<br>
         Shells compress inward where gravity is strongest.
       </div>
+      <!-- Info overlay (top-right, compact) -->
+      <div id="curv-info-overlay">
+        <div class="curv-info-row"><span class="curv-info-label">Scenario</span> <span class="curv-info-val" id="curv-info-scenario">Earth</span></div>
+        <div class="curv-info-row"><span class="curv-info-label">Time</span> <span class="curv-info-val" id="curv-info-time">0.0s</span></div>
+        <div class="curv-info-row"><span class="curv-info-label">Dilation</span> <span class="curv-info-val" id="curv-info-dilation">1.000</span></div>
+        <div class="curv-info-row readout-adv"><span class="curv-info-label">Energy</span> <span class="curv-info-val" id="curv-info-energy">&mdash;</span></div>
+      </div>
       <button id="curv-fullscreen-close" style="display:none;position:absolute;top:16px;left:16px;z-index:10001;background:rgba(17,24,39,0.85);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.9rem;font-family:inherit;">Exit Fullscreen</button>
       <div id="curv-fullscreen-instructions" style="display:none;position:absolute;bottom:16px;left:16px;z-index:10001;background:rgba(17,24,39,0.85);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.8rem;color:var(--muted);max-width:300px;line-height:1.5;">
         <strong style="color:var(--text);">Controls:</strong><br>
@@ -1580,26 +1561,145 @@
         Right-click + drag: Pan<br>
         Scroll: Zoom<br>
         Click grid: Place mass / Launch particle<br>
+        Press H: Show/hide controls<br>
         Press Esc: Exit fullscreen
       </div>
     </div>
 
+    <!-- ===== CONTROL PANEL (BOTTOM — 3 columns) ===== -->
+    <div id="curv-control-panel">
+
+      <!-- LEFT COLUMN: Quick Start -->
+      <div class="curv-col" id="curv-col-left">
+        <div class="curv-col-header">Quick Start</div>
+        <div class="curv-btn-group-label">Mass Presets</div>
+        <div class="curv-btn-group">
+          <button class="tab-btn active" id="curv-preset-earth" data-preset="earth">Earth</button>
+          <button class="tab-btn" id="curv-preset-sun" data-preset="sun">Sun</button>
+          <button class="tab-btn" id="curv-preset-bh" data-preset="blackhole">Black Hole</button>
+          <button class="tab-btn" id="curv-preset-binary" data-preset="binary">Binary Stars</button>
+        </div>
+        <div class="curv-btn-group-label">Scenarios</div>
+        <div class="curv-btn-group">
+          <button class="tab-btn" id="curv-scenario-iss" data-scenario="iss" title="ISS orbits Earth at 408 km altitude">ISS</button>
+          <button class="tab-btn" id="curv-scenario-moon" data-scenario="moon" title="Moon orbits Earth at 384,400 km">Moon</button>
+          <button class="tab-btn" id="curv-scenario-earthsun" data-scenario="earthsun" title="Earth orbits the Sun at 1 AU">Earth-Sun</button>
+          <button class="tab-btn" id="curv-scenario-binarystar" data-scenario="binarystar" title="Two equal stars orbit their common center of mass">Binary Stars</button>
+          <button class="tab-btn" id="curv-scenario-figure8" data-scenario="figure8" title="Chenciner-Montgomery 3-body solution on a figure-8 path">Figure-8</button>
+        </div>
+        <div id="curv-scenario-info" style="display:none;color:var(--dim);font-size:0.7rem;padding:2px 0;line-height:1.4;font-style:italic;"></div>
+      </div>
+
+      <!-- MIDDLE COLUMN: Simulation Controls -->
+      <div class="curv-col" id="curv-col-mid">
+        <div class="curv-col-header">Simulation</div>
+        <div class="curv-btn-group">
+          <button class="tab-btn" id="curv-pause">Pause</button>
+          <button class="tab-btn" id="curv-step-fwd">Step +1</button>
+          <button class="tab-btn" id="curv-reset-all">Reset All</button>
+        </div>
+        <div class="slider-group">
+          <label>Sim speed <span class="val" id="curv-sim-speed-label">1.0x</span></label>
+          <input type="range" id="curv-sim-speed" min="1" max="50" value="10" step="1">
+        </div>
+        <div class="curv-check-grid">
+          <label><input type="checkbox" id="curv-show-grid" checked> Grid</label>
+          <label><input type="checkbox" id="curv-show-trails" checked> Trails</label>
+          <label><input type="checkbox" id="curv-cross-sections" checked> Cross-Sections</label>
+          <label><input type="checkbox" id="curv-show-forces"> Forces</label>
+          <label><input type="checkbox" id="curv-straightness"> Geodesics</label>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Advanced (collapsible) -->
+      <div class="curv-col" id="curv-col-right">
+        <div class="curv-collapse-header" id="curv-adv-toggle">Advanced &#9660;</div>
+        <div class="curv-collapse-body open" id="curv-adv-body">
+          <div class="curv-btn-group-label">View</div>
+          <div class="curv-btn-group">
+            <button class="tab-btn active" id="curv-view-2d">2D Sheet</button>
+            <button class="tab-btn" id="curv-view-3d">3D Spherical</button>
+          </div>
+          <div class="curv-btn-group-label">Camera</div>
+          <div class="curv-btn-group">
+            <button class="tab-btn" id="curv-cam-top">Top</button>
+            <button class="tab-btn" id="curv-cam-side">Side</button>
+            <button class="tab-btn" id="curv-cam-front">Front</button>
+            <button class="tab-btn active" id="curv-cam-free">Free</button>
+            <button class="tab-btn" id="curv-cam-follow">Follow</button>
+          </div>
+          <div class="curv-btn-group-label">Mode</div>
+          <div class="curv-btn-group">
+            <button class="tab-btn active" id="curv-mode-place">Place Mass</button>
+            <button class="tab-btn" id="curv-mode-drop">Drop Particle</button>
+            <button class="tab-btn" id="curv-mode-orbit">Launch Orbit</button>
+            <button class="tab-btn" id="curv-mode-rain">Rain</button>
+            <button class="tab-btn" id="curv-mode-orbits">Orbital Planes</button>
+          </div>
+          <div id="curv-mass-slider-group">
+            <div class="slider-group">
+              <label>Mass strength <span class="val" id="curv-mass-label">1.0</span></label>
+              <input type="range" id="curv-mass-slider" min="1" max="100" value="10" step="1">
+            </div>
+          </div>
+          <div id="curv-launch-speed-group" style="display:none;">
+            <div class="slider-group">
+              <label>Launch speed <span class="val" id="curv-speed-label">1.0x v<sub>circ</sub></span></label>
+              <input type="range" id="curv-launch-speed" min="1" max="100" value="50" step="1">
+            </div>
+          </div>
+          <div id="curv-inclination-group" style="display:none;">
+            <div class="slider-group">
+              <label>Orbital inclination <span class="val" id="curv-incl-label">0&deg;</span></label>
+              <input type="range" id="curv-inclination" min="0" max="180" value="0" step="1">
+            </div>
+          </div>
+          <div id="curv-orbit-presets" style="display:none;gap:4px;flex-wrap:wrap;">
+            <div class="curv-btn-group-label">Orbital Demos</div>
+            <div class="curv-btn-group">
+              <button class="tab-btn" id="curv-orbpreset-3plane">3-Plane</button>
+              <button class="tab-btn" id="curv-orbpreset-solar">Solar System</button>
+              <button class="tab-btn" id="curv-orbpreset-globular">Globular</button>
+            </div>
+          </div>
+          <div id="curv-orbit-info" style="display:none;color:var(--dim);font-size:0.7rem;padding:2px 0;line-height:1.4;font-style:italic;"></div>
+          <div class="curv-btn-group" style="margin-top:2px;">
+            <button class="tab-btn" id="curv-clear">Clear All</button>
+            <button class="tab-btn" id="curv-fullscreen" style="margin-left:auto;">Fullscreen</button>
+          </div>
+        </div>
+        <!-- Help (collapsible, closed by default) -->
+        <div class="curv-collapse-header" id="curv-help-toggle">Help &#9654;</div>
+        <div class="curv-collapse-body" id="curv-help-body">
+          <p><strong>Camera:</strong> Drag to rotate, right-drag to pan, scroll to zoom. Use Top/Side/Front buttons for preset angles.</p>
+          <p><strong>3D View:</strong> The mass sits at the <em>center</em> of the grid &mdash; gravity curves space equally in ALL directions, not just &ldquo;down.&rdquo;</p>
+          <p><strong>Shells:</strong> Nested wireframe shells show spacetime curvature. <span style="color:#ef4444;">Red</span> = strong curvature near mass. <span style="color:#3b82f6;">Blue</span> = flat spacetime far away.</p>
+          <p><strong>Modes:</strong> Place Mass adds gravity sources. Drop/Orbit/Rain launch test particles. Orbital Planes shows multi-inclination orbits.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden info divs (kept for JS compatibility) -->
+    <div id="curv-3d-hint" style="display:none;color:var(--accent);font-size:0.82rem;padding:4px 0;line-height:1.5;">
+      <strong>3D Spherical view:</strong> The mass sits at the <em>center</em> of the grid &mdash; gravity curves space equally in ALL directions, not just &ldquo;down.&rdquo; Use Top/Side/Front views to see this from every angle.
+    </div>
+
     <!-- Readouts -->
-    <div class="readouts">
+    <div class="readouts" id="curv-readout-strip">
       <div class="readout">
-        <div class="label">Masses Placed</div>
+        <div class="label">Masses</div>
         <div class="value blue" id="curv-mass-count">0</div>
       </div>
       <div class="readout">
-        <div class="label">Active Particles</div>
+        <div class="label">Particles</div>
         <div class="value cyan" id="curv-particle-count">0</div>
       </div>
       <div class="readout">
-        <div class="label">Particle Velocity</div>
+        <div class="label">Velocity</div>
         <div class="value purple" id="curv-particle-vel">0.000</div>
       </div>
       <div class="readout">
-        <div class="label">Time Dilation (cursor)</div>
+        <div class="label">Time Dilation</div>
         <div class="value yellow" id="curv-dilation">1.000</div>
       </div>
       <div class="readout">
@@ -1611,7 +1711,7 @@
         <div class="value cyan" id="curv-altitude">&mdash;</div>
       </div>
       <div class="readout readout-adv">
-        <div class="label">Escape Velocity</div>
+        <div class="label">Escape Vel</div>
         <div class="value red" id="curv-escape-vel">&mdash;</div>
       </div>
       <div class="readout">
@@ -1624,21 +1724,21 @@
       </div>
     </div>
 
-    <p class="explain level-beg">
+    <p class="explain level-beg explain-bottom">
       <strong>Gravity pulls from ALL directions, not just &ldquo;down.&rdquo;</strong> The 2D trampoline picture is helpful but
       misleading &mdash; it makes gravity look like it only bends space downward. Switch to <strong>3D Spherical</strong>
-      to see how space actually curves equally in every direction around a mass. Try <strong>Rain Particles</strong>
+      to see how space actually curves equally in every direction around a mass. Try <strong>Rain</strong>
       to drop objects from above, below, and all sides &mdash; they all curve the same way!
     </p>
-    <p class="explain level-int">
+    <p class="explain level-int explain-bottom">
       <strong>Gravity isn't &ldquo;downward&rdquo; &mdash; it's inward.</strong> The 2D sheet view shows the classic &ldquo;rubber sheet&rdquo; analogy,
       but this is misleading because it only shows curvature in one direction. Switch to <strong>3D Spherical</strong> view to see
-      concentric shells of spacetime compressing equally in all directions around a mass. Use <strong>Rain Particles</strong>
+      concentric shells of spacetime compressing equally in all directions around a mass. Use <strong>Rain</strong>
       to drop test objects from above, below, and all sides &mdash; they all experience identical curvature.
       An orbiting planet isn't being &ldquo;pulled&rdquo; &mdash; it's following the straightest possible path (a <strong>geodesic</strong>)
       through warped spacetime.
     </p>
-    <p class="explain level-adv">
+    <p class="explain level-adv explain-bottom">
       <strong>Spherical symmetry of the Schwarzschild solution:</strong> The metric is diagonal in (t,r,&theta;,&phi;)
       and depends only on r, making all angular directions equivalent. The orbital plane presets demonstrate
       this: orbits at any inclination are equally stable. The 2D embedding diagram (Flamm&rsquo;s paraboloid)
@@ -7073,6 +7173,82 @@ function setupCanvas(id) {
 
       renderer.render(scene, camera);
     }
+
+    // ---- Collapsible panel toggles ----
+    ['curv-adv', 'curv-help'].forEach(function(prefix) {
+      var toggle = document.getElementById(prefix + '-toggle');
+      var body = document.getElementById(prefix + '-body');
+      if (!toggle || !body) return;
+      toggle.addEventListener('click', function() {
+        var isOpen = body.classList.toggle('open');
+        toggle.innerHTML = toggle.innerHTML.replace(/[\u25BC\u25B6]/, isOpen ? '\u25BC' : '\u25B6');
+      });
+    });
+
+    // ---- Context-sensitive control visibility ----
+    setInterval(function() {
+      // Launch speed: visible only in orbit/orbits mode
+      var lsg = document.getElementById('curv-launch-speed-group');
+      if (lsg) lsg.style.display = (currentMode === 'orbit' || currentMode === 'orbits') ? 'block' : 'none';
+
+      // Follow button: visible only when movable bodies exist
+      var followBtn = document.getElementById('curv-cam-follow');
+      if (followBtn) {
+        var hasBody = particles.length > 0 || masses.some(function(m) { return m.dynamic; });
+        followBtn.style.display = hasBody ? '' : 'none';
+      }
+
+      // Step +1: grayed out when playing (not paused)
+      var stepBtn = document.getElementById('curv-step-fwd');
+      if (stepBtn) {
+        if (paused) { stepBtn.classList.remove('curv-disabled'); }
+        else { stepBtn.classList.add('curv-disabled'); }
+      }
+
+      // Mass strength: hidden when a scenario (not manual preset) is active
+      var msg = document.getElementById('curv-mass-slider-group');
+      var activeScenario = document.querySelector('#sec-curvature [data-scenario].active');
+      if (msg) msg.style.display = activeScenario ? 'none' : 'block';
+
+      // Info overlay sync
+      var infoTime = document.getElementById('curv-info-time');
+      var infoDilation = document.getElementById('curv-info-dilation');
+      var infoEnergy = document.getElementById('curv-info-energy');
+      var infoScenario = document.getElementById('curv-info-scenario');
+      if (infoTime) infoTime.textContent = document.getElementById('curv-elapsed-time').textContent;
+      if (infoDilation) infoDilation.textContent = document.getElementById('curv-dilation').textContent;
+      if (infoEnergy) infoEnergy.textContent = document.getElementById('curv-energy-drift').textContent;
+      if (infoScenario) {
+        var abtn = document.querySelector('#sec-curvature [data-scenario].active') ||
+                   document.querySelector('#sec-curvature [data-preset].active');
+        infoScenario.textContent = abtn ? abtn.textContent : 'Custom';
+      }
+    }, 200);
+
+    // ---- Enhanced fullscreen: H key toggle + section class ----
+    var secEl = document.getElementById('sec-curvature');
+    document.getElementById('curv-fullscreen').addEventListener('click', function() {
+      // Runs after existing toggleFullscreen handler
+      setTimeout(function() {
+        secEl.classList.toggle('curv-fs-active', container.classList.contains('curv-fullscreen'));
+        if (!container.classList.contains('curv-fullscreen')) {
+          secEl.classList.remove('curv-fs-controls-visible');
+        }
+      }, 10);
+    });
+    document.getElementById('curv-fullscreen-close').addEventListener('click', function() {
+      setTimeout(function() {
+        secEl.classList.remove('curv-fs-active', 'curv-fs-controls-visible');
+      }, 10);
+    });
+    document.addEventListener('keydown', function(e) {
+      if ((e.key === 'h' || e.key === 'H') && container.classList.contains('curv-fullscreen')) {
+        secEl.classList.toggle('curv-fs-controls-visible');
+      }
+      if (e.key === 'Escape') {
+        secEl.classList.remove('curv-fs-active', 'curv-fs-controls-visible');
+      }
+    });
 
     // Load default preset and start
     loadPreset('earth');

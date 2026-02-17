@@ -134,7 +134,7 @@ https://sampsonb.github.io/ftl-impossibility/
 - **Omnidirectional hint**: educational note appears in 3D mode explaining gravity curves space in ALL directions
 - **Camera controls**: Top View, Side View, Front View, Free Rotation presets; Follow Body mode
 - **Full orbit freedom**: removed polar angle constraint — camera can view from any direction including below
-- **Fullscreen mode**: expands visualization to fill viewport, ESC to exit, instructions overlay
+- **Fullscreen mode**: expands visualization to fill viewport, H key shows/hides controls, ESC to exit
 - **Visual improvements**: body sizes scaled by mass, custom colors per body (Earth blue, Moon gray, Sun gold, etc.), HTML label overlays projected from 3D positions
 - **Force vectors**: optional red ArrowHelper showing gravitational force on each particle
 - **Educational readouts**: altitude (distance to nearest mass), escape velocity at current position
@@ -146,8 +146,17 @@ https://sampsonb.github.io/ftl-impossibility/
 - Mass presets: Earth (gentle), Sun (moderate), Black Hole (extreme + accretion ring), Binary Stars
 - Toggle between 2D Sheet and 3D Spherical views
 - Show/hide cross-section rings, grid, geodesic straightness, trails, force vectors
-- Camera controls help text inline
-- 7 readouts: masses, particles, velocity, time dilation, orbital period, altitude, escape velocity
+- **Reorganized bottom-panel UI**:
+  - 3D container fills top 70-80% of section; controls consolidated at bottom
+  - 3-column control panel: Quick Start (presets + scenarios) | Simulation (play/pause, speed, checkboxes) | Advanced (view, camera, mode, sliders)
+  - Collapsible "Advanced" section with ▼/▶ toggle
+  - Collapsible "Help" section with camera, shell, and mode explanations
+  - Compact top-right info overlay: scenario name, elapsed time, time dilation, energy drift
+  - Context-sensitive controls: launch speed shown only in orbit mode, Follow button only when bodies exist, Step+1 grayed when playing, mass slider hidden in scenarios
+  - Enhanced fullscreen: H key toggles control panel visibility, ESC exits
+  - Scenario descriptions available via button tooltips (title attributes)
+  - Responsive: columns stack on ≤900px, compact sizing on ≤600px
+- 9 readouts: masses, particles, velocity, time dilation, orbital period, altitude, escape velocity, time elapsed, energy drift
 
 ### 06 — Photon Clock & Time Dilation
 - Side-by-side animated photon clocks (stationary vs moving)
@@ -262,3 +271,4 @@ https://sampsonb.github.io/ftl-impossibility/
 21. Netflix-style landing page: module card grid, progress tracking, sticky nav, smooth scroll
 22. 3D curvature polish: labeled presets, wireframe legend, axis arrowheads, camera help, time elapsed, trail visibility
 23. Physics rewrite: velocity-Verlet integrator, fixed sub-steps, energy conservation tracking, Step Forward debug button
+24. Curvature UI reorganization: bottom control panel, 3-column layout, collapsible sections, context-sensitive controls, info overlay, enhanced fullscreen

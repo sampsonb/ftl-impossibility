@@ -4,6 +4,119 @@ All changes from the February 2026 build session.
 
 ---
 
+## 24. Curvature UI Reorganization: Bottom Control Panel
+**Prompt:** "Reorganize the 3D Spacetime Curvature interface for better usability: Move ALL controls to the bottom, consolidate into organized sections (Quick Start, Simulation, Advanced), add collapsible sections, context-sensitive controls, compact info display, enhanced fullscreen, responsive design."
+
+**Changes:**
+- Moved 3D container to top of section (70-80% of space), controls to bottom panel
+- 3-column control panel layout: Quick Start | Simulation | Advanced
+  - **Quick Start** (always visible): mass presets (Earth/Sun/Black Hole/Binary) + scenario buttons (ISS/Moon/Earth-Sun/Binary/Figure-8)
+  - **Simulation** (always visible): Pause/Step+1/Reset, sim speed slider, 2-column checkbox grid (Grid, Trails, Cross-Sections, Forces, Geodesics)
+  - **Advanced** (collapsible ▼/▶): view toggle, camera buttons, mode buttons, mass/launch/inclination sliders, orbital presets, Clear All, Fullscreen
+- Collapsible **Help** section with camera, shell legend, and mode explanations
+- Compact **info overlay** (top-right of 3D view): scenario name, elapsed time, time dilation, energy drift
+- **Context-sensitive controls** (5Hz setInterval):
+  - Launch speed slider: visible only in orbit/orbits mode
+  - Follow camera button: visible only when movable bodies exist
+  - Step+1: grayed out when simulation is playing
+  - Mass strength slider: hidden during preset scenarios
+- **Enhanced fullscreen**: H key toggles control panel visibility (CSS fixed overlay at bottom), ESC exits + cleans up
+- Fullscreen instructions updated to mention H key
+- Scenario descriptions moved to button `title` tooltips
+- Tooltip repositioned to top-center (avoids overlapping info overlay)
+- Replaced ~180 lines of inline-styled control rows with comprehensive CSS layout
+- Responsive: columns stack on ≤900px, compact sizing on ≤600px
+- All 58 element IDs preserved — zero JS modifications to existing event handlers
+- **Commit:** (pending)
+
+---
+
+## 23. Physics Rewrite: Velocity-Verlet Integrator
+**Prompt:** "The orbital physics simulation is fundamentally broken - all orbits are wrong. Complete rewrite needed: Fix core gravitational physics, use proper physics integrator (velocity-Verlet or RK4), verify circular orbit calculations, add energy conservation check, step-by-step debugging mode."
+
+**Changes:**
+- Replaced position-Verlet integrator with velocity-Verlet (symplectic, energy-conserving)
+- **Root cause**: old integrator encoded velocity implicitly as `(x - prevX)/dt`; variable sub-step sizes between frames corrupted velocity, causing energy drift and spiral orbits
+- Fixed sub-step size `PHYSICS_DT = 0.004` — consistent integration regardless of frame rate
+- New `gravAccel(px, py, pz)` helper computes gravitational acceleration at any point (with soft minimum radius 0.15 to prevent singularity)
+- New `computeTotalEnergy()` tracks kinetic + potential energy for conservation monitoring
+- Explicit velocity storage on particles (`vx`, `vy`, `vz`) — removed all `prevX`/`prevY`/`prevZ` fields
+- Rewrote `stepParticles(dt)`: half-step velocity → full-step position → recompute acceleration → half-step velocity
+- Rewrote `stepDynamicMasses(dt)` with same velocity-Verlet pattern and new `massAccel(m)` helper
+- Added energy drift readout with color coding (green <0.01%, yellow <0.1%, red >0.1%)
+- Added Step Forward button for single-frame debugging while paused
+- Removed orphaned `VERLET_DT` constant
+- **Commit:** `fc4585f`
+
+---
+
+## 22. 3D Curvature Polish: Labels, Legend, Axes, Camera Help
+**Prompt:** "Fix multiple issues with the 3D Spacetime Curvature visualization: Label ALL objects, explain the spherical wireframes, fix Moon orbit preset, improve axis labels, add camera controls explanation, fix all preset scenarios, add visual clarity."
+
+**Changes:**
+- Added labels to all default presets (Earth, Sun, Black Hole, Star A/B) via `label` property in PRESETS object
+- Added wireframe shell legend overlay explaining inner/outer shells and color coding
+- Improved axis labels: bigger text (16px), arrowhead cones at positive ends
+- Added camera help overlay ("Drag: Rotate | Right-drag: Pan | Scroll: Zoom")
+- Added time elapsed readout (seconds/minutes/hours format), reset on scenario change
+- Increased trail opacity from 0.35 to 0.55
+- Reduced Moon preset sim speed from 2.0 to 1.0
+- **Commit:** `bd43d59` (combined with landing page)
+
+---
+
+## 21. Netflix-Style Landing Page
+**Prompt:** "Transform the website into a modern educational platform with: full-viewport Netflix-style landing page, interactive module cards, progress tracking, sticky navigation."
+
+**Changes:**
+- Full-viewport hero with progress bar ("X / 12 modules") and bouncing scroll hint chevron
+- 12 module cards in responsive CSS grid (3-column desktop, 1-column mobile)
+  - Each card: emoji icon thumbnail, section number, difficulty badge, title, description, visited status dot
+  - Hover: lift -6px with blue glow, opacity transition
+- Progress tracking via IntersectionObserver: sections marked "visited" after 2-second dwell at 25% visibility
+- localStorage persistence (`ftl-visited-sections` key) — visited state restored across sessions
+- Sticky navigation bar: appears when scrolling past module grid, backdrop-blur glass effect
+  - 12 section buttons with horizontal scroll, mini progress bar with percentage
+  - Highlights current section via IntersectionObserver
+- Smooth scroll: card/nav clicks scroll to section with `scroll-margin-top: 60px` offset
+- Keyboard accessible: cards focusable with Enter/Space activation
+- **Commit:** `bd43d59`
+
+---
+
+## 20. 3D Centering Fix: Masses at Center of Spherical Grid
+**Prompt:** (continuation from prior session — fix 3D visualization)
+
+**Changes:**
+- Modified `updateMassPositions()`: masses use Y=0 in 3D mode (center of spherical shells) instead of sitting on deformed surface
+- Added 3D axis labels: X (red), Y (green), Z (blue) dashed lines with projected HTML labels
+- Arrowheads on axis positive ends
+- Added Front camera preset button (camera at (50, 0, 0))
+- Removed polar angle constraint (`maxPolarAngle = Math.PI`) — full orbit freedom
+- Added omnidirectional gravity hint div in 3D mode
+- Better 3D camera default: (15, 18, 35) instead of (0, 20, 45)
+- Fixed dynamic mass trail Y in 3D mode: `view3D ? 0 : gridYAt(m.x, m.z)`
+- **Commit:** `75f4312`
+
+---
+
+## 19. Major 3D Curvature Overhaul
+**Prompt:** (continuation from prior session — dynamic masses, scenarios, controls)
+
+**Changes:**
+- Dynamic masses: masses can have velocities and move under mutual N-body gravity
+- Scenario presets: ISS Orbiting Earth, Moon Orbiting Earth, Earth Orbiting Sun, Binary Star System, Figure-8 Three-Body
+- Simulation controls: Pause/Play, Reset All, speed slider (0.1x–5.0x)
+- Camera controls: Top/Side/Front View, Free Rotation, Follow Body mode
+- Fullscreen mode with ESC to exit
+- Body sizes scaled by mass, custom colors per body
+- HTML label overlays projected from 3D positions
+- Force vectors: optional red ArrowHelper showing gravitational force
+- Educational readouts: altitude, escape velocity
+- **Commit:** (prior session)
+
+---
+
 ## 18. Adaptive Difficulty Level System
 **Prompt:** "Make the website work for both younger students (7th-12th grade) and college level: 1. Add difficulty level toggle at the top... 2. Adaptive content for each section... 3. Visual indicators... 4. Educational scaffolding... 5. Interactive elements scale with difficulty... 6. Teacher/classroom features... Make it feel like ONE cohesive tool that grows with the student, not three separate websites!"
 
@@ -77,7 +190,7 @@ All changes from the February 2026 build session.
 
 | File | Description |
 |------|-------------|
-| `index.html` | Single-file app, grew from ~5400 to ~7100 lines |
+| `index.html` | Single-file app, grew from ~5400 to ~8200+ lines |
 | `progress.md` | Documentation updated after every change |
 | `CHANGELOG.md` | This file |
 

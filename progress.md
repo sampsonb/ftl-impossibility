@@ -101,26 +101,42 @@ https://sampsonb.github.io/ftl-impossibility/
   - Demonstrates gravity curves space equally in ALL directions, not just "downward"
   - 3 orthogonal cross-section rings (XZ amber, XY cyan, YZ purple) show curvature in each plane
 - Grid/shell vertex colors show gravitational time dilation (red = slow, blue = flat)
-- Schwarzschild-like potential: displacement ∝ -M/r
+- Schwarzschild-like potential: displacement ∝ -M/r (1.5× depth scale for dramatic wells)
 - Click to place masses (up to 5), raycasting onto XZ plane
 - Particle simulation with full 3D Verlet integration following geodesics
   - Drop mode: particles fall from rest into gravity wells
   - Orbit mode: tangential launch for orbital mechanics (inclination-aware)
+  - **Launch speed calibrated** to circular orbit velocity (slider: 0x–2x v_circ)
   - **Rain mode**: 6 particles from ±X, ±Y, ±Z all fall inward — proves omnidirectional curvature
   - **Orbital Planes mode**: multi-plane orbital demonstrations
-  - Trail rendering (300-point ring buffer)
+  - Trail rendering (300-point ring buffer), togglable on/off
+- **Physics fixes**: corrected Verlet initialization, removed 5× speed multiplier, orbit-relative launch speeds
+- **Dynamic masses**: masses can have velocities and move under mutual N-body gravity
+  - Enables Binary Star and Figure-8 scenarios
+  - Grid deformation updates dynamically as masses move
+  - Dynamic masses leave their own orbit trails
+- **Scenario presets** (educational, with calibrated physics):
+  - **ISS Orbiting Earth**: blue Earth, ISS at distance 6, stable circular orbit
+  - **Moon Orbiting Earth**: blue Earth, gray Moon at distance 12
+  - **Earth Orbiting Sun**: gold Sun, blue Earth at distance 10
+  - **Binary Star System**: two equal dynamic masses orbiting common center of mass
+  - **Figure-8 Three-Body**: Chenciner-Montgomery solution — 3 equal masses on figure-8 path
+- **Simulation controls**: Pause/Play, Reset All, speed slider (0.1x–5.0x)
+- **Camera controls**: Top View, Side View, Free Rotation presets; Follow Body mode
+- **Fullscreen mode**: expands visualization to fill viewport, ESC to exit, instructions overlay
+- **Visual improvements**: body sizes scaled by mass, custom colors per body (Earth blue, Moon gray, Sun gold, etc.), HTML label overlays projected from 3D positions
+- **Force vectors**: optional red ArrowHelper showing gravitational force on each particle
+- **Educational readouts**: altitude (distance to nearest mass), escape velocity at current position
 - Orbital inclination slider (0°–180°) for orbit and orbital planes modes
 - **Orbital plane presets** (auto-switch to 3D view):
   - **3-Plane Demo**: equatorial (0°), polar (90°), tilted (45°) — all equally stable
   - **Solar System**: Mercury (7°), Earth (0°), Mars (1.9°), Pluto (17°), comet (62°)
   - **Globular Cluster**: 8 stars with uniformly distributed inclinations — truly spherical
-- Presets: Earth (gentle), Sun (moderate), Black Hole (extreme + accretion ring), Binary Stars
+- Mass presets: Earth (gentle), Sun (moderate), Black Hole (extreme + accretion ring), Binary Stars
 - Toggle between 2D Sheet and 3D Spherical views
-- Show/hide cross-section rings, grid, geodesic straightness
-- Geodesic straightness: red dashed (flat line) vs green (curved geodesic)
-- Mouse controls: rotate, zoom, pan via OrbitControls
-- Tooltip showing gravitational potential and time dilation at cursor
-- 5 readouts: masses placed, active particles, velocity, time dilation, orbital period
+- Show/hide cross-section rings, grid, geodesic straightness, trails, force vectors
+- Camera controls help text inline
+- 7 readouts: masses, particles, velocity, time dilation, orbital period, altitude, escape velocity
 
 ### 06 — Photon Clock & Time Dilation
 - Side-by-side animated photon clocks (stationary vs moving)
@@ -215,3 +231,4 @@ https://sampsonb.github.io/ftl-impossibility/
 16. Multi-plane orbital demonstrations: inclination slider, 3-Plane/Solar System/Globular Cluster presets
 17. "Speed Limit of the Universe" section with 5 visual tabs, moved to section 01
 18. Adaptive difficulty level system: 3-level toggle, adaptive content, badges, tooltips, classroom mode
+19. Major 3D curvature overhaul: physics fixes, dynamic masses, scenarios (ISS/Moon/Binary/Figure-8), pause/speed/camera/fullscreen controls, labels, force vectors

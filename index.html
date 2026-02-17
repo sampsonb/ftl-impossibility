@@ -374,6 +374,9 @@
   #curvature-container canvas { display: block; border-radius: 12px; }
   #sec-curvature input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
   #curv-tooltip { z-index: 10; backdrop-filter: blur(8px); }
+  #curvature-container.curv-fullscreen { position:fixed !important; top:0; left:0; width:100vw !important; height:100vh !important; z-index:9999; border-radius:0 !important; margin:0 !important; }
+  #curvature-container.curv-fullscreen #curv-fullscreen-close { display:block !important; }
+  #curvature-container.curv-fullscreen #curv-fullscreen-instructions { display:block !important; }
 
   /* ==================== DIFFICULTY LEVEL SYSTEM ==================== */
 
@@ -975,11 +978,28 @@
       <button class="tab-btn" id="curv-clear" style="margin-left:auto;">Clear All</button>
     </div>
 
+    <!-- Scenario presets -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 8px;align-items:center;">
+      <span style="color:var(--muted);font-size:0.85rem;line-height:2.2;">Scenarios:</span>
+      <button class="tab-btn" id="curv-scenario-iss" data-scenario="iss">ISS</button>
+      <button class="tab-btn" id="curv-scenario-moon" data-scenario="moon">Moon</button>
+      <button class="tab-btn" id="curv-scenario-earthsun" data-scenario="earthsun">Earth-Sun</button>
+      <button class="tab-btn" id="curv-scenario-binarystar" data-scenario="binarystar">Binary Stars</button>
+      <button class="tab-btn" id="curv-scenario-figure8" data-scenario="figure8">Figure-8</button>
+    </div>
+    <div id="curv-scenario-info" style="display:none;color:var(--muted);font-size:0.82rem;padding:4px 0;line-height:1.5;font-style:italic;"></div>
+
     <!-- View mode toggle -->
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;align-items:center;">
       <span style="color:var(--muted);font-size:0.85rem;line-height:2.2;">View:</span>
       <button class="tab-btn active" id="curv-view-2d">2D Sheet</button>
       <button class="tab-btn" id="curv-view-3d">3D Spherical</button>
+      <span style="color:var(--dim);font-size:0.75rem;margin-left:12px;line-height:2.2;">Camera:</span>
+      <button class="tab-btn" id="curv-cam-top">Top</button>
+      <button class="tab-btn" id="curv-cam-side">Side</button>
+      <button class="tab-btn active" id="curv-cam-free">Free</button>
+      <button class="tab-btn" id="curv-cam-follow">Follow</button>
+      <button class="tab-btn" id="curv-fullscreen" style="margin-left:auto;">Fullscreen</button>
     </div>
 
     <!-- Mode buttons -->
@@ -989,6 +1009,17 @@
       <button class="tab-btn" id="curv-mode-orbit">Launch Orbit</button>
       <button class="tab-btn" id="curv-mode-rain">Rain Particles</button>
       <button class="tab-btn" id="curv-mode-orbits">Orbital Planes</button>
+    </div>
+
+    <!-- Simulation controls -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;align-items:center;">
+      <button class="tab-btn" id="curv-pause">Pause</button>
+      <button class="tab-btn" id="curv-reset-all">Reset All</button>
+      <div class="slider-group" style="flex:1;min-width:180px;margin:0;">
+        <label>Sim speed <span class="val" id="curv-sim-speed-label">1.0x</span></label>
+        <input type="range" id="curv-sim-speed" min="1" max="50" value="10" step="1">
+      </div>
+      <span style="color:var(--dim);font-size:0.7rem;">Drag: rotate &bull; Right-drag: pan &bull; Scroll: zoom</span>
     </div>
 
     <!-- Toggles -->
@@ -1002,6 +1033,12 @@
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.9rem;color:var(--muted);">
         <input type="checkbox" id="curv-show-grid" checked> Show Grid
       </label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.9rem;color:var(--muted);">
+        <input type="checkbox" id="curv-show-trails" checked> Show Trails
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.9rem;color:var(--muted);">
+        <input type="checkbox" id="curv-show-forces"> Show Forces
+      </label>
     </div>
 
     <!-- Sliders -->
@@ -1011,7 +1048,7 @@
         <input type="range" id="curv-mass-slider" min="1" max="100" value="10" step="1">
       </div>
       <div class="slider-group" style="flex:1;min-width:200px;">
-        <label>Launch speed <span class="val" id="curv-speed-label">0.50</span></label>
+        <label>Launch speed <span class="val" id="curv-speed-label">1.0x v<sub>circ</sub></span></label>
         <input type="range" id="curv-launch-speed" min="1" max="100" value="50" step="1">
       </div>
     </div>
@@ -1039,6 +1076,16 @@
         <div>Potential: <span id="curv-tip-potential" style="color:var(--accent3);">--</span></div>
         <div>Time dilation: <span id="curv-tip-dilation" style="color:var(--accent);">--</span></div>
       </div>
+      <div id="curv-labels" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:5;"></div>
+      <button id="curv-fullscreen-close" style="display:none;position:absolute;top:16px;left:16px;z-index:10001;background:rgba(17,24,39,0.85);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.9rem;font-family:inherit;">Exit Fullscreen</button>
+      <div id="curv-fullscreen-instructions" style="display:none;position:absolute;bottom:16px;left:16px;z-index:10001;background:rgba(17,24,39,0.85);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.8rem;color:var(--muted);max-width:300px;line-height:1.5;">
+        <strong style="color:var(--text);">Controls:</strong><br>
+        Left-click + drag: Rotate<br>
+        Right-click + drag: Pan<br>
+        Scroll: Zoom<br>
+        Click grid: Place mass / Launch particle<br>
+        Press Esc: Exit fullscreen
+      </div>
     </div>
 
     <!-- Readouts -->
@@ -1062,6 +1109,14 @@
       <div class="readout">
         <div class="label">Orbital Period</div>
         <div class="value red" id="curv-orbit-period">&mdash;</div>
+      </div>
+      <div class="readout readout-adv">
+        <div class="label">Altitude</div>
+        <div class="value cyan" id="curv-altitude">&mdash;</div>
+      </div>
+      <div class="readout readout-adv">
+        <div class="label">Escape Velocity</div>
+        <div class="value red" id="curv-escape-vel">&mdash;</div>
       </div>
     </div>
 
@@ -5203,6 +5258,13 @@ function setupCanvas(id) {
     let showCrossSections = true;
     let view3D = false;
     let mouseDownPos = null;
+    let paused = false;
+    let simSpeed = 1.0;
+    let showTrails = true;
+    let showForces = false;
+    let followTarget = null;
+    let cameraMode = 'free';
+    const VERLET_DT = 0.012;
 
     // ---- 3D Spherical shells ----
     const sphereGroup = new THREE.Group();
@@ -5330,10 +5392,10 @@ function setupCanvas(id) {
         for (const m of masses) {
           const dx = vx - m.x, dz = vz - m.z;
           const r = Math.max(Math.sqrt(dx * dx + dz * dz), 0.3);
-          dy -= m.strength / r;
+          dy -= m.strength / r * 1.5;
           totalPot += m.strength / r;
         }
-        dy = Math.max(dy, -18);
+        dy = Math.max(dy, -25);
         pos[ix + 1] = dy;
         // Color: time dilation τ = sqrt(1 - 2Φ), Φ normalized
         const phi = Math.min(totalPot * 0.08, 0.499);
@@ -5348,25 +5410,53 @@ function setupCanvas(id) {
     }
 
     // ---- Mass management ----
-    function addMass(x, z, strength, isBlackHole) {
+    function addMass(x, z, strength, isBlackHole, options) {
       if (masses.length >= MAX_MASSES) return;
-      const radius = 0.4 + strength * 0.06;
+      const opts = options || {};
+      const radius = opts.radius || Math.max(0.3, 0.25 + Math.pow(strength, 0.6) * 0.25);
+      const bodyColor = opts.color || (isBlackHole ? 0x000000 : 0xf59e0b);
+      const emissiveColor = opts.emissive || (isBlackHole ? 0x110000 : bodyColor);
       const sGeo = new THREE.SphereGeometry(radius, 20, 20);
       const sMat = new THREE.MeshPhongMaterial({
-        color: isBlackHole ? 0x000000 : 0xf59e0b,
-        emissive: isBlackHole ? 0x110000 : 0xf59e0b,
+        color: bodyColor,
+        emissive: emissiveColor,
         emissiveIntensity: isBlackHole ? 0.1 : 0.35,
         transparent: true, opacity: 0.9
       });
       const sphere = new THREE.Mesh(sGeo, sMat);
       // Glow
+      const glowColor = isBlackHole ? 0xef4444 : bodyColor;
       const gGeo = new THREE.SphereGeometry(radius * 2.2, 16, 16);
       const gMat = new THREE.MeshBasicMaterial({
-        color: isBlackHole ? 0xef4444 : 0xf59e0b,
+        color: glowColor,
         transparent: true, opacity: 0.12
       });
       const glow = new THREE.Mesh(gGeo, gMat);
-      const mass = { x, z, strength, mesh: sphere, glowMesh: glow, extras: [] };
+      const mass = {
+        x, z, strength, mesh: sphere, glowMesh: glow, extras: [],
+        dynamic: opts.dynamic || false,
+        vx: opts.vx || 0, vz: opts.vz || 0,
+        prevX: x - (opts.vx || 0) * VERLET_DT,
+        prevZ: z - (opts.vz || 0) * VERLET_DT,
+        label: opts.label || null,
+        bodyColor: bodyColor,
+        trail: null, trailGeo: null, trailPos: null, trailIdx: 0
+      };
+      // Dynamic mass trail
+      if (opts.dynamic) {
+        mass.trailPos = new Float32Array(TRAIL_LEN * 3);
+        var initY = gridYAt(x, z);
+        for (var ti = 0; ti < TRAIL_LEN; ti++) {
+          mass.trailPos[ti*3] = x; mass.trailPos[ti*3+1] = initY; mass.trailPos[ti*3+2] = z;
+        }
+        var tGeo = new THREE.BufferGeometry();
+        tGeo.setAttribute('position', new THREE.BufferAttribute(mass.trailPos, 3));
+        var tMat = new THREE.LineBasicMaterial({ color: bodyColor, transparent: true, opacity: 0.4 });
+        mass.trail = new THREE.Line(tGeo, tMat);
+        mass.trailGeo = tGeo;
+        if (showTrails) mass.trail.visible = true;
+        massGroup.add(mass.trail);
+      }
       // Black hole accretion ring
       if (isBlackHole) {
         const ringGeo = new THREE.TorusGeometry(radius * 2.5, 0.2, 8, 32);
@@ -5392,7 +5482,7 @@ function setupCanvas(id) {
           const r = Math.max(Math.sqrt(dx * dx + dz * dz), 0.3);
           dy -= m.strength / r;
         }
-        dy = Math.max(dy, -18);
+        dy = Math.max(dy, -25);
         mass.mesh.position.set(mass.x, dy, mass.z);
         mass.glowMesh.position.set(mass.x, dy, mass.z);
         for (const e of mass.extras) e.position.set(mass.x, dy, mass.z);
@@ -5407,8 +5497,12 @@ function setupCanvas(id) {
         for (const e of m.extras) {
           massGroup.remove(e); e.geometry.dispose(); e.material.dispose();
         }
+        if (m.trail) {
+          massGroup.remove(m.trail); m.trailGeo.dispose(); m.trail.material.dispose();
+        }
       }
       masses.length = 0;
+      followTarget = null;
       updateGrid();
       updateReadouts();
     }
@@ -5442,7 +5536,7 @@ function setupCanvas(id) {
     }
 
     // ---- Particle system ----
-    function addParticle(px, py_in, pz, vx, vy_in, vz, color) {
+    function addParticle(px, py_in, pz, vx, vy_in, vz, color, label) {
       if (particles.length >= MAX_PARTICLES) removeParticle(0);
       const c = color || 0x06b6d4;
       const geo = new THREE.SphereGeometry(0.3, 10, 10);
@@ -5461,12 +5555,14 @@ function setupCanvas(id) {
       tGeo.setAttribute('position', new THREE.BufferAttribute(trailPos, 3));
       const tMat = new THREE.LineBasicMaterial({ color: c, transparent: true, opacity: 0.35 });
       const trail = new THREE.Line(tGeo, tMat);
+      trail.visible = showTrails;
       const p = {
         x: px, y: py, z: pz, vx, vy, vz,
-        prevX: px - vx * 0.016, prevY: py - vy * 0.016, prevZ: pz - vz * 0.016,
+        prevX: px - vx * VERLET_DT, prevY: py - vy * VERLET_DT, prevZ: pz - vz * VERLET_DT,
         mesh, glowMesh, trail, trailGeo: tGeo, trailPos,
         trailIdx: 0, totalAngle: 0, lastAngle: null,
-        orbitTimer: 0, alive: true, startX: px, startY: py, startZ: pz
+        orbitTimer: 0, alive: true, startX: px, startY: py, startZ: pz,
+        label: label || null
       };
       particles.push(p);
       particleGroup.add(mesh); particleGroup.add(glowMesh); particleGroup.add(trail);
@@ -5567,6 +5663,116 @@ function setupCanvas(id) {
       }
       for (let i = particles.length - 1; i >= 0; i--) {
         if (!particles[i].alive) removeParticle(i);
+      }
+    }
+
+    // ---- Dynamic mass stepping ----
+    function stepDynamicMasses(dt) {
+      var dynMasses = masses.filter(function(m) { return m.dynamic; });
+      if (dynMasses.length === 0) return;
+      var STEP = VERLET_DT;
+      var steps = Math.max(1, Math.ceil(dt / STEP));
+      var sDt = dt / steps;
+      for (var mi = 0; mi < dynMasses.length; mi++) {
+        var m = dynMasses[mi];
+        for (var s = 0; s < steps; s++) {
+          var ax = 0, az = 0;
+          for (var oi = 0; oi < masses.length; oi++) {
+            var other = masses[oi];
+            if (other === m) continue;
+            var dx = m.x - other.x, dz = m.z - other.z;
+            var r2 = dx * dx + dz * dz;
+            var r = Math.max(Math.sqrt(r2), 0.5);
+            var r3 = r * r * r;
+            ax -= other.strength * dx / r3;
+            az -= other.strength * dz / r3;
+          }
+          var nx = 2 * m.x - m.prevX + ax * sDt * sDt;
+          var nz = 2 * m.z - m.prevZ + az * sDt * sDt;
+          m.prevX = m.x; m.prevZ = m.z;
+          m.x = nx; m.z = nz;
+        }
+        m.vx = (m.x - m.prevX) / sDt;
+        m.vz = (m.z - m.prevZ) / sDt;
+        // Update trail
+        if (m.trail && m.trailPos) {
+          m.trailIdx = (m.trailIdx + 1) % TRAIL_LEN;
+          var ti = m.trailIdx * 3;
+          var my = gridYAt(m.x, m.z);
+          m.trailPos[ti] = m.x; m.trailPos[ti+1] = my; m.trailPos[ti+2] = m.z;
+          m.trailGeo.attributes.position.needsUpdate = true;
+        }
+      }
+      updateGrid();
+      updateMassPositions();
+    }
+
+    // ---- Labels overlay ----
+    var labelContainer = document.getElementById('curv-labels');
+    function updateLabels() {
+      labelContainer.innerHTML = '';
+      var allBodies = [];
+      for (var i = 0; i < masses.length; i++) {
+        var m = masses[i];
+        if (m.label) allBodies.push({ pos: m.mesh.position, label: m.label, color: m.bodyColor });
+      }
+      for (var j = 0; j < particles.length; j++) {
+        var p = particles[j];
+        if (p.label) allBodies.push({ pos: p.mesh.position, label: p.label, color: p.mesh.material.color.getHex() });
+      }
+      for (var k = 0; k < allBodies.length; k++) {
+        var body = allBodies[k];
+        var v = body.pos.clone().project(camera);
+        if (v.z > 1) continue;
+        var cx = (v.x * 0.5 + 0.5) * container.clientWidth;
+        var cy = (-v.y * 0.5 + 0.5) * container.clientHeight;
+        var el = document.createElement('div');
+        el.textContent = body.label;
+        var hex = '#' + (body.color || 0xffffff).toString(16).padStart(6, '0');
+        el.style.cssText = 'position:absolute;left:' + cx + 'px;top:' + (cy - 22) + 'px;transform:translateX(-50%);color:' + hex + ';font-size:0.75rem;font-weight:600;text-shadow:0 0 6px rgba(0,0,0,0.9);white-space:nowrap;';
+        labelContainer.appendChild(el);
+      }
+    }
+
+    // ---- Force vectors ----
+    var forceGroup = new THREE.Group();
+    scene.add(forceGroup);
+
+    function clearForceVectors() {
+      while (forceGroup.children.length > 0) {
+        var ch = forceGroup.children[0];
+        forceGroup.remove(ch);
+        if (ch.dispose) ch.dispose();
+        else {
+          if (ch.geometry) ch.geometry.dispose();
+          if (ch.material) ch.material.dispose();
+        }
+      }
+    }
+
+    function updateForceVectors() {
+      clearForceVectors();
+      if (!showForces) return;
+      for (var pi = 0; pi < particles.length; pi++) {
+        var p = particles[pi];
+        var fx = 0, fz = 0;
+        for (var mi = 0; mi < masses.length; mi++) {
+          var m = masses[mi];
+          var dx = p.x - m.x, dz = p.z - m.z;
+          var r2 = dx * dx + dz * dz;
+          var r = Math.max(Math.sqrt(r2), 0.4);
+          var r3 = r * r * r;
+          fx -= m.strength * dx / r3;
+          fz -= m.strength * dz / r3;
+        }
+        var fMag = Math.sqrt(fx * fx + fz * fz);
+        if (fMag < 0.01) continue;
+        var scale = Math.min(4, fMag * 5);
+        var py = view3D ? p.y : gridYAt(p.x, p.z) + 0.5;
+        var dir = new THREE.Vector3(fx / fMag, 0, fz / fMag);
+        var origin = new THREE.Vector3(p.x, py, p.z);
+        var arrow = new THREE.ArrowHelper(dir, origin, scale, 0xef4444, 0.3, 0.2);
+        forceGroup.add(arrow);
       }
     }
 
@@ -5685,12 +5891,13 @@ function setupCanvas(id) {
         if (nm) {
           const dx = ix - nm.x, dz = iz - nm.z;
           const d = Math.max(Math.sqrt(dx * dx + dz * dz), 0.1);
-          const spd = speed * 8;
+          const vCirc = Math.sqrt(nm.strength / d);
+          const spd = speed * 2 * vCirc;
           const ci = Math.cos(incl), si = Math.sin(incl);
           const hx = -dz / d, hz = dx / d;
           addParticle(ix, 0, iz, hx * spd * ci, spd * si, hz * spd * ci);
         } else {
-          addParticle(ix, 0, iz, speed * 8, 0, 0);
+          addParticle(ix, 0, iz, speed * 2, 0, 0);
         }
       }
     });
@@ -5750,7 +5957,7 @@ function setupCanvas(id) {
     ['earth', 'sun', 'blackhole', 'binary'].forEach(name => {
       const btn = document.getElementById('curv-preset-' + (name === 'blackhole' ? 'bh' : name));
       if (btn) btn.addEventListener('click', () => {
-        document.querySelectorAll('#sec-curvature [data-preset]').forEach(b => b.classList.remove('active'));
+        deactivateAllPresets();
         btn.classList.add('active');
         loadPreset(name);
         if (view3D) { updateSphereShells(); updateCrossRings(); }
@@ -5768,7 +5975,7 @@ function setupCanvas(id) {
       document.getElementById('curv-mass-label').textContent = (e.target.value / 10).toFixed(1);
     });
     document.getElementById('curv-launch-speed').addEventListener('input', (e) => {
-      document.getElementById('curv-speed-label').textContent = (e.target.value / 100).toFixed(2);
+      document.getElementById('curv-speed-label').innerHTML = (e.target.value / 100 * 2).toFixed(1) + 'x v<sub>circ</sub>';
     });
     document.getElementById('curv-inclination').addEventListener('input', (e) => {
       document.getElementById('curv-incl-label').textContent = e.target.value + '\u00B0';
@@ -5825,19 +6032,33 @@ function setupCanvas(id) {
     function updateReadouts() {
       document.getElementById('curv-mass-count').textContent = masses.length;
       document.getElementById('curv-particle-count').textContent = particles.length;
+      var altEl = document.getElementById('curv-altitude');
+      var escEl = document.getElementById('curv-escape-vel');
       if (particles.length > 0) {
-        const p = particles[particles.length - 1];
-        const spd = Math.sqrt(p.vx * p.vx + (p.vy || 0) * (p.vy || 0) + p.vz * p.vz);
+        var p = particles[particles.length - 1];
+        var spd = Math.sqrt(p.vx * p.vx + (p.vy || 0) * (p.vy || 0) + p.vz * p.vz);
         document.getElementById('curv-particle-vel').textContent = spd.toFixed(3);
         if (p.totalAngle > 2 * Math.PI && p.orbitTimer > 0) {
-          const period = p.orbitTimer * (2 * Math.PI) / p.totalAngle;
+          var period = p.orbitTimer * (2 * Math.PI) / p.totalAngle;
           document.getElementById('curv-orbit-period').textContent = period.toFixed(2) + 's';
         } else {
           document.getElementById('curv-orbit-period').innerHTML = '&mdash;';
         }
+        var nm = nearestMass(p.x, p.z);
+        if (nm) {
+          var alt = Math.sqrt((p.x - nm.x) * (p.x - nm.x) + (p.z - nm.z) * (p.z - nm.z));
+          altEl.textContent = alt.toFixed(2);
+          var vEsc = Math.sqrt(2 * nm.strength / Math.max(alt, 0.1));
+          escEl.textContent = vEsc.toFixed(3);
+        } else {
+          altEl.innerHTML = '&mdash;';
+          escEl.innerHTML = '&mdash;';
+        }
       } else {
         document.getElementById('curv-particle-vel').textContent = '0.000';
         document.getElementById('curv-orbit-period').innerHTML = '&mdash;';
+        altEl.innerHTML = '&mdash;';
+        escEl.innerHTML = '&mdash;';
       }
     }
 
@@ -5911,7 +6132,7 @@ function setupCanvas(id) {
         const pz = orb.distance * Math.sin(orb.azimuth);
         const d = orb.distance;
         const hx = -pz / d, hz = px / d;
-        const spd = Math.sqrt(preset.massStrength / d) * 5.0;
+        const spd = Math.sqrt(preset.massStrength / d);
         const ci = Math.cos(orb.inclination), si = Math.sin(orb.inclination);
         addParticle(px, 0, pz, hx * spd * ci, spd * si, hz * spd * ci, orb.color);
       }
@@ -5927,6 +6148,186 @@ function setupCanvas(id) {
       });
     });
 
+    // ---- Scenario presets ----
+    var SCENARIOS = {
+      iss: {
+        name: 'ISS Orbiting Earth',
+        description: 'ISS orbits at 408 km altitude in ~90 minutes. Scaled to our grid: Earth at center, ISS in circular orbit.',
+        setup: function() {
+          clearMasses(); clearParticles();
+          addMass(0, 0, 3.0, false, { color: 0x3b82f6, label: 'Earth', radius: 1.2 });
+          var d = 6, vCirc = Math.sqrt(3.0 / d);
+          addParticle(d, 0, 0, 0, 0, vCirc, 0x06b6d4, 'ISS');
+          setSimSpeed(1.0);
+        }
+      },
+      moon: {
+        name: 'Moon Orbiting Earth',
+        description: 'The Moon orbits Earth at 384,400 km (27.3-day period). Scaled with a larger orbit distance.',
+        setup: function() {
+          clearMasses(); clearParticles();
+          addMass(0, 0, 2.0, false, { color: 0x3b82f6, label: 'Earth', radius: 1.0 });
+          var d = 12, vCirc = Math.sqrt(2.0 / d);
+          addParticle(d, 0, 0, 0, 0, vCirc, 0x9ca3af, 'Moon');
+          setSimSpeed(2.0);
+        }
+      },
+      earthsun: {
+        name: 'Earth Orbiting Sun',
+        description: 'Earth orbits the Sun at ~150 million km (1 year period). The Sun contains 99.86% of the solar system\'s mass.',
+        setup: function() {
+          clearMasses(); clearParticles();
+          addMass(0, 0, 5.0, false, { color: 0xf59e0b, label: 'Sun', radius: 1.5 });
+          var d = 10, vCirc = Math.sqrt(5.0 / d);
+          addParticle(d, 0, 0, 0, 0, vCirc, 0x3b82f6, 'Earth');
+          setSimSpeed(1.0);
+        }
+      },
+      binarystar: {
+        name: 'Binary Star System',
+        description: 'Two equal-mass stars orbit their common center of mass. Watch the grid deform dynamically as both stars move!',
+        setup: function() {
+          clearMasses(); clearParticles();
+          var sep = 5, str = 4.0;
+          var vOrbit = Math.sqrt(str / (2 * sep));
+          addMass(sep, 0, str, false, { color: 0xf59e0b, label: 'Star A', dynamic: true, vx: 0, vz: vOrbit });
+          addMass(-sep, 0, str, false, { color: 0xef4444, label: 'Star B', dynamic: true, vx: 0, vz: -vOrbit });
+          updateGrid();
+          setSimSpeed(1.0);
+        }
+      },
+      figure8: {
+        name: 'Figure-8 Three-Body',
+        description: 'The famous Chenciner-Montgomery stable 3-body orbit. Three equal masses trace a figure-8 path — incredibly rare and beautiful!',
+        setup: function() {
+          clearMasses(); clearParticles();
+          var scale = 5.0, str = 3.0;
+          var vScale = Math.sqrt(str / scale);
+          var vx3 = 0.347111 * vScale, vz3 = 0.532728 * vScale;
+          addMass(-scale, 0, str, false, { color: 0xef4444, label: 'A', dynamic: true, vx: vz3, vz: vx3 });
+          addMass(scale, 0, str, false, { color: 0x22c55e, label: 'B', dynamic: true, vx: vz3, vz: vx3 });
+          addMass(0, 0, str, false, { color: 0x3b82f6, label: 'C', dynamic: true, vx: -2 * vz3, vz: -2 * vx3 });
+          updateGrid();
+          setSimSpeed(0.5);
+        }
+      }
+    };
+
+    function setSimSpeed(val) {
+      simSpeed = val;
+      document.getElementById('curv-sim-speed').value = Math.round(val * 10);
+      document.getElementById('curv-sim-speed-label').textContent = val.toFixed(1) + 'x';
+    }
+
+    function deactivateAllPresets() {
+      document.querySelectorAll('#sec-curvature [data-preset]').forEach(function(b) { b.classList.remove('active'); });
+      document.querySelectorAll('#sec-curvature [data-scenario]').forEach(function(b) { b.classList.remove('active'); });
+      document.getElementById('curv-scenario-info').style.display = 'none';
+      document.getElementById('curv-orbit-info').style.display = 'none';
+    }
+
+    // Wire scenario buttons
+    Object.keys(SCENARIOS).forEach(function(name) {
+      var btn = document.getElementById('curv-scenario-' + name);
+      if (!btn) return;
+      btn.addEventListener('click', function() {
+        deactivateAllPresets();
+        btn.classList.add('active');
+        paused = false;
+        document.getElementById('curv-pause').textContent = 'Pause';
+        document.getElementById('curv-pause').classList.remove('active');
+        SCENARIOS[name].setup();
+        document.getElementById('curv-scenario-info').textContent = SCENARIOS[name].description;
+        document.getElementById('curv-scenario-info').style.display = 'block';
+        if (view3D) { updateSphereShells(); updateCrossRings(); }
+      });
+    });
+
+    // ---- Simulation control wiring ----
+    document.getElementById('curv-pause').addEventListener('click', function() {
+      paused = !paused;
+      document.getElementById('curv-pause').textContent = paused ? 'Play' : 'Pause';
+      document.getElementById('curv-pause').classList.toggle('active', paused);
+    });
+
+    document.getElementById('curv-reset-all').addEventListener('click', function() {
+      clearMasses(); clearParticles();
+      paused = false;
+      document.getElementById('curv-pause').textContent = 'Pause';
+      document.getElementById('curv-pause').classList.remove('active');
+      deactivateAllPresets();
+      if (view3D) { updateSphereShells(); updateCrossRings(); }
+    });
+
+    document.getElementById('curv-sim-speed').addEventListener('input', function(e) {
+      simSpeed = e.target.value / 10;
+      document.getElementById('curv-sim-speed-label').textContent = simSpeed.toFixed(1) + 'x';
+    });
+
+    // ---- Camera controls ----
+    function updateCamButtons() {
+      ['top', 'side', 'free', 'follow'].forEach(function(m) {
+        document.getElementById('curv-cam-' + m).classList.toggle('active', cameraMode === m);
+      });
+    }
+
+    document.getElementById('curv-cam-top').addEventListener('click', function() {
+      cameraMode = 'top';
+      camera.position.set(0, 50, 0.1);
+      controls.target.set(0, 0, 0);
+      updateCamButtons();
+    });
+
+    document.getElementById('curv-cam-side').addEventListener('click', function() {
+      cameraMode = 'side';
+      camera.position.set(0, 0, 50);
+      controls.target.set(0, 0, 0);
+      updateCamButtons();
+    });
+
+    document.getElementById('curv-cam-free').addEventListener('click', function() {
+      cameraMode = 'free';
+      followTarget = null;
+      updateCamButtons();
+    });
+
+    document.getElementById('curv-cam-follow').addEventListener('click', function() {
+      var bodies = particles.slice();
+      for (var i = 0; i < masses.length; i++) {
+        if (masses[i].dynamic) bodies.push(masses[i]);
+      }
+      if (bodies.length === 0) return;
+      var idx = bodies.indexOf(followTarget);
+      followTarget = bodies[(idx + 1) % bodies.length];
+      cameraMode = 'follow';
+      updateCamButtons();
+    });
+
+    // ---- Trail toggle ----
+    document.getElementById('curv-show-trails').addEventListener('change', function(e) {
+      showTrails = e.target.checked;
+      for (var i = 0; i < particles.length; i++) particles[i].trail.visible = showTrails;
+      for (var j = 0; j < masses.length; j++) { if (masses[j].trail) masses[j].trail.visible = showTrails; }
+    });
+
+    // ---- Force vector toggle ----
+    document.getElementById('curv-show-forces').addEventListener('change', function(e) {
+      showForces = e.target.checked;
+      if (!showForces) clearForceVectors();
+    });
+
+    // ---- Fullscreen ----
+    function toggleFullscreen() {
+      var isFS = container.classList.toggle('curv-fullscreen');
+      document.body.style.overflow = isFS ? 'hidden' : '';
+      setTimeout(onResize, 50);
+    }
+    document.getElementById('curv-fullscreen').addEventListener('click', toggleFullscreen);
+    document.getElementById('curv-fullscreen-close').addEventListener('click', toggleFullscreen);
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && container.classList.contains('curv-fullscreen')) toggleFullscreen();
+    });
+
     // ---- Animation loop ----
     let prevTime = null;
     let frameCount = 0;
@@ -5934,22 +6335,42 @@ function setupCanvas(id) {
     function animate(timestamp) {
       requestAnimationFrame(animate);
       if (prevTime === null) prevTime = timestamp;
-      const dt = Math.min((timestamp - prevTime) / 1000, 0.05);
+      const rawDt = Math.min((timestamp - prevTime) / 1000, 0.05);
       prevTime = timestamp;
+      const dt = paused ? 0 : rawDt * simSpeed;
       frameCount++;
 
       controls.update();
 
+      // Step dynamic masses (must come before particles — they affect forces)
+      var hasDynamic = masses.some(function(m) { return m.dynamic; });
+      if (hasDynamic && dt > 0) {
+        stepDynamicMasses(dt);
+        if (view3D && frameCount % 2 === 0) { updateSphereShells(); updateCrossRings(); }
+      }
+
       // Step particles
-      if (masses.length > 0 && particles.length > 0) stepParticles(dt);
+      if (masses.length > 0 && particles.length > 0 && dt > 0) stepParticles(dt);
 
       // Update visuals
       if (view3D) {
-        if (frameCount % 4 === 0 && masses.length > 0) { updateSphereShells(); updateCrossRings(); }
+        if (!hasDynamic && frameCount % 4 === 0 && masses.length > 0) { updateSphereShells(); updateCrossRings(); }
       } else {
         updateCrossSection();
       }
       if (showStraightness && frameCount % 3 === 0) updateStraightnessVis();
+
+      // Labels
+      if (frameCount % 3 === 0) updateLabels();
+
+      // Force vectors
+      if (showForces && frameCount % 3 === 0) updateForceVectors();
+
+      // Follow camera
+      if (cameraMode === 'follow' && followTarget) {
+        var fPos = followTarget.mesh.position;
+        controls.target.set(fPos.x, fPos.y, fPos.z);
+      }
 
       // Animate mass glow pulse
       for (const m of masses) {

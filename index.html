@@ -1602,8 +1602,8 @@
         <div id="curv-scenario-info" style="display:none;color:var(--dim);font-size:0.7rem;padding:2px 0;line-height:1.4;font-style:italic;"></div>
         <div class="curv-btn-group-label">View</div>
         <div class="curv-btn-group">
-          <button class="tab-btn active" id="curv-view-2d">2D Sheet</button>
-          <button class="tab-btn" id="curv-view-3d">3D Spherical</button>
+          <button class="tab-btn" id="curv-view-2d">2D Sheet</button>
+          <button class="tab-btn active" id="curv-view-3d">3D Spherical</button>
         </div>
       </div>
 
@@ -5873,7 +5873,7 @@ function setupCanvas(id) {
     let crossSectionMode = false;
     let showStraightness = false;
     let showCrossSections = true;
-    let view3D = false;
+    let view3D = true;
     let mouseDownPos = null;
     let paused = false;
     let simSpeed = 1.0;
@@ -7505,6 +7505,7 @@ function setupCanvas(id) {
 
     // Load default preset, set camera mode, and start
     loadPreset('earth');
+    switchView(true);
     setMode('camera');
     requestAnimationFrame(animate);
   }

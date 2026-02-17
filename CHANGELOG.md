@@ -4,6 +4,80 @@ All changes from the February 2026 build session.
 
 ---
 
+## 33. Proper Vertex Displacement Algorithm for Spacetime Curvature
+**Prompt:** "Implement proper 3D spacetime curvature for the wireframe spheres — displacement = k × (GM/r) × (1/R²), sum displacement vectors for multi-mass support."
+
+**Changes:**
+- Rewrote `updateSphereShells()` with user-specified displacement formula
+- `displacement = curvatureScale × CURVE_K × (M/r) × (1/R²)` per mass
+- Displacement vectors **accumulated** across all masses (fixes multi-mass overwrite bug)
+- `1/R²` factor: inner shell (R=8) deforms ~6× more than outer shell (R=20)
+- 80% distance clamp prevents vertices from collapsing into mass centers
+- Color gradient based on displacement magnitude (base color → deep red)
+- CURVE_K = 120 calibrated so default slider value produces visible deformation
+- **Commit:** `e9723d2`
+
+---
+
+## 32. Remove Mass Presets
+**Prompt:** "Let's get rid of the mass presets for now."
+
+**Changes:**
+- Hid mass preset buttons (Earth/Sun/Black Hole/Binary) with `display:none` wrapper
+- Kept in DOM for JS compatibility; can be re-enabled later
+- **Commit:** `4f83d8e`
+
+---
+
+## 31. Make 3D View Default
+**Prompt:** "Make the 3D view the default view."
+
+**Changes:**
+- Set `view3D = true` at init (was false)
+- Swapped active class on view toggle buttons
+- Added `switchView(true)` call after initial `loadPreset('earth')`
+- **Commit:** `5f67f87`
+
+---
+
+## 30. Fix Force Arrow Direction and Color
+**Prompt:** "The yellow arrow on the earth needs to be red and the emanating arrows need to be pointed at the sun instead of away."
+
+**Changes:**
+- Fixed cone rotation: `rotateX(Math.PI/2)` so `lookAt(mass)` aims tip toward mass
+- Changed per-object force arrow color from yellow (`0xffdd44`) to red (`0xef4444`)
+- **Commit:** `92bfcc0`
+
+---
+
+## 29. Spacetime Curvature Shell Deformation (Iterations 1–5)
+**Prompt:** "Fix the wireframe spheres to actually show spacetime curvature."
+
+**Changes (5 iterations):**
+1. Radial pull with `M/r × curvatureScale` — too subtle (uniform shrinkage)
+2. Gravity funnel: Y-axis pull — created hot-air-balloon shape
+3. Clamped funnel depth to 70%, increased shell detail from 3→5 (5120 faces)
+4. Lorentzian bowl profile `M/sqrt(r²+s²)` — still balloon-shaped
+5. Pure radial compression toward mass — shells compress spherically
+- Added flat space reference shells (ghost wireframes, toggle checkbox)
+- Added curvature strength slider (range 0.5–10.0)
+- **Commits:** `59d1eb8`, `d6d8227`, `b4ad15a`, `9e8088e`, `614c2ce`
+
+---
+
+## 28. Fix Trail Artifact, Shell Opacity, Sim Speed Limit
+**Prompt:** "Fix three issues: trail wraparound straight line, inner shell too opaque, limit sim speed to 10x."
+
+**Changes:**
+- **Trail fix**: Added `trailRing` secondary buffer; copy ring buffer oldest→newest before rendering
+  - Fixed for both particles and dynamic masses
+  - Updated geodesic straightness code to read linear-ordered buffer
+- **Shell opacity**: Reduced inner shell from 0.12 to 0.05
+- **Sim speed**: Changed logarithmic mapping from `0.1 × 1000^(v/100)` to `0.1 × 100^(v/100)` for 0.1x–10x range
+- **Commit:** `7e454df`
+
+---
+
 ## 27. Five 3D Curvature Improvements
 **Prompt:** "Multiple improvements: distinct colored shells, rename Scenarios→Simulations, increase sim speed to 100x logarithmic, redesign force visualization with animated flowing arrows, per-object force vectors."
 

@@ -97,15 +97,20 @@ https://sampsonb.github.io/ftl-impossibility/
 ### 05 — Spacetime Curvature in 3D
 - Interactive 3D visualization using Three.js + OrbitControls
 - **2D Sheet view**: 60×60 vertex grid deforms downward (classic rubber-sheet analogy)
-- **3D Spherical view**: 3 concentric icosahedron shells (r=8, 14, 20) compress inward toward masses at center
+- **3D Spherical view**: 3 concentric icosahedron shells (r=8, 14, 20) with vertex displacement curvature
+  - **Vertex displacement formula**: `displacement = k × (GM/r) × (1/R²)` — proper gravitational potential
+  - **1/R² shell scaling**: inner shells deform dramatically more than outer shells
+  - Displacement vectors **accumulated** across all masses — correct multi-body curvature
+  - 80% distance clamp prevents vertex collapse into mass centers
   - **Distinct shell colors**: inner (deep red, strongest gravity), middle (orange/amber, medium), outer (light blue, weakest)
-  - Shell opacity gradient: inner 12%, middle 10%, outer 8% — see through to inner shells
+  - Shell opacity gradient: inner 5%, middle 8%, outer 7% — see through to inner shells
   - Wireframe colors match shells: red, orange, blue with decreasing opacity
+  - Vertex colors blend from base color toward deep red based on displacement magnitude
+  - High-res wireframes: detail level 5 (5120 faces per shell)
+  - Flat space reference shells (ghost wireframes) for comparison — toggle checkbox
+  - Curvature strength slider (0.5–10.0) controls deformation magnitude
   - Masses sit at the CENTER of the shells — demonstrates gravity curves space equally in ALL directions
-  - Enhanced deformation (3.5× pull factor) for more visible curvature
   - 3 orthogonal cross-section rings (XZ amber, XY cyan, YZ purple) show curvature in each plane
-- Vertex colors blend from shell's base color toward deep red near masses
-- Schwarzschild-like potential: displacement ∝ -M/r (1.5× depth scale for dramatic wells)
 - Click to place masses (up to 5), raycasting onto XZ plane
 - Particle simulation with full 3D Verlet integration following geodesics
   - Drop mode: particles fall from rest into gravity wells
@@ -147,7 +152,7 @@ https://sampsonb.github.io/ftl-impossibility/
   - Far from mass: pale red, small, slow flow, dim opacity
   - Phase-based fade-in/out creates particle stream effect
   - Spherically symmetric — shows gravity pulls equally from ALL directions
-  - **Per-object force vectors**: bright yellow ArrowHelper on each particle and dynamic mass
+  - **Per-object force vectors**: red ArrowHelper on each particle and dynamic mass
     - Shows actual net force acting on that specific object in real time
     - Length proportional to force magnitude
     - Applied to both test particles and dynamic masses (e.g., binary stars)

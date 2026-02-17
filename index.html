@@ -5896,7 +5896,7 @@ function setupCanvas(id) {
     sphereGroup.visible = false;
     scene.add(sphereGroup);
     const shellRadii = [8, 14, 20];
-    const shellDetail = 3;
+    const shellDetail = 5;
     const shells = [];
     const shellOrigPositions = [];
     // Distinct colors per shell: inner=red, middle=orange, outer=blue
@@ -5965,15 +5965,16 @@ function setupCanvas(id) {
             const r3D = Math.max(Math.sqrt(dx * dx + oy * oy + dz * dz), 0.5);
             totalPull += m.strength / r3D;
 
-            // === Gravity funnel: pull vertices DOWN (Y axis) near mass ===
-            // Like the rubber-sheet analogy but in full 3D
-            // Deeper well for closer vertices, creating visible funnel shape
-            const softR = Math.max(rHoriz, 1.0);
-            const wellDepth = m.strength / softR * curvatureScale * 1.5;
+            // === Gravity well: smooth bowl shape, clamped depth ===
+            // Well depth ∝ M/r but clamped to shell radius to prevent tail
+            const softR = Math.max(rHoriz, 0.8);
+            const maxWellDepth = sh.radius * 0.7;  // never deeper than 70% of shell radius
+            const rawDepth = m.strength / softR * curvatureScale;
+            const wellDepth = Math.min(rawDepth, maxWellDepth);
             py -= wellDepth;
 
-            // === Mild radial pull toward mass (XZ only) for grid compression ===
-            const radialPull = m.strength / r3D * curvatureScale * 0.3;
+            // === Radial compression toward mass (XZ only) ===
+            const radialPull = m.strength / r3D * curvatureScale * 0.2;
             if (rHoriz > 0.1) {
               px -= (dx / rHoriz) * radialPull;
               pz -= (dz / rHoriz) * radialPull;

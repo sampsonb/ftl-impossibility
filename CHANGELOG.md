@@ -30,7 +30,7 @@ All changes from the February 2026 build session.
   - Shows net gravitational force in real time
   - Length proportional to force magnitude (capped at 4 units)
   - Applied to both test particles and dynamic masses
-- **Commit:** (pending)
+- **Commit:** `6d270a9`
 
 ---
 

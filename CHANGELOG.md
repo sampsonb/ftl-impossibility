@@ -4,6 +4,36 @@ All changes from the February 2026 build session.
 
 ---
 
+## 27. Five 3D Curvature Improvements
+**Prompt:** "Multiple improvements: distinct colored shells, rename Scenarios→Simulations, increase sim speed to 100x logarithmic, redesign force visualization with animated flowing arrows, per-object force vectors."
+
+**Changes:**
+- **Distinct shell colors**: inner (r=8) deep red, middle (r=14) orange/amber, outer (r=20) light blue
+  - Per-shell opacity gradient: 12%/10%/8% (see through to inner shells)
+  - Wireframe colors match: `0xff3333`, `0xf59e0b`, `0x3b82f6`
+  - Shell vertex colors blend from base color toward deep red near masses
+  - Updated shell legend and help text with 3 distinct color entries
+- **Renamed "Scenarios" → "Simulations"** in all user-facing labels
+  - Info overlay label, button group label, description text
+  - Internal IDs and variable names unchanged for compatibility
+- **Logarithmic sim speed slider**: 0.1x–100x (was linear 0.1x–5.0x)
+  - `sliderToSpeed(v)`: `0.1 × 1000^(v/100)` — slider 0→0.1x, 50→1.0x, 100→100x
+  - Label formats: `1.0x` for <10, `50x` for ≥10
+  - Updated `setSimSpeed()` and slider input handler
+- **Animated force field**: replaced tractor-beam beams with flowing arrow field
+  - 600-arrow pre-allocated pool (ConeGeometry, reused per frame)
+  - 5 radial layers with fibonacci sphere distribution
+  - Arrows flow inward with phase-based animation (speed ∝ 1/r²)
+  - Distance-based appearance: dark red / large / bright (close) → pale red / small / dim (far)
+  - Checkbox renamed from "Forces" to "Force Field"
+- **Per-object force vectors**: bright yellow ArrowHelper on each particle and dynamic mass
+  - Shows net gravitational force in real time
+  - Length proportional to force magnitude (capped at 4 units)
+  - Applied to both test particles and dynamic masses
+- **Commit:** (pending)
+
+---
+
 ## 26. Tractor-Beam Force Visualization
 **Prompt:** "Add gravitational force visualization to the 3D Spacetime view — tractor beam visual design with color gradients, force magnitude visualization, per-mass colored beams, educational features."
 

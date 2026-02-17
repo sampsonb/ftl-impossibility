@@ -1527,7 +1527,7 @@
     <p class="explain level-int">
       Einstein's <strong>General Relativity</strong> reveals that gravity isn't a force &mdash; it's the curvature of spacetime
       caused by mass and energy. A planet orbiting a star is simply following the straightest possible path (a <span class="term">geodesic<span class="term-tip">The straightest possible path through curved spacetime</span></span>)
-      through warped spacetime. Use the presets below to explore scenarios, or place your own masses.
+      through warped spacetime. Use the presets below to explore simulations, or place your own masses.
     </p>
     <p class="explain level-adv">
       General Relativity replaces Newtonian gravity with the Einstein field equations: G&mu;&nu; = 8&pi;G/c&sup4; T&mu;&nu;.
@@ -1550,19 +1550,20 @@
       <!-- Mode indicator -->
       <div id="curv-mode-indicator" style="position:absolute;bottom:10px;right:10px;background:rgba(17,24,39,0.85);border:1px solid #22c55e;border-radius:6px;padding:4px 10px;font-size:0.72rem;font-weight:600;color:#22c55e;pointer-events:none;z-index:6;">Camera Controls</div>
       <div id="curv-shell-legend" style="display:none;position:absolute;top:10px;left:10px;background:rgba(17,24,39,0.85);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:0.75rem;color:var(--muted);pointer-events:none;z-index:5;line-height:1.6;max-width:220px;">
-        <strong style="color:var(--text);">Spherical Grid</strong><br>
-        Nested shells show spacetime curvature.<br>
-        <span style="color:#ef4444;">&#9632;</span> Red = strong curvature (near mass)<br>
-        <span style="color:#3b82f6;">&#9632;</span> Blue = flat spacetime (far away)<br>
-        Shells compress inward where gravity is strongest.
+        <strong style="color:var(--text);">Gravitational Shells</strong><br>
+        Three nested shells show gravity strength:<br>
+        <span style="color:#ff3333;">&#9632;</span> Inner (red) = strongest gravity<br>
+        <span style="color:#f59e0b;">&#9632;</span> Middle (orange) = medium gravity<br>
+        <span style="color:#3b82f6;">&#9632;</span> Outer (blue) = weakest gravity<br>
+        Shells compress inward toward masses.
       </div>
       <!-- Info overlay (top-right, compact) -->
       <div id="curv-info-overlay">
-        <div class="curv-info-row"><span class="curv-info-label">Scenario</span> <span class="curv-info-val" id="curv-info-scenario">Earth</span></div>
+        <div class="curv-info-row"><span class="curv-info-label">Simulation</span> <span class="curv-info-val" id="curv-info-scenario">Earth</span></div>
         <div class="curv-info-row"><span class="curv-info-label">Time</span> <span class="curv-info-val" id="curv-info-time">0.0s</span></div>
         <div class="curv-info-row"><span class="curv-info-label">Dilation</span> <span class="curv-info-val" id="curv-info-dilation">1.000</span></div>
         <div class="curv-info-row readout-adv"><span class="curv-info-label">Energy</span> <span class="curv-info-val" id="curv-info-energy">&mdash;</span></div>
-        <div class="curv-info-row" id="curv-info-force-row" style="display:none;border-top:1px solid rgba(255,255,255,0.08);padding-top:3px;margin-top:2px;"><span class="curv-info-label" style="color:var(--accent2);">Force &prop; 1/r&sup2;</span> <span class="curv-info-val" id="curv-info-force" style="color:#ef4444;">&mdash;</span></div>
+        <div class="curv-info-row" id="curv-info-force-row" style="display:none;border-top:1px solid rgba(255,255,255,0.08);padding-top:3px;margin-top:2px;"><span class="curv-info-label" style="color:#ef4444;">Field F &prop; 1/r&sup2;</span> <span class="curv-info-val" id="curv-info-force" style="color:#ffdd44;">&mdash;</span></div>
       </div>
       <button id="curv-fullscreen-close" style="display:none;position:absolute;top:16px;left:16px;z-index:10001;background:rgba(17,24,39,0.85);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.9rem;font-family:inherit;">Exit Fullscreen</button>
       <div id="curv-fullscreen-instructions" style="display:none;position:absolute;bottom:16px;left:16px;z-index:10001;background:rgba(17,24,39,0.85);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.8rem;color:var(--muted);max-width:300px;line-height:1.5;">
@@ -1590,7 +1591,7 @@
           <button class="tab-btn" id="curv-preset-bh" data-preset="blackhole">Black Hole</button>
           <button class="tab-btn" id="curv-preset-binary" data-preset="binary">Binary Stars</button>
         </div>
-        <div class="curv-btn-group-label">Scenarios</div>
+        <div class="curv-btn-group-label">Simulations</div>
         <div class="curv-btn-group">
           <button class="tab-btn" id="curv-scenario-iss" data-scenario="iss" title="ISS orbits Earth at 408 km altitude">ISS</button>
           <button class="tab-btn" id="curv-scenario-moon" data-scenario="moon" title="Moon orbits Earth at 384,400 km">Moon</button>
@@ -1616,13 +1617,13 @@
         </div>
         <div class="slider-group">
           <label>Sim speed <span class="val" id="curv-sim-speed-label">1.0x</span></label>
-          <input type="range" id="curv-sim-speed" min="1" max="50" value="10" step="1">
+          <input type="range" id="curv-sim-speed" min="0" max="100" value="50" step="1">
         </div>
         <div class="curv-check-grid">
           <label><input type="checkbox" id="curv-show-grid" checked> Grid</label>
           <label><input type="checkbox" id="curv-show-trails" checked> Trails</label>
           <label><input type="checkbox" id="curv-cross-sections" checked> Cross-Sections</label>
-          <label><input type="checkbox" id="curv-show-forces"> Forces</label>
+          <label><input type="checkbox" id="curv-show-forces"> Force Field</label>
           <label><input type="checkbox" id="curv-straightness"> Geodesics</label>
         </div>
       </div>
@@ -1685,7 +1686,7 @@
         <div class="curv-collapse-body" id="curv-help-body">
           <p><strong>Camera:</strong> Drag to rotate, right-drag to pan, scroll to zoom. Use Top/Side/Front buttons for preset angles.</p>
           <p><strong>3D View:</strong> The mass sits at the <em>center</em> of the grid &mdash; gravity curves space equally in ALL directions, not just &ldquo;down.&rdquo;</p>
-          <p><strong>Shells:</strong> Nested wireframe shells show spacetime curvature. <span style="color:#ef4444;">Red</span> = strong curvature near mass. <span style="color:#3b82f6;">Blue</span> = flat spacetime far away.</p>
+          <p><strong>Shells:</strong> Three nested shells show gravity strength. <span style="color:#ff3333;">Inner (red)</span> = strongest, <span style="color:#f59e0b;">Middle (orange)</span> = medium, <span style="color:#3b82f6;">Outer (blue)</span> = weakest.</p>
           <p><strong>Modes:</strong> Place Mass adds gravity sources. Drop/Orbit/Rain launch test particles. Orbital Planes shows multi-inclination orbits.</p>
         </div>
       </div>
@@ -5891,31 +5892,42 @@ function setupCanvas(id) {
     const shellDetail = 3;
     const shells = [];
     const shellOrigPositions = [];
+    // Distinct colors per shell: inner=red, middle=orange, outer=blue
+    const shellBaseColors = [
+      { r: 1.0, g: 0.15, b: 0.1 },   // inner: deep red
+      { r: 1.0, g: 0.6, b: 0.1 },    // middle: orange/amber
+      { r: 0.2, g: 0.5, b: 1.0 }     // outer: light blue
+    ];
+    const shellWireColors = [0xff3333, 0xf59e0b, 0x3b82f6];
+    const shellOpacities = [0.12, 0.10, 0.08];
+    const shellWireOpacities = [0.35, 0.25, 0.18];
 
     for (let si = 0; si < shellRadii.length; si++) {
       const r = shellRadii[si];
+      const bc = shellBaseColors[si];
       const geo = new THREE.IcosahedronGeometry(r, shellDetail);
       const vc = geo.attributes.position.count;
       const cols = new Float32Array(vc * 3);
-      for (let i = 0; i < vc; i++) { cols[i*3]=0.2; cols[i*3+1]=0.4; cols[i*3+2]=1.0; }
+      for (let i = 0; i < vc; i++) { cols[i*3]=bc.r; cols[i*3+1]=bc.g; cols[i*3+2]=bc.b; }
       geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
       const mat = new THREE.MeshPhongMaterial({
-        vertexColors: true, transparent: true, opacity: 0.18 + si * 0.06,
+        vertexColors: true, transparent: true, opacity: shellOpacities[si],
         side: THREE.DoubleSide, shininess: 20, depthWrite: false
       });
       const mesh = new THREE.Mesh(geo, mat);
       const wGeo = new THREE.WireframeGeometry(geo);
-      const wMat = new THREE.LineBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.28 - si * 0.04 });
+      const wMat = new THREE.LineBasicMaterial({ color: shellWireColors[si], transparent: true, opacity: shellWireOpacities[si] });
       const wire = new THREE.LineSegments(wGeo, wMat);
       sphereGroup.add(mesh);
       sphereGroup.add(wire);
-      shells.push({ geo, mesh, wire, wGeo, radius: r });
+      shells.push({ geo, mesh, wire, wGeo, radius: r, baseColor: bc });
       shellOrigPositions.push(new Float32Array(geo.attributes.position.array));
     }
 
     function updateSphereShells() {
       for (let si = 0; si < shells.length; si++) {
         const sh = shells[si];
+        const bc = sh.baseColor;
         const pos = sh.geo.attributes.position.array;
         const orig = shellOrigPositions[si];
         const col = sh.geo.attributes.color.array;
@@ -5935,11 +5947,12 @@ function setupCanvas(id) {
             pz -= (dz / r) * pull;
           }
           pos[ix] = px; pos[ix+1] = py; pos[ix+2] = pz;
+          // Blend from shell's base color toward deep red near masses
           const phi = Math.min(totalPull * 0.08, 0.499);
           const tau = Math.sqrt(1 - 2 * phi);
-          col[ix]   = lerp(1.0, 0.15, tau);
-          col[ix+1] = lerp(0.12, 0.35, tau);
-          col[ix+2] = lerp(0.05, 1.0, tau);
+          col[ix]   = lerp(1.0, bc.r, tau);   // toward red near mass, shell base color far away
+          col[ix+1] = lerp(0.1, bc.g, tau);
+          col[ix+2] = lerp(0.05, bc.b, tau);
         }
         sh.geo.attributes.position.needsUpdate = true;
         sh.geo.attributes.color.needsUpdate = true;
@@ -6486,124 +6499,155 @@ function setupCanvas(id) {
     var forceGroup = new THREE.Group();
     scene.add(forceGroup);
 
-    // ---- Force beam geometry (reusable) ----
-    var beamGeo = new THREE.CylinderGeometry(1, 1, 1, 6, 1, true);
-    beamGeo.translate(0, 0.5, 0);  // pivot at base
-    beamGeo.rotateX(Math.PI / 2);  // align along Z axis
-    var coneGeo = new THREE.ConeGeometry(1, 1, 6);
-    coneGeo.rotateX(Math.PI / 2);  // point along Z
+    // ---- Animated force field (flowing arrows toward masses) ----
+    var fieldArrowGeo = new THREE.ConeGeometry(0.12, 0.4, 4);
+    fieldArrowGeo.rotateX(-Math.PI / 2);  // point along -Z (toward center)
+    var FIELD_POOL_SIZE = 600;
+    var fieldArrows = [];
+    var fieldExtraObjects = [];  // ArrowHelpers for per-object force vectors
+    var fieldPhase = 0;
 
-    // Mass-source colors: blue=planet, gold=star, purple=BH, fallback=cyan
-    function massBeamColor(m) {
-      if (m.bh) return { r: 0.7, g: 0.1, b: 0.9 };     // purple for BH
-      if (m.bodyColor === 0xf59e0b || m.strength >= 4) return { r: 1.0, g: 0.7, b: 0.1 };  // gold for stars/sun
-      return { r: 0.2, g: 0.6, b: 1.0 };                 // blue for planets
+    // Pre-create arrow pool
+    for (var _fai = 0; _fai < FIELD_POOL_SIZE; _fai++) {
+      var _fmat = new THREE.MeshBasicMaterial({ color: 0xff4444, transparent: true, opacity: 0.3, depthWrite: false });
+      var _farrow = new THREE.Mesh(fieldArrowGeo, _fmat);
+      _farrow.visible = false;
+      forceGroup.add(_farrow);
+      fieldArrows.push(_farrow);
     }
-
-    // Strength-based color blend: weak=source color (dim), strong=hot (orange/red)
-    function forceColor(baseCol, strength) {
-      var t = Math.min(1, strength * 3);  // 0=weak, 1=very strong
-      var r = baseCol.r + (1.0 - baseCol.r) * t * 0.7;
-      var g = baseCol.g + (0.4 - baseCol.g) * t;
-      var b = baseCol.b * (1 - t * 0.6);
-      return new THREE.Color(r, g, b);
-    }
-
-    var forcePulsePhase = 0;
 
     function clearForceVectors() {
-      while (forceGroup.children.length > 0) {
-        var ch = forceGroup.children[0];
-        forceGroup.remove(ch);
-        if (ch.geometry && ch.geometry !== beamGeo && ch.geometry !== coneGeo) ch.geometry.dispose();
-        if (ch.material) ch.material.dispose();
+      // Hide all pooled arrows
+      for (var i = 0; i < fieldArrows.length; i++) fieldArrows[i].visible = false;
+      // Remove and dispose extra objects (ArrowHelpers for per-object vectors)
+      for (var j = 0; j < fieldExtraObjects.length; j++) {
+        var obj = fieldExtraObjects[j];
+        forceGroup.remove(obj);
+        if (obj.line) { obj.line.material.dispose(); obj.line.geometry.dispose(); }
+        if (obj.cone) { obj.cone.material.dispose(); obj.cone.geometry.dispose(); }
       }
+      fieldExtraObjects.length = 0;
     }
 
     function updateForceVectors() {
       clearForceVectors();
       if (!showForces || masses.length === 0) return;
-      forcePulsePhase += 0.05;
+      fieldPhase += 0.02;
 
+      var ai = 0;  // arrow index into pool
+      var layerRadii = [3, 6, 9, 13, 18];
+      var goldenAngle = Math.PI * (1 + Math.sqrt(5));
+
+      for (var mi = 0; mi < masses.length; mi++) {
+        var m = masses[mi];
+        var mx = m.x, my = view3D ? 0 : gridYAt(m.x, m.z), mz = m.z;
+
+        for (var li = 0; li < layerRadii.length; li++) {
+          var baseR = layerRadii[li];
+          var arrowsInLayer = 8 + li * 4;  // 8, 12, 16, 20, 24
+
+          for (var aj = 0; aj < arrowsInLayer && ai < FIELD_POOL_SIZE; aj++) {
+            // Fibonacci sphere distribution
+            var phi = Math.acos(1 - 2 * (aj + 0.5) / arrowsInLayer);
+            var theta = goldenAngle * aj;
+
+            // Flow animation: arrow slides inward over time
+            var flowSpeed = 0.3 + m.strength * 0.5 / (baseR * baseR);
+            var phase = (fieldPhase * flowSpeed + aj * 0.37 + mi * 1.7) % 1.0;
+            // Flow from outer edge (phase=0) to inner (phase=1) within layer band
+            var rMin = baseR * 0.4, rMax = baseR * 1.0;
+            var r = rMax - (rMax - rMin) * phase;
+
+            var sx = Math.sin(phi) * Math.cos(theta);
+            var sy = Math.sin(phi) * Math.sin(theta);
+            var sz = Math.cos(phi);
+
+            var px = mx + sx * r;
+            var py2 = view3D ? (my + sy * r) : (my + 0.3);
+            var pz = mz + sz * r;
+
+            // Distance-based appearance (0=close/strong, 1=far/weak)
+            var distNorm = Math.min(1, r / 20);
+            var strength01 = 1 - distNorm;
+
+            var arrow = fieldArrows[ai++];
+            arrow.visible = true;
+            arrow.position.set(px, py2, pz);
+            arrow.lookAt(mx, my, mz);
+
+            // Color: deep red (close) → pale red (far)
+            var cr = 0.8 + 0.2 * strength01;
+            var cg = 0.15 + 0.35 * (1 - strength01);
+            var cb = 0.1 + 0.3 * (1 - strength01);
+            arrow.material.color.setRGB(cr, cg, cb);
+
+            // Opacity: bright close, dim far, with phase fade-in/out
+            var phaseFade = 1 - Math.abs(phase - 0.5) * 2;
+            arrow.material.opacity = (0.1 + strength01 * 0.5) * (0.3 + 0.7 * phaseFade);
+
+            // Scale: larger close, smaller far
+            var s = 0.3 + strength01 * 0.7;
+            arrow.scale.set(s, s, s);
+          }
+        }
+      }
+
+      // Hide remaining unused arrows
+      for (; ai < FIELD_POOL_SIZE; ai++) fieldArrows[ai].visible = false;
+
+      // ---- Per-object force vectors (bright yellow arrows on particles) ----
       for (var pi = 0; pi < particles.length; pi++) {
         var p = particles[pi];
         if (!p.alive) continue;
-        var py = view3D ? p.y : gridYAt(p.x, p.z) + 0.5;
+        var ppy = view3D ? p.y : gridYAt(p.x, p.z) + 0.5;
         var netFx = 0, netFy = 0, netFz = 0;
-
-        // Per-mass force beams
-        for (var mi = 0; mi < masses.length; mi++) {
-          var m = masses[mi];
-          var dx = p.x - m.x;
-          var dy = view3D ? (p.y - 0) : 0;
-          var dz = p.z - m.z;
-          var r = Math.sqrt(dx * dx + dy * dy + dz * dz);
-          if (r < 0.2) r = 0.2;
-          var fMag = m.strength / (r * r);  // F ∝ M/r²
-          var fNorm = fMag / r;  // components: fMag * (-dx/r)
-          var fx = -fNorm * dx, fy = -fNorm * dy, fz = -fNorm * dz;
-          netFx += fx; netFy += fy; netFz += fz;
-
-          // Beam from particle toward mass
-          var baseCol = massBeamColor(m);
-          var strength01 = Math.min(1, fMag * 2);  // normalized 0-1
-          var col = forceColor(baseCol, strength01);
-
-          // Beam thickness: 0.03 (weak) to 0.25 (strong)
-          var thickness = 0.03 + strength01 * 0.22;
-          // Pulse animation
-          var pulse = 1 + 0.15 * Math.sin(forcePulsePhase + pi * 2 + mi * 1.5);
-          thickness *= pulse;
-          // Opacity: 0.15 (weak) to 0.7 (strong)
-          var opacity = 0.15 + strength01 * 0.55;
-
-          var my = view3D ? 0 : gridYAt(m.x, m.z);
-          var beamLen = r;
-          var beamDir = new THREE.Vector3(m.x - p.x, my - py, m.z - p.z).normalize();
-
-          // Beam cylinder
-          var mat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: opacity, depthWrite: false, side: THREE.DoubleSide });
-          var beam = new THREE.Mesh(beamGeo, mat);
-          beam.position.set(p.x, py, p.z);
-          beam.scale.set(thickness, thickness, beamLen * 0.85);
-          beam.lookAt(m.x, my, m.z);
-          forceGroup.add(beam);
-
-          // Arrowhead cone near the mass end
-          var coneScale = thickness * 2.5;
-          var coneMat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: Math.min(0.9, opacity + 0.2), depthWrite: false });
-          var cone = new THREE.Mesh(coneGeo, coneMat);
-          // Position: 85% along the beam toward the mass
-          var t = 0.82;
-          cone.position.set(p.x + (m.x - p.x) * t, py + (my - py) * t, p.z + (m.z - p.z) * t);
-          cone.scale.set(coneScale, coneScale, coneScale * 1.5);
-          cone.lookAt(m.x, my, m.z);
-          forceGroup.add(cone);
-
-          // Glow halo (wider, more transparent beam)
-          var glowMat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: opacity * 0.25, depthWrite: false, side: THREE.DoubleSide });
-          var glow = new THREE.Mesh(beamGeo, glowMat);
-          glow.position.set(p.x, py, p.z);
-          glow.scale.set(thickness * 3, thickness * 3, beamLen * 0.85);
-          glow.lookAt(m.x, my, m.z);
-          forceGroup.add(glow);
+        for (var mj = 0; mj < masses.length; mj++) {
+          var mm = masses[mj];
+          var dx = p.x - mm.x, dy = ppy - (view3D ? 0 : gridYAt(mm.x, mm.z)), dz = p.z - mm.z;
+          var dr = Math.max(Math.sqrt(dx*dx + dy*dy + dz*dz), 0.2);
+          var fMag = mm.strength / (dr * dr);
+          netFx -= fMag * dx / dr; netFy -= fMag * dy / dr; netFz -= fMag * dz / dr;
         }
+        var netMag = Math.sqrt(netFx*netFx + netFy*netFy + netFz*netFz);
+        if (netMag < 0.001) continue;
+        var dir = new THREE.Vector3(netFx/netMag, netFy/netMag, netFz/netMag);
+        var origin = new THREE.Vector3(p.x, ppy, p.z);
+        var arrowLen = Math.min(4, 0.5 + netMag * 3);
+        var forceArrow = new THREE.ArrowHelper(dir, origin, arrowLen, 0xffdd44, 0.3, 0.2);
+        forceArrow.line.material.transparent = true;
+        forceArrow.line.material.opacity = 0.9;
+        forceArrow.cone.material.transparent = true;
+        forceArrow.cone.material.opacity = 0.9;
+        forceGroup.add(forceArrow);
+        fieldExtraObjects.push(forceArrow);
+      }
 
-        // Net force vector (white arrow) if multiple masses
-        if (masses.length > 1) {
-          var netMag = Math.sqrt(netFx * netFx + netFy * netFy + netFz * netFz);
-          if (netMag > 0.01) {
-            var netDir = new THREE.Vector3(netFx / netMag, netFy / netMag, netFz / netMag);
-            var netScale = Math.min(5, netMag * 4);
-            var netOrigin = new THREE.Vector3(p.x, py, p.z);
-            var netArrow = new THREE.ArrowHelper(netDir, netOrigin, netScale, 0xffffff, 0.4, 0.25);
-            netArrow.line.material.transparent = true;
-            netArrow.line.material.opacity = 0.9;
-            netArrow.cone.material.transparent = true;
-            netArrow.cone.material.opacity = 0.9;
-            forceGroup.add(netArrow);
-          }
+      // Per-object force vectors for dynamic masses
+      for (var di = 0; di < masses.length; di++) {
+        var dm = masses[di];
+        if (!dm.dynamic) continue;
+        var dmy = view3D ? 0 : gridYAt(dm.x, dm.z);
+        var dnFx = 0, dnFy = 0, dnFz = 0;
+        for (var dk = 0; dk < masses.length; dk++) {
+          if (dk === di) continue;
+          var om = masses[dk];
+          var ddx = dm.x - om.x, ddy = dmy - (view3D ? 0 : gridYAt(om.x, om.z)), ddz = dm.z - om.z;
+          var ddr = Math.max(Math.sqrt(ddx*ddx + ddy*ddy + ddz*ddz), 0.2);
+          var dfMag = om.strength / (ddr * ddr);
+          dnFx -= dfMag * ddx / ddr; dnFy -= dfMag * ddy / ddr; dnFz -= dfMag * ddz / ddr;
         }
+        var dnMag = Math.sqrt(dnFx*dnFx + dnFy*dnFy + dnFz*dnFz);
+        if (dnMag < 0.001) continue;
+        var ddir = new THREE.Vector3(dnFx/dnMag, dnFy/dnMag, dnFz/dnMag);
+        var dorigin = new THREE.Vector3(dm.x, dmy, dm.z);
+        var darrowLen = Math.min(4, 0.5 + dnMag * 3);
+        var dArrow = new THREE.ArrowHelper(ddir, dorigin, darrowLen, 0xffdd44, 0.3, 0.2);
+        dArrow.line.material.transparent = true;
+        dArrow.line.material.opacity = 0.9;
+        dArrow.cone.material.transparent = true;
+        dArrow.cone.material.opacity = 0.9;
+        forceGroup.add(dArrow);
+        fieldExtraObjects.push(dArrow);
       }
     }
 
@@ -7045,7 +7089,7 @@ function setupCanvas(id) {
       });
     });
 
-    // ---- Scenario presets ----
+    // ---- Simulation presets ----
     var SCENARIOS = {
       iss: {
         name: 'ISS Orbiting Earth',
@@ -7110,10 +7154,15 @@ function setupCanvas(id) {
       }
     };
 
+    // Logarithmic speed mapping: slider 0-100 → speed 0.1x-100x
+    function sliderToSpeed(v) { return 0.1 * Math.pow(1000, v / 100); }
+    function speedToSlider(s) { return 100 * Math.log(s / 0.1) / Math.log(1000); }
+    function formatSpeed(s) { return s >= 10 ? Math.round(s) + 'x' : s.toFixed(1) + 'x'; }
+
     function setSimSpeed(val) {
       simSpeed = val;
-      document.getElementById('curv-sim-speed').value = Math.round(val * 10);
-      document.getElementById('curv-sim-speed-label').textContent = val.toFixed(1) + 'x';
+      document.getElementById('curv-sim-speed').value = Math.round(speedToSlider(val));
+      document.getElementById('curv-sim-speed-label').textContent = formatSpeed(val);
     }
 
     function deactivateAllPresets() {
@@ -7123,7 +7172,7 @@ function setupCanvas(id) {
       document.getElementById('curv-orbit-info').style.display = 'none';
     }
 
-    // Wire scenario buttons
+    // Wire simulation buttons
     Object.keys(SCENARIOS).forEach(function(name) {
       var btn = document.getElementById('curv-scenario-' + name);
       if (!btn) return;
@@ -7176,8 +7225,8 @@ function setupCanvas(id) {
     });
 
     document.getElementById('curv-sim-speed').addEventListener('input', function(e) {
-      simSpeed = e.target.value / 10;
-      document.getElementById('curv-sim-speed-label').textContent = simSpeed.toFixed(1) + 'x';
+      simSpeed = sliderToSpeed(parseFloat(e.target.value));
+      document.getElementById('curv-sim-speed-label').textContent = formatSpeed(simSpeed);
     });
 
     // ---- Camera controls ----
@@ -7367,7 +7416,7 @@ function setupCanvas(id) {
         else { stepBtn.classList.add('curv-disabled'); }
       }
 
-      // Mass strength: hidden when a scenario (not manual preset) is active
+      // Mass strength: hidden when a simulation (not manual preset) is active
       var msg = document.getElementById('curv-mass-slider-group');
       var activeScenario = document.querySelector('#sec-curvature [data-scenario].active');
       if (msg) msg.style.display = activeScenario ? 'none' : 'block';

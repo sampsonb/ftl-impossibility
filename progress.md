@@ -98,10 +98,13 @@ https://sampsonb.github.io/ftl-impossibility/
 - Interactive 3D visualization using Three.js + OrbitControls
 - **2D Sheet view**: 60×60 vertex grid deforms downward (classic rubber-sheet analogy)
 - **3D Spherical view**: 3 concentric icosahedron shells (r=8, 14, 20) compress inward toward masses at center
+  - **Distinct shell colors**: inner (deep red, strongest gravity), middle (orange/amber, medium), outer (light blue, weakest)
+  - Shell opacity gradient: inner 12%, middle 10%, outer 8% — see through to inner shells
+  - Wireframe colors match shells: red, orange, blue with decreasing opacity
   - Masses sit at the CENTER of the shells — demonstrates gravity curves space equally in ALL directions
   - Enhanced deformation (3.5× pull factor) for more visible curvature
   - 3 orthogonal cross-section rings (XZ amber, XY cyan, YZ purple) show curvature in each plane
-- Grid/shell vertex colors show gravitational time dilation (red = slow, blue = flat)
+- Vertex colors blend from shell's base color toward deep red near masses
 - Schwarzschild-like potential: displacement ∝ -M/r (1.5× depth scale for dramatic wells)
 - Click to place masses (up to 5), raycasting onto XZ plane
 - Particle simulation with full 3D Verlet integration following geodesics
@@ -128,7 +131,7 @@ https://sampsonb.github.io/ftl-impossibility/
   - **Earth Orbiting Sun**: gold Sun, blue Earth at distance 10
   - **Binary Star System**: two equal dynamic masses orbiting common center of mass
   - **Figure-8 Three-Body**: Chenciner-Montgomery solution — 3 equal masses on figure-8 path
-- **Simulation controls**: Pause/Play, Reset All, speed slider (0.1x–5.0x)
+- **Simulation controls**: Pause/Play, Reset All, logarithmic speed slider (0.1x–100x)
 - **3D centering fix**: masses positioned at CENTER of spherical grid (Y=0), not on deformed surface
 - **3D axis labels**: X (red), Y (green), Z (blue) dashed axis lines with projected labels — shows no preferred "down"
 - **Omnidirectional hint**: educational note appears in 3D mode explaining gravity curves space in ALL directions
@@ -136,16 +139,19 @@ https://sampsonb.github.io/ftl-impossibility/
 - **Full orbit freedom**: removed polar angle constraint — camera can view from any direction including below
 - **Fullscreen mode**: expands visualization to fill viewport, H key shows/hides controls, ESC to exit
 - **Visual improvements**: body sizes scaled by mass, custom colors per body (Earth blue, Moon gray, Sun gold, etc.), HTML label overlays projected from 3D positions
-- **Force visualization**: tractor-beam style gravitational force beams
-  - Per-mass colored beams from each particle to each mass (blue=planet, gold=star, purple=black hole)
-  - Beam thickness and opacity proportional to force magnitude (F = M/r²)
-  - Gentle pulsing animation for visual energy
-  - Glow halo (wider, more transparent cylinder) per beam
-  - Arrowhead cones at 82% along beam (pointing toward mass)
-  - Color gradient: source mass color → orange/red at high strength
-  - Net force white ArrowHelper when multiple masses present
-  - Force info in overlay: peak force value + "Force ∝ 1/r²" educational label
-  - Context-sensitive: force row shown only when Show Forces is active
+- **Force field visualization**: animated flowing arrow field showing gravitational pull
+  - 600-arrow pre-allocated pool for performance (no GC churn)
+  - 5 radial layers (r=3, 6, 9, 13, 18) with fibonacci sphere distribution per layer
+  - Arrows flow inward toward masses — continuous streaming animation
+  - Close to mass: dark red, large, fast flow, bright opacity
+  - Far from mass: pale red, small, slow flow, dim opacity
+  - Phase-based fade-in/out creates particle stream effect
+  - Spherically symmetric — shows gravity pulls equally from ALL directions
+  - **Per-object force vectors**: bright yellow ArrowHelper on each particle and dynamic mass
+    - Shows actual net force acting on that specific object in real time
+    - Length proportional to force magnitude
+    - Applied to both test particles and dynamic masses (e.g., binary stars)
+  - Force info in overlay: peak force value + "Field F ∝ 1/r²" label
 - **Educational readouts**: altitude (distance to nearest mass), escape velocity at current position
 - Orbital inclination slider (0°–180°) for orbit and orbital planes modes
 - **Orbital plane presets** (auto-switch to 3D view):
@@ -154,7 +160,7 @@ https://sampsonb.github.io/ftl-impossibility/
   - **Globular Cluster**: 8 stars with uniformly distributed inclinations — truly spherical
 - Mass presets: Earth (gentle), Sun (moderate), Black Hole (extreme + accretion ring), Binary Stars
 - Toggle between 2D Sheet and 3D Spherical views
-- Show/hide cross-section rings, grid, geodesic straightness, trails, force vectors
+- Show/hide cross-section rings, grid, geodesic straightness, trails, force field
 - **Reorganized bottom-panel UI**:
   - 3D container fills top 70-80% of section; controls consolidated at bottom
   - 3-column control panel: Quick Start (presets + scenarios) | Simulation (play/pause, speed, checkboxes) | Advanced (view, camera, mode, sliders)
@@ -283,3 +289,4 @@ https://sampsonb.github.io/ftl-impossibility/
 24. Curvature UI reorganization: bottom control panel, 3-column layout, collapsible sections, context-sensitive controls, info overlay, enhanced fullscreen
 25. Camera default mode: explicit mode toggle for mass/particle placement, keyboard shortcuts (M/P/O/Esc), mode indicator overlay
 26. Tractor-beam force visualization: per-mass colored beams, thickness/opacity proportional to force, pulsing animation, glow halos, arrowhead cones, net force arrow, educational force info overlay
+27. Five curvature improvements: distinct colored shells (red/orange/blue), rename Scenarios→Simulations, logarithmic sim speed 0.1x-100x, animated force field with flowing arrows, per-object yellow force vectors

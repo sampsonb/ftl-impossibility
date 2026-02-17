@@ -372,13 +372,13 @@
 
   /* ==================== CURVATURE SECTION LAYOUT ==================== */
 
-  /* Card becomes flex column: container on top, controls on bottom */
-  #sec-curvature .card { display: flex; flex-direction: column; gap: 0; padding: 0; overflow: hidden; }
+  /* Card becomes flex column: container on top, controls pinned to bottom */
+  #sec-curvature .card { display: flex; flex-direction: column; gap: 0; padding: 0; overflow: visible; padding-bottom: 28vh; }
   #sec-curvature .card > .explain { padding: 16px 20px 0; margin: 0; }
   #sec-curvature .card > .explain:last-of-type { padding-bottom: 8px; }
 
-  /* 3D container fills top portion */
-  #curvature-container { width: 100% !important; height: 70vh !important; min-height: 500px; max-height: 80vh; border-radius: 0 !important; margin: 0 !important; position: relative; overflow: hidden; background: #060a14; cursor: grab; }
+  /* 3D container fills viewport above pinned controls */
+  #curvature-container { width: 100% !important; height: calc(100vh - 28vh) !important; min-height: 400px; border-radius: 0 !important; margin: 0 !important; position: relative; overflow: hidden; background: #060a14; cursor: grab; }
   #curvature-container canvas { display: block; }
 
   /* Info overlay (top-right of 3D view) */
@@ -390,8 +390,12 @@
   /* Tooltip */
   #curv-tooltip { z-index: 10; backdrop-filter: blur(8px); }
 
-  /* Control panel — bottom, 3 columns */
-  #curv-control-panel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; padding: 12px 16px; background: rgba(17,24,39,0.6); border-top: 1px solid var(--border); }
+  /* Bottom panel — fixed to viewport bottom when curvature section is active */
+  #curv-bottom-panel { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 900; background: rgba(10,14,26,0.95); backdrop-filter: blur(12px); border-top: 1px solid var(--border); max-height: 30vh; overflow-y: auto; }
+  #sec-curvature.curv-section-active #curv-bottom-panel { display: block; }
+
+  /* Control panel grid inside bottom panel */
+  #curv-control-panel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; padding: 10px 16px; }
 
   /* Column layout */
   .curv-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
@@ -427,9 +431,9 @@
   .curv-disabled { opacity: 0.35; filter: saturate(0.3); }
   .curv-ctx-hidden { display: none !important; }
 
-  /* Compact readout strip */
-  #curv-readout-strip { padding: 8px 16px; }
-  #curv-readout-strip.readouts { gap: 8px; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); margin: 8px 0; }
+  /* Compact readout strip — sits inside the fixed control panel wrapper */
+  #curv-readout-strip { padding: 4px 16px 0; }
+  #curv-readout-strip.readouts { gap: 6px; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); margin: 0; }
   #curv-readout-strip .readout { padding: 4px 8px; }
   #curv-readout-strip .readout .label { font-size: 0.65rem; }
   #curv-readout-strip .readout .value { font-size: 0.85rem; }
@@ -439,10 +443,9 @@
   #curvature-container.curv-fullscreen #curv-fullscreen-close { display: block !important; }
   #curvature-container.curv-fullscreen #curv-fullscreen-instructions { display: block !important; }
 
-  /* In fullscreen, control panel becomes fixed overlay at bottom — hidden by default */
-  .curv-fs-active #curv-control-panel { display: none; }
-  .curv-fs-active.curv-fs-controls-visible #curv-control-panel { display: grid; position: fixed; bottom: 0; left: 0; right: 0; z-index: 10000; background: rgba(10,14,26,0.92); backdrop-filter: blur(12px); border-top: 1px solid var(--border); max-height: 40vh; overflow-y: auto; }
-  .curv-fs-active #curv-readout-strip { display: none; }
+  /* In fullscreen, bottom panel hidden by default, H key reveals it */
+  .curv-fs-active #curv-bottom-panel { display: none !important; }
+  .curv-fs-active.curv-fs-controls-visible #curv-bottom-panel { display: block !important; z-index: 10000; }
   .curv-fs-active #curv-info-overlay { display: block !important; }
 
   /* Post-container explanations */
@@ -450,15 +453,19 @@
 
   /* Responsive: stack columns on narrow screens */
   @media (max-width: 900px) {
-    #curv-control-panel { grid-template-columns: 1fr; gap: 10px; padding: 10px 12px; max-height: 50vh; overflow-y: auto; }
-    #curvature-container { height: 55vh !important; min-height: 350px; }
+    #curv-control-panel { grid-template-columns: 1fr; gap: 10px; padding: 10px 12px; }
+    #curv-bottom-panel { max-height: 35vh; }
+    #curvature-container { height: calc(100vh - 35vh) !important; min-height: 300px; }
     .curv-check-grid { grid-template-columns: 1fr 1fr; }
+    #sec-curvature .card { padding-bottom: 35vh; }
   }
   @media (max-width: 600px) {
-    #curvature-container { height: 45vh !important; min-height: 280px; }
+    #curvature-container { height: calc(100vh - 40vh) !important; min-height: 250px; }
+    #curv-bottom-panel { max-height: 40vh; }
     .curv-btn-group .tab-btn { font-size: 0.68rem; padding: 3px 6px; }
     #curv-control-panel .slider-group label { font-size: 0.68rem; }
     .curv-check-grid label { font-size: 0.66rem; }
+    #sec-curvature .card { padding-bottom: 40vh; }
   }
 
   /* ==================== DIFFICULTY LEVEL SYSTEM ==================== */
@@ -1568,7 +1575,8 @@
       </div>
     </div>
 
-    <!-- ===== CONTROL PANEL (BOTTOM — 3 columns) ===== -->
+    <!-- ===== BOTTOM PANEL (fixed to viewport bottom when section active) ===== -->
+    <div id="curv-bottom-panel">
     <div id="curv-control-panel">
 
       <!-- LEFT COLUMN: Quick Start -->
@@ -1681,13 +1689,7 @@
         </div>
       </div>
     </div>
-
-    <!-- Hidden info divs (kept for JS compatibility) -->
-    <div id="curv-3d-hint" style="display:none;color:var(--accent);font-size:0.82rem;padding:4px 0;line-height:1.5;">
-      <strong>3D Spherical view:</strong> The mass sits at the <em>center</em> of the grid &mdash; gravity curves space equally in ALL directions, not just &ldquo;down.&rdquo; Use Top/Side/Front views to see this from every angle.
-    </div>
-
-    <!-- Readouts -->
+    <!-- Readouts (inside bottom panel) -->
     <div class="readouts" id="curv-readout-strip">
       <div class="readout">
         <div class="label">Masses</div>
@@ -1725,6 +1727,12 @@
         <div class="label">Energy Drift</div>
         <div class="value" id="curv-energy-drift" style="color:#22c55e;">&mdash;</div>
       </div>
+    </div>
+    </div><!-- /curv-bottom-panel -->
+
+    <!-- Hidden info divs (kept for JS compatibility) -->
+    <div id="curv-3d-hint" style="display:none;color:var(--accent);font-size:0.82rem;padding:4px 0;line-height:1.5;">
+      <strong>3D Spherical view:</strong> The mass sits at the <em>center</em> of the grid &mdash; gravity curves space equally in ALL directions, not just &ldquo;down.&rdquo; Use Top/Side/Front views to see this from every angle.
     </div>
 
     <p class="explain level-beg explain-bottom">
@@ -7234,6 +7242,15 @@ function setupCanvas(id) {
 
       renderer.render(scene, camera);
     }
+
+    // ---- Show/hide bottom panel when curvature section is in viewport ----
+    var curvSection = document.getElementById('sec-curvature');
+    var curvObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        curvSection.classList.toggle('curv-section-active', entry.isIntersecting);
+      });
+    }, { threshold: 0.05 });
+    curvObserver.observe(curvSection);
 
     // ---- Collapsible panel toggles ----
     ['curv-adv', 'curv-help'].forEach(function(prefix) {

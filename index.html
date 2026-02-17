@@ -378,7 +378,7 @@
   #sec-curvature .card > .explain:last-of-type { padding-bottom: 8px; }
 
   /* 3D container fills top portion */
-  #curvature-container { width: 100% !important; height: 70vh !important; min-height: 500px; max-height: 80vh; border-radius: 0 !important; margin: 0 !important; position: relative; overflow: hidden; background: #060a14; cursor: crosshair; }
+  #curvature-container { width: 100% !important; height: 70vh !important; min-height: 500px; max-height: 80vh; border-radius: 0 !important; margin: 0 !important; position: relative; overflow: hidden; background: #060a14; cursor: grab; }
   #curvature-container canvas { display: block; }
 
   /* Info overlay (top-right of 3D view) */
@@ -1540,6 +1540,8 @@
       <div id="curv-cam-help" style="position:absolute;bottom:10px;left:10px;background:rgba(17,24,39,0.7);border-radius:6px;padding:4px 8px;font-size:0.65rem;color:var(--dim);pointer-events:none;z-index:5;opacity:0.7;">
         Drag: Rotate &nbsp;&bull;&nbsp; Right-drag: Pan &nbsp;&bull;&nbsp; Scroll: Zoom
       </div>
+      <!-- Mode indicator -->
+      <div id="curv-mode-indicator" style="position:absolute;bottom:10px;right:10px;background:rgba(17,24,39,0.85);border:1px solid #22c55e;border-radius:6px;padding:4px 10px;font-size:0.72rem;font-weight:600;color:#22c55e;pointer-events:none;z-index:6;">Camera Controls</div>
       <div id="curv-shell-legend" style="display:none;position:absolute;top:10px;left:10px;background:rgba(17,24,39,0.85);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:0.75rem;color:var(--muted);pointer-events:none;z-index:5;line-height:1.6;max-width:220px;">
         <strong style="color:var(--text);">Spherical Grid</strong><br>
         Nested shells show spacetime curvature.<br>
@@ -1628,13 +1630,14 @@
             <button class="tab-btn active" id="curv-cam-free">Free</button>
             <button class="tab-btn" id="curv-cam-follow">Follow</button>
           </div>
-          <div class="curv-btn-group-label">Mode</div>
+          <div class="curv-btn-group-label">Mode <span style="color:var(--dim);font-size:0.6rem;font-weight:400;">(M/P/O keys)</span></div>
           <div class="curv-btn-group">
-            <button class="tab-btn active" id="curv-mode-place">Place Mass</button>
-            <button class="tab-btn" id="curv-mode-drop">Drop Particle</button>
-            <button class="tab-btn" id="curv-mode-orbit">Launch Orbit</button>
-            <button class="tab-btn" id="curv-mode-rain">Rain</button>
-            <button class="tab-btn" id="curv-mode-orbits">Orbital Planes</button>
+            <button class="tab-btn active" id="curv-mode-camera" title="Camera only — click and drag to rotate (Esc)">Camera</button>
+            <button class="tab-btn" id="curv-mode-place" title="Click on grid to place a mass (M)">Place Mass</button>
+            <button class="tab-btn" id="curv-mode-drop" title="Click on grid to drop a particle (P)">Drop Particle</button>
+            <button class="tab-btn" id="curv-mode-orbit" title="Click on grid to launch an orbit (O)">Launch Orbit</button>
+            <button class="tab-btn" id="curv-mode-rain" title="Drop 6 particles from all directions">Rain</button>
+            <button class="tab-btn" id="curv-mode-orbits" title="Multi-plane orbital demonstrations">Orbital Planes</button>
           </div>
           <div id="curv-mass-slider-group">
             <div class="slider-group">
@@ -5856,7 +5859,7 @@ function setupCanvas(id) {
     scene.add(particleGroup);
     scene.add(straightGroup);
 
-    let currentMode = 'place';
+    let currentMode = 'camera';
     let crossSectionMode = false;
     let showStraightness = false;
     let showCrossSections = true;
@@ -6598,6 +6601,8 @@ function setupCanvas(id) {
     });
 
     container.addEventListener('click', (e) => {
+      // Camera mode: do nothing (OrbitControls handles interaction)
+      if (currentMode === 'camera') return;
       if (currentMode === 'rain') { rainParticles(); return; }
       // Ignore drags (OrbitControls)
       if (mouseDownPos) {
@@ -6666,27 +6671,63 @@ function setupCanvas(id) {
     });
 
     // ---- Controls wiring ----
-    // ---- Mode buttons ----
-    const modeMap = { 'curv-mode-place': 'place', 'curv-mode-drop': 'drop', 'curv-mode-orbit': 'orbit', 'curv-mode-rain': 'rain', 'curv-mode-orbits': 'orbits' };
-    const modeIds = Object.keys(modeMap);
-    Object.entries(modeMap).forEach(([id, mode]) => {
-      document.getElementById(id).addEventListener('click', () => {
-        currentMode = mode;
-        modeIds.forEach(bid => document.getElementById(bid).classList.toggle('active', bid === id));
-        // Show inclination slider for orbit modes
-        document.getElementById('curv-inclination-group').style.display = (mode === 'orbit' || mode === 'orbits') ? 'block' : 'none';
-        // Show orbital presets for orbits mode
-        document.getElementById('curv-orbit-presets').style.display = mode === 'orbits' ? 'flex' : 'none';
-        if (mode !== 'orbits') {
-          document.getElementById('curv-orbit-info').style.display = 'none';
-          document.getElementById('curv-orbit-info').textContent = '';
-        }
-        if (mode === 'rain') {
-          rainParticles();
-          container.style.cursor = 'default';
-        } else {
-          container.style.cursor = mode === 'place' ? 'crosshair' : mode === 'drop' ? 'pointer' : 'cell';
-        }
+    // ---- Mode system (camera is default — no accidental placement) ----
+    var modeMap = { 'curv-mode-place': 'place', 'curv-mode-drop': 'drop', 'curv-mode-orbit': 'orbit', 'curv-mode-rain': 'rain', 'curv-mode-orbits': 'orbits' };
+    var modeIds = Object.keys(modeMap);
+    var allModeIds = ['curv-mode-camera'].concat(modeIds);
+
+    function setMode(mode) {
+      currentMode = mode;
+      // Update button active states
+      allModeIds.forEach(function(bid) {
+        var el = document.getElementById(bid);
+        if (el) el.classList.toggle('active', bid === 'curv-mode-' + mode);
+      });
+      // Inclination slider for orbit modes
+      document.getElementById('curv-inclination-group').style.display = (mode === 'orbit' || mode === 'orbits') ? 'block' : 'none';
+      // Orbital presets for orbits mode
+      document.getElementById('curv-orbit-presets').style.display = mode === 'orbits' ? 'flex' : 'none';
+      if (mode !== 'orbits') {
+        document.getElementById('curv-orbit-info').style.display = 'none';
+        document.getElementById('curv-orbit-info').textContent = '';
+      }
+      // Cursor
+      if (mode === 'camera' || mode === 'rain') {
+        container.style.cursor = 'grab';
+      } else {
+        container.style.cursor = mode === 'place' ? 'crosshair' : mode === 'drop' ? 'pointer' : 'cell';
+      }
+      // Rain fires immediately
+      if (mode === 'rain') { rainParticles(); setMode('camera'); return; }
+      // Mode indicator
+      updateModeIndicator();
+    }
+
+    function updateModeIndicator() {
+      var el = document.getElementById('curv-mode-indicator');
+      if (!el) return;
+      var labels = { camera: 'Camera Controls', place: 'Click to Place Mass', drop: 'Click to Drop Particle', orbit: 'Click to Launch Orbit', orbits: 'Click to Launch Orbital Plane' };
+      var colors = { camera: '#22c55e', place: '#f59e0b', drop: '#3b82f6', orbit: '#8b5cf6', orbits: '#8b5cf6' };
+      el.textContent = labels[currentMode] || 'Camera Controls';
+      el.style.color = colors[currentMode] || '#22c55e';
+      el.style.borderColor = colors[currentMode] || '#22c55e';
+      // Container border glow for placement modes
+      if (currentMode !== 'camera') {
+        container.style.boxShadow = 'inset 0 0 20px ' + (colors[currentMode] || '#f59e0b') + '33';
+      } else {
+        container.style.boxShadow = 'none';
+      }
+    }
+
+    // Camera button
+    document.getElementById('curv-mode-camera').addEventListener('click', function() { setMode('camera'); });
+
+    // Action mode buttons — clicking an active mode toggles back to camera
+    Object.entries(modeMap).forEach(function(entry) {
+      var id = entry[0], mode = entry[1];
+      document.getElementById(id).addEventListener('click', function() {
+        if (currentMode === mode) { setMode('camera'); }
+        else { setMode(mode); }
       });
     });
 
@@ -6697,6 +6738,7 @@ function setupCanvas(id) {
         deactivateAllPresets();
         btn.classList.add('active');
         loadPreset(name);
+        setMode('camera');
         if (view3D) { updateSphereShells(); updateCrossRings(); }
       });
     });
@@ -6704,6 +6746,7 @@ function setupCanvas(id) {
     document.getElementById('curv-clear').addEventListener('click', () => {
       clearMasses(); clearParticles();
       document.querySelectorAll('#sec-curvature [data-preset]').forEach(b => b.classList.remove('active'));
+      setMode('camera');
       if (view3D) { updateSphereShells(); updateCrossRings(); }
     });
 
@@ -6999,6 +7042,7 @@ function setupCanvas(id) {
         document.getElementById('curv-pause').textContent = 'Pause';
         document.getElementById('curv-pause').classList.remove('active');
         SCENARIOS[name].setup();
+        setMode('camera');
         document.getElementById('curv-scenario-info').textContent = SCENARIOS[name].description;
         document.getElementById('curv-scenario-info').style.display = 'block';
         if (view3D) { updateSphereShells(); updateCrossRings(); }
@@ -7035,6 +7079,7 @@ function setupCanvas(id) {
       document.getElementById('curv-pause').textContent = 'Pause';
       document.getElementById('curv-pause').classList.remove('active');
       deactivateAllPresets();
+      setMode('camera');
       if (view3D) { updateSphereShells(); updateCrossRings(); }
     });
 
@@ -7112,6 +7157,22 @@ function setupCanvas(id) {
     document.getElementById('curv-fullscreen-close').addEventListener('click', toggleFullscreen);
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && container.classList.contains('curv-fullscreen')) toggleFullscreen();
+    });
+
+    // ---- Keyboard shortcuts for mode switching ----
+    document.addEventListener('keydown', function(e) {
+      // Only respond when curvature section is visible (in viewport)
+      var sec = document.getElementById('sec-curvature');
+      var secRect = sec.getBoundingClientRect();
+      if (secRect.bottom < 0 || secRect.top > window.innerHeight) return;
+      // Don't intercept when typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      var key = e.key.toLowerCase();
+      if (key === 'm') { setMode(currentMode === 'place' ? 'camera' : 'place'); }
+      else if (key === 'p') { setMode(currentMode === 'drop' ? 'camera' : 'drop'); }
+      else if (key === 'o') { setMode(currentMode === 'orbit' ? 'camera' : 'orbit'); }
+      else if (key === 'escape' && currentMode !== 'camera') { setMode('camera'); }
     });
 
     // ---- Animation loop ----
@@ -7250,8 +7311,9 @@ function setupCanvas(id) {
       }
     });
 
-    // Load default preset and start
+    // Load default preset, set camera mode, and start
     loadPreset('earth');
+    setMode('camera');
     requestAnimationFrame(animate);
   }
 })();

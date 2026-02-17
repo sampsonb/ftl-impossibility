@@ -20,7 +20,7 @@ All changes from the February 2026 build session.
 - Net force: white ArrowHelper showing combined force when multiple masses present
 - Force info row in top-right overlay: "Force ∝ 1/r²" label + peak force magnitude (red)
 - Context-sensitive: force info row shown/hidden based on Show Forces toggle state
-- **Commit:** (pending)
+- **Commit:** `5ab6dcf`
 
 ---
 
